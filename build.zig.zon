@@ -1,0 +1,17 @@
+.{
+    .name = .zig_sban,
+    .version = "0.1.0",
+    .minimum_zig_version = "0.17.0-dev.87+9b177a7d2",
+    .fingerprint = 0xd1b3a7ac0b7ea03,
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+        "scripts",
+        "docs",
+        "README.md",
+        "EXECUTIVE_SUMMARY.md",
+        "LICENSE",
+    },
+}

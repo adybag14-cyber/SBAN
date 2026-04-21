@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-and-test:
     strategy:
@@ -25,10 +28,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Setup Zig
-        uses: mlugg/setup-zig@v2
-        with:
-          version: 0.17.0-dev.87+9b177a7d2
+      - name: Install Zig
+        run: python scripts/install_zig_ci.py --version master --output-dir .ci-tools/zig
 
       - name: Run unit tests
         run: zig build test

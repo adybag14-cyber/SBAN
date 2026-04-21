@@ -1,0 +1,4 @@
+prompt=explain the new routing logic
+mode=hybrid-anchor
+matched_prompt=can you explain the hybrid experts
+response=The hybrid experts blend SBAN scores with online Markov, burst-context, and recent-context signals and learn which one to trust.

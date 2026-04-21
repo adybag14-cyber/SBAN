@@ -1,0 +1,145 @@
+[1] prompt=hello are you ok
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[2] prompt=can you help me
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[3] prompt=what can you do
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[4] prompt=give me a status update
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[5] prompt=what happened in the long run
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[6] prompt=are you still there
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[7] prompt=say hello back
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[8] prompt=tell me what you are doing
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[9] prompt=who are you
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[10] prompt=what are the current limitations
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[11] prompt=what should improve next
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[12] prompt=can you summarize the project
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[13] prompt=what changed in v16
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[14] prompt=why is v16 different
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[15] prompt=what is the architecture now
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[16] prompt=what is the strongest result
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[17] prompt=can it scale
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[18] prompt=what is the main risk
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[19] prompt=how does the model answer
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[20] prompt=what does the long run prove
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[21] prompt=what is still missing
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[22] prompt=what did you test
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[23] prompt=did the build succeed
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[24] prompt=what should i read first
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[25] prompt=can you explain the hybrid experts
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[26] prompt=is the system coherent
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[27] prompt=what is regime aware routing
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[28] prompt=what does the recent expert do
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[29] prompt=why add a recent expert
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[30] prompt=how does v16 handle drift
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[31] prompt=what is the long horizon goal
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[32] prompt=what is better in chat mode
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[33] prompt=what still looks weak
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[34] prompt=explain the new routing logic
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[35] prompt=how do you respond when the prompt is only loosely related
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+[36] prompt=thank you
+mode=free
+response=what stant: what stant: what stant: what stant: what stant: what stant: what stant: what stant:
+
+summary turns=36 anchored=0 retrieved=0 nonempty=36

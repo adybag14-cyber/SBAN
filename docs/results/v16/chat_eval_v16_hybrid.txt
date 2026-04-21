@@ -1,0 +1,181 @@
+[1] prompt=hello are you ok
+mode=hybrid-anchor
+matched_prompt=hello are you ok
+response=Hello. Yes, I am okay and ready to help.
+
+[2] prompt=can you help me
+mode=hybrid-anchor
+matched_prompt=can you help me
+response=Yes. I can help with builds, experiments, evaluation, and summaries.
+
+[3] prompt=what can you do
+mode=hybrid-anchor
+matched_prompt=what can you do
+response=I can build the runtime, run long streams, inspect accuracy, and explain limitations.
+
+[4] prompt=give me a status update
+mode=hybrid-anchor
+matched_prompt=give me a status update
+response=The build is running, the evaluation is active, and the latest checks are recorded.
+
+[5] prompt=what happened in the long run
+mode=hybrid-anchor
+matched_prompt=what happened in the long run
+response=The long run stayed measurable and stable, with checkpoints and reproducible outputs.
+
+[6] prompt=are you still there
+mode=hybrid-anchor
+matched_prompt=are you still there
+response=Yes. I am here and the system is still running.
+
+[7] prompt=say hello back
+mode=hybrid-anchor
+matched_prompt=say hello back
+response=Hello. I am here and ready.
+
+[8] prompt=tell me what you are doing
+mode=hybrid-anchor
+matched_prompt=tell me what you are doing
+response=I am training on the stream, testing the runtime, and improving the architecture.
+
+[9] prompt=who are you
+mode=hybrid-anchor
+matched_prompt=who are you
+response=I am an SBAN runtime demo focused on experiments, stress tests, and short replies.
+
+[10] prompt=what are the current limitations
+mode=hybrid-anchor
+matched_prompt=what are the current limitations
+response=The system is real and runnable, but it still has limited open-ended dialogue depth.
+
+[11] prompt=what should improve next
+mode=hybrid-anchor
+matched_prompt=what should improve next
+response=The next steps are stronger long-horizon learning, better routing, and better dialogue control.
+
+[12] prompt=can you summarize the project
+mode=hybrid-anchor
+matched_prompt=can you summarize the project
+response=The project is building a compact online learner that can adapt, measure, and answer short requests.
+
+[13] prompt=what changed in v16
+mode=hybrid-anchor
+matched_prompt=what changed in v16
+response=V16 adds regime-aware routing, a recent-context expert, and stronger chat fallback behavior.
+
+[14] prompt=why is v16 different
+mode=hybrid-anchor
+matched_prompt=why is v16 different
+response=V16 keeps the hybrid expert design but adds a fast recent-memory specialist for non-stationary stretches.
+
+[15] prompt=what is the architecture now
+mode=hybrid-anchor
+matched_prompt=what is the architecture now
+response=The runtime combines SBAN memory propagation with adaptive order-one, order-two, burst, and recent-context experts.
+
+[16] prompt=what is the strongest result
+mode=hybrid-anchor
+matched_prompt=what is the strongest result
+response=The strongest result is that the system stays stable on very long runs while keeping strong short-protocol accuracy.
+
+[17] prompt=can it scale
+mode=hybrid-anchor
+matched_prompt=can it scale
+response=It can scale to much longer streams now, although the cost is higher than the smaller release path.
+
+[18] prompt=what is the main risk
+mode=hybrid-anchor
+matched_prompt=what is the main risk
+response=The main risk is that free generation is still weaker than anchored or retrieved dialogue.
+
+[19] prompt=how does the model answer
+mode=hybrid-anchor
+matched_prompt=how does the model answer
+response=It answers through anchored retrieval, retrieved support matches, and sequence-aware continuation over runtime state.
+
+[20] prompt=what does the long run prove
+mode=hybrid-anchor
+matched_prompt=what does the long run prove
+response=The long run proves the system can keep training online for a very large number of predictions without collapsing.
+
+[21] prompt=what is still missing
+mode=hybrid-anchor
+matched_prompt=what is still missing
+response=It still needs stronger open dialogue, richer data, and better bridge utility under long horizons.
+
+[22] prompt=what did you test
+mode=hybrid-anchor
+matched_prompt=what did you test
+response=I tested short benchmarks, long stress runs, and a wider range of dialogue prompts.
+
+[23] prompt=did the build succeed
+mode=hybrid-anchor
+matched_prompt=did the build succeed
+response=Yes. The build path is hardened and has a reliable fallback when release mode is unsafe.
+
+[24] prompt=what should i read first
+mode=hybrid-anchor
+matched_prompt=what should i read first
+response=Read the executive summary first, then the research paper, then the results folder.
+
+[25] prompt=can you explain the hybrid experts
+mode=hybrid-anchor
+matched_prompt=can you explain the hybrid experts
+response=The hybrid experts blend SBAN scores with online Markov, burst-context, and recent-context signals and learn which one to trust.
+
+[26] prompt=is the system coherent
+mode=hybrid-anchor
+matched_prompt=is the system coherent
+response=It is coherent on anchored and retrieved requests and materially better on measured prompt sets than before.
+
+[27] prompt=what is regime aware routing
+mode=hybrid-anchor
+matched_prompt=what is regime aware routing
+response=Regime-aware routing means the runtime can shift weight toward experts that match the current local pattern rather than the old global average.
+
+[28] prompt=what does the recent expert do
+mode=hybrid-anchor
+matched_prompt=what does the recent expert do
+response=The recent expert tracks a bounded sliding window of recent order-two transitions so it can react faster to drift.
+
+[29] prompt=why add a recent expert
+mode=hybrid-anchor
+matched_prompt=why add a recent expert
+response=I add a recent expert because long streams can change regime and older counts are not always the best guide.
+
+[30] prompt=how does v16 handle drift
+mode=hybrid-anchor
+matched_prompt=how does v16 handle drift
+response=V16 handles drift by combining global experts with a short-window specialist and shared online weight updates.
+
+[31] prompt=what is the long horizon goal
+mode=hybrid-anchor
+matched_prompt=what is the long horizon goal
+response=The long horizon goal is a compact online learner that stays accurate and stable across millions of predictions.
+
+[32] prompt=what is better in chat mode
+mode=hybrid-anchor
+matched_prompt=what is better in chat mode
+response=Chat mode now falls back to related retrieved answers before fully free generation, which improves coherence.
+
+[33] prompt=what still looks weak
+mode=hybrid-anchor
+matched_prompt=what still looks weak
+response=Fully free continuation is still the weakest path and should not be overclaimed.
+
+[34] prompt=explain the new routing logic
+mode=hybrid-anchor
+matched_prompt=can you explain the hybrid experts
+response=The hybrid experts blend SBAN scores with online Markov, burst-context, and recent-context signals and learn which one to trust.
+
+[35] prompt=how do you respond when the prompt is only loosely related
+mode=hybrid-anchor
+matched_prompt=can you summarize the project
+response=The project is building a compact online learner that can adapt, measure, and answer short requests.
+
+[36] prompt=thank you
+mode=hybrid-anchor
+matched_prompt=thank you
+response=You are welcome. I am ready for the next check.
+
+summary turns=36 anchored=36 retrieved=0 nonempty=36

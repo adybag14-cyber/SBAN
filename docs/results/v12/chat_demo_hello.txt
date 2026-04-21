@@ -1,0 +1,2 @@
+prompt=hello are you ok
+response=I am here and ready.

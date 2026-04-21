@@ -1,0 +1,4 @@
+prompt=what changed in v17
+mode=hybrid-anchor
+matched_prompt=what changed in v17
+response=V17 adds evidence-weighted expert blending, a sparse order-three expert, and cleaner boundary resets for local expert state.

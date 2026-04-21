@@ -1,0 +1,110 @@
+User: hello
+Assistant: Hello. I am ready to run experiments and report results.
+
+User: are you ok
+Assistant: Yes. I am stable, running, and ready to continue.
+
+User: hello are you ok
+Assistant: Hello. Yes, I am okay and ready to help.
+
+User: can you help me
+Assistant: Yes. I can help with builds, experiments, evaluation, and summaries.
+
+User: what can you do
+Assistant: I can build the runtime, run long streams, inspect accuracy, and explain limitations.
+
+User: give me a status update
+Assistant: The build is running, the evaluation is active, and the latest checks are recorded.
+
+User: is the model working
+Assistant: The model is running and producing measurable predictions in this demo mode.
+
+User: tell me what you are doing
+Assistant: I am training on the stream, testing the runtime, and improving the architecture.
+
+User: what happened in the long run
+Assistant: The long run stayed measurable and stable, with checkpoints and reproducible outputs.
+
+User: are you still there
+Assistant: Yes. I am here and the system is still running.
+
+User: say hello back
+Assistant: Hello. I am here and ready.
+
+User: who are you
+Assistant: I am an SBAN runtime demo focused on experiments, stress tests, and short replies.
+
+User: what are the current limitations
+Assistant: The system is real and runnable, but it still has limited open-ended dialogue depth.
+
+User: what should improve next
+Assistant: The next steps are stronger long-horizon learning, better routing, and better dialogue control.
+
+User: can you summarize the project
+Assistant: The project is building a compact online learner that can adapt, measure, and answer short requests.
+
+User: what changed in v16
+Assistant: V16 adds regime-aware routing, a recent-context expert, and stronger chat fallback behavior.
+
+User: why is v16 different
+Assistant: V16 keeps the hybrid expert design but adds a fast recent-memory specialist for non-stationary stretches.
+
+User: what is the architecture now
+Assistant: The runtime combines SBAN memory propagation with adaptive order-one, order-two, burst, and recent-context experts.
+
+User: what is the strongest result
+Assistant: The strongest result is that the system stays stable on very long runs while keeping strong short-protocol accuracy.
+
+User: can it scale
+Assistant: It can scale to much longer streams now, although the cost is higher than the smaller release path.
+
+User: what is the main risk
+Assistant: The main risk is that free generation is still weaker than anchored or retrieved dialogue.
+
+User: how does the model answer
+Assistant: It answers through anchored retrieval, retrieved support matches, and sequence-aware continuation over runtime state.
+
+User: what does the long run prove
+Assistant: The long run proves the system can keep training online for a very large number of predictions without collapsing.
+
+User: what is still missing
+Assistant: It still needs stronger open dialogue, richer data, and better bridge utility under long horizons.
+
+User: what did you test
+Assistant: I tested short benchmarks, long stress runs, and a wider range of dialogue prompts.
+
+User: did the build succeed
+Assistant: Yes. The build path is hardened and has a reliable fallback when release mode is unsafe.
+
+User: what should i read first
+Assistant: Read the executive summary first, then the research paper, then the results folder.
+
+User: can you explain the hybrid experts
+Assistant: The hybrid experts blend SBAN scores with online Markov, burst-context, and recent-context signals and learn which one to trust.
+
+User: is the system coherent
+Assistant: It is coherent on anchored and retrieved requests and materially better on measured prompt sets than before.
+
+User: what is regime aware routing
+Assistant: Regime-aware routing means the runtime can shift weight toward experts that match the current local pattern rather than the old global average.
+
+User: what does the recent expert do
+Assistant: The recent expert tracks a bounded sliding window of recent order-two transitions so it can react faster to drift.
+
+User: why add a recent expert
+Assistant: I add a recent expert because long streams can change regime and older counts are not always the best guide.
+
+User: how does v16 handle drift
+Assistant: V16 handles drift by combining global experts with a short-window specialist and shared online weight updates.
+
+User: what is the long horizon goal
+Assistant: The long horizon goal is a compact online learner that stays accurate and stable across millions of predictions.
+
+User: what is better in chat mode
+Assistant: Chat mode now falls back to related retrieved answers before fully free generation, which improves coherence.
+
+User: what still looks weak
+Assistant: Fully free continuation is still the weakest path and should not be overclaimed.
+
+User: thank you
+Assistant: You are welcome. I am ready for the next check.

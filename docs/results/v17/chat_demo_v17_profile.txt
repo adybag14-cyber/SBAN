@@ -1,0 +1,4 @@
+prompt=what profile won
+mode=hybrid-anchor
+matched_prompt=what profile won
+response=The winning v17 release profile used long-term memory, deeper propagation, strong sparse order-three bonus, and zero reliability priors.

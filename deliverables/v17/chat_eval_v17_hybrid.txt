@@ -1,0 +1,211 @@
+[1] prompt=hello are you ok
+mode=hybrid-anchor
+matched_prompt=hello are you ok
+response=Hello. Yes, I am ready to build, evaluate, and summarize v17.
+
+[2] prompt=can you help me
+mode=hybrid-anchor
+matched_prompt=can you help me
+response=Yes. I can build the runtime, run the benchmarks, package the repo, and explain the results.
+
+[3] prompt=what can you do
+mode=hybrid-anchor
+matched_prompt=what can you do
+response=I can run SBAN experiments, inspect the metrics, generate deliverables, and explain the architecture.
+
+[4] prompt=give me a status update
+mode=hybrid-anchor
+matched_prompt=give me a status update
+response=The v17 profile is built, the benchmark suite is runnable, and the latest metrics are recorded.
+
+[5] prompt=what happened in the long run
+mode=hybrid-anchor
+matched_prompt=what happened in the long run
+response=The long runs improved materially, including a strong 250k line and a much stronger completed 1M run.
+
+[6] prompt=are you still there
+mode=hybrid-anchor
+matched_prompt=are you still there
+response=Yes. I am here and the release workflow is still active.
+
+[7] prompt=say hello back
+mode=hybrid-anchor
+matched_prompt=say hello back
+response=Hello. I am here and ready.
+
+[8] prompt=tell me what you are doing
+mode=hybrid-anchor
+matched_prompt=tell me what you are doing
+response=I am evaluating the release profile, checking the long runs, and preparing the v17 deliverables.
+
+[9] prompt=who are you
+mode=hybrid-anchor
+matched_prompt=who are you
+response=I am the SBAN v17 runtime demo focused on experiments, stress tests, and concise answers.
+
+[10] prompt=what are the current limitations
+mode=hybrid-anchor
+matched_prompt=what are the current limitations
+response=Free generation is still weaker than anchored dialogue, and the runtime still needs checkpoint and resume support.
+
+[11] prompt=what should improve next
+mode=hybrid-anchor
+matched_prompt=what should improve next
+response=The next steps are multi-window recent experts, checkpointed multi-million runs, and stronger free dialogue control.
+
+[12] prompt=can you summarize the project
+mode=hybrid-anchor
+matched_prompt=can you summarize the project
+response=SBAN is a compact online learner that mixes memory-graph signals with sequence experts and reports measured results.
+
+[13] prompt=what changed in v17
+mode=hybrid-anchor
+matched_prompt=what changed in v17
+response=V17 adds evidence-weighted expert blending, a sparse order-three expert, and cleaner boundary resets for local expert state.
+
+[14] prompt=why is v17 different
+mode=hybrid-anchor
+matched_prompt=why is v17 different
+response=V17 stops trusting weak expert evidence too early, adds deeper sparse sequence context, and uses a stronger release profile.
+
+[15] prompt=what is the architecture now
+mode=hybrid-anchor
+matched_prompt=what is the architecture now
+response=The runtime combines SBAN memory propagation with order-one, order-two, sparse order-three, burst, and anchored chat experts.
+
+[16] prompt=what is the strongest result
+mode=hybrid-anchor
+matched_prompt=what is the strongest result
+response=The strongest packaged result is the completed 1M run above fifty-one percent while the short suite also improves sharply.
+
+[17] prompt=can it scale
+mode=hybrid-anchor
+matched_prompt=can it scale
+response=Yes. The v17 release profile stays strong on the short suite and scales much better on the completed long runs.
+
+[18] prompt=what is the main risk
+mode=hybrid-anchor
+matched_prompt=what is the main risk
+response=The main remaining risk is that open free continuation is still much weaker than anchored responses.
+
+[19] prompt=how does the model answer
+mode=hybrid-anchor
+matched_prompt=how does the model answer
+response=It answers through anchored prompt matches first, related retrieval second, and free continuation only when it must.
+
+[20] prompt=what does the long run prove
+mode=hybrid-anchor
+matched_prompt=what does the long run prove
+response=The long run proves the system can keep learning online for a very large number of predictions while staying materially stronger than v16.
+
+[21] prompt=what is still missing
+mode=hybrid-anchor
+matched_prompt=what is still missing
+response=It still needs better checkpointing, broader held-out validation, and stronger open-ended generation.
+
+[22] prompt=what did you test
+mode=hybrid-anchor
+matched_prompt=what did you test
+response=I tested prefix, drift, probe, 250k, 1M, and the expanded v17 dialogue evaluation.
+
+[23] prompt=did the build succeed
+mode=hybrid-anchor
+matched_prompt=did the build succeed
+response=Yes. The Windows Zig build succeeds and the release runner reproduces the v17 benchmark suite.
+
+[24] prompt=what should i read first
+mode=hybrid-anchor
+matched_prompt=what should i read first
+response=Read the executive summary first, then the research paper, then the v17 results directory.
+
+[25] prompt=can you explain the hybrid experts
+mode=hybrid-anchor
+matched_prompt=can you explain the hybrid experts
+response=The hybrid experts add evidence-weighted sequence distributions on top of SBAN memory scores and adapt online to what is working.
+
+[26] prompt=is the system coherent
+mode=hybrid-anchor
+matched_prompt=is the system coherent
+response=It is coherent on anchored prompts and stays fully non-empty on the bundled v17 prompt set.
+
+[27] prompt=what is evidence weighted routing
+mode=hybrid-anchor
+matched_prompt=what is evidence weighted routing
+response=Evidence-weighted routing means an expert only gets a strong vote when its context has both support and a meaningful winner over its alternatives.
+
+[28] prompt=what does the sparse order three expert do
+mode=hybrid-anchor
+matched_prompt=what does the sparse order three expert do
+response=The sparse order-three expert tracks deeper sequence context without allocating a dense four-dimensional table.
+
+[29] prompt=why add an order three expert
+mode=hybrid-anchor
+matched_prompt=why add an order three expert
+response=I added the order-three expert because the short suite and the probe both benefited from deeper local context once it was made sparse and selective.
+
+[30] prompt=how does v17 handle drift
+mode=hybrid-anchor
+matched_prompt=how does v17 handle drift
+response=V17 keeps global sequence knowledge, but resets the local recent and burst expert state at drift boundaries so stale local evidence does not leak forward.
+
+[31] prompt=what is the long horizon goal
+mode=hybrid-anchor
+matched_prompt=what is the long horizon goal
+response=The long horizon goal is a compact online learner that stays accurate, stable, and resumable across millions of predictions.
+
+[32] prompt=what is better in chat mode
+mode=hybrid-anchor
+matched_prompt=what is better in chat mode
+response=The v17 chat assets are broader, the anchors stay exact, and the release profile keeps the evaluation fully populated.
+
+[33] prompt=what still looks weak
+mode=hybrid-anchor
+matched_prompt=what still looks weak
+response=Fully free continuation is still the weakest path and should not be overclaimed.
+
+[34] prompt=explain the new routing logic
+mode=hybrid-anchor
+matched_prompt=explain the new routing logic
+response=The new routing logic scales expert influence by actual evidence and lets the sparse order-three expert contribute only when its context is real.
+
+[35] prompt=how do you respond when the prompt is only loosely related
+mode=hybrid-anchor
+matched_prompt=how do you respond when the prompt is only loosely related
+response=I try an anchor first, then a related support answer, and only then fall back to free continuation.
+
+[36] prompt=what changed in the probe
+mode=hybrid-anchor
+matched_prompt=what changed in the probe
+response=The probe improved because the stronger order-three routing and release profile capture structured local transitions more effectively than v16.
+
+[37] prompt=why did the scores jump
+mode=hybrid-anchor
+matched_prompt=why did the scores jump
+response=The scores jumped because v17 stopped over-trusting weak contexts and let strong sparse sequence evidence dominate when it was actually justified.
+
+[38] prompt=what profile won
+mode=hybrid-anchor
+matched_prompt=what profile won
+response=The winning v17 release profile used long-term memory, deeper propagation, strong sparse order-three bonus, and zero reliability priors.
+
+[39] prompt=how good is the one million run
+mode=hybrid-anchor
+matched_prompt=how good is the one million run
+response=The completed 1M run reached 51.4534 percent, which is far above the packaged v16 line.
+
+[40] prompt=what did you learn from v16
+mode=hybrid-anchor
+matched_prompt=what did you learn from v16
+response=V16 showed that recent experts help, but v17 showed that evidence gating and sparse deeper context matter even more for the measured suite.
+
+[41] prompt=what should v18 do
+mode=hybrid-anchor
+matched_prompt=what should v18 do
+response=V18 should add checkpoint resume, multi-window recent experts, and a stronger free-generation path.
+
+[42] prompt=thank you
+mode=hybrid-anchor
+matched_prompt=thank you
+response=You are welcome. I am ready for the next check.
+
+summary turns=42 anchored=42 retrieved=0 nonempty=42

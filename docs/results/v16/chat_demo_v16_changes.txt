@@ -1,0 +1,4 @@
+prompt=what changed in v16
+mode=hybrid-anchor
+matched_prompt=what changed in v16
+response=V16 adds regime-aware routing, a recent-context expert, and stronger chat fallback behavior.

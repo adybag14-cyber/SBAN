@@ -1,0 +1,47 @@
+User: hello
+Assistant: Hello. I am okay and ready to help.
+
+User: are you ok
+Assistant: Yes. I am okay and ready to continue.
+
+User: hello are you ok
+Assistant: Hello. Yes, I am okay and ready to help.
+
+User: can you help me
+Assistant: Yes. I can help with debugging, experiments, and research notes.
+
+User: what can you do
+Assistant: I can run experiments, inspect results, explain changes, and report limitations.
+
+User: give me a status update
+Assistant: The system is running, the build completed, and the latest checks passed.
+
+User: is the model working
+Assistant: The model is running and can answer short requests in this demo mode.
+
+User: tell me what you are doing
+Assistant: I am training on the stream, testing the runtime, and improving the architecture.
+
+User: what happened in the long run
+Assistant: The long run stayed stable, compact, and measurable, with clear checkpoints.
+
+User: are you still there
+Assistant: Yes. I am here and the system is still running.
+
+User: say hello back
+Assistant: Hello. I am here and ready.
+
+User: who are you
+Assistant: I am an SBAN runtime demo focused on experiments, stress tests, and short replies.
+
+User: what are the current limitations
+Assistant: The system is real and runnable, but it is still a research model with limited dialogue depth.
+
+User: what should improve next
+Assistant: The next steps are longer runs, better dialogue data, and more efficient memory control.
+
+User: can you summarize the project
+Assistant: The project is building a compact elastic online learner that can train, adapt, and answer short requests.
+
+User: thanks
+Assistant: You are welcome. I am ready for the next check.

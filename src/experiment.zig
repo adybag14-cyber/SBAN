@@ -85,14 +85,14 @@ fn makeMeta(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, da
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v4_prefix_bit_sweep",
-                'a' => "enwik8_v4_prefix_ablation",
-                else => "enwik8_v4_prefix_custom",
+                'b' => "enwik8_v17_prefix_bit_sweep",
+                'a' => "enwik8_v17_prefix_ablation",
+                else => "enwik8_v17_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v4_drift_bit_sweep",
-                'a' => "enwik8_v4_drift_ablation",
-                else => "enwik8_v4_drift_custom",
+                'b' => "enwik8_v17_drift_bit_sweep",
+                'a' => "enwik8_v17_drift_ablation",
+                else => "enwik8_v17_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),
@@ -207,16 +207,16 @@ fn finalizeReport(report: *network.RunReport, net: *const network.Network) void 
     report.summary.max_active_regions = net.max_active_regions_seen;
 }
 
-fn runSbanVariant(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, bits: u8, variant: cfg.NetworkVariant) !network.RunReport {
-    var net = try network.Network.init(allocator, cfg.configForVariant(bits, variant));
+fn runSbanConfig(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig) !network.RunReport {
+    var net = try network.Network.init(allocator, net_config);
     defer net.deinit();
 
     var report = try network.RunReport.init(allocator, .{
-        .name = cfg.sbanVariantLabel(bits, variant),
+        .name = model_name,
         .kind = "sban",
-        .weight_bits = bits,
+        .weight_bits = net_config.weight_bits,
         .segment_count = bundle.segment_count,
-        .variant = variant.label(),
+        .variant = variant_name,
     }, corpus_cfg.checkpoint_interval, corpus_cfg.rolling_window);
 
     const total = bundle.predictionsLen();
@@ -232,6 +232,11 @@ fn runSbanVariant(allocator: std.mem.Allocator, bundle: *const stream.StreamBund
     if (total > 0) try report.maybeCheckpoint(total - 1, net.countAliveShortMemories(), net.countAliveLongMemories(), net.countAliveBridgeMemories(), net.countLiveRegions(), net.currentShortTarget(), net.countAliveSynapses(), net.births, net.bridge_births, net.promotions, net.recycled_slots, true);
     finalizeReport(&report, &net);
     return report;
+}
+
+fn runSbanVariant(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, bits: u8, variant: cfg.NetworkVariant) !network.RunReport {
+    const net_config = cfg.configForVariant(bits, variant);
+    return runSbanConfig(allocator, bundle, corpus_cfg, cfg.sbanVariantLabel(bits, variant), variant.label(), net_config);
 }
 
 pub fn runCorpus(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig) !ExperimentData {
@@ -276,7 +281,7 @@ test "experiment can build prefix bundle and run reports" {
     defer allocator.free(corpus);
     for (corpus, 0..) |*byte, idx| byte.* = @intCast(idx % 256);
 
-    const tmp_path = "/tmp/sban_v4_test_enwik8.bin";
+    const tmp_path = "/tmp/sban_v5_test_enwik8.bin";
     try std.fs.cwd().writeFile(.{ .sub_path = tmp_path, .data = corpus });
     defer std.fs.cwd().deleteFile(tmp_path) catch {};
 
@@ -291,4 +296,34 @@ test "experiment can build prefix bundle and run reports" {
     var ablation_data = try runAblations(io, allocator, .{ .dataset_path = tmp_path, .mode = .prefix, .segment_len = 128, .segment_count = 4, .checkpoint_interval = 64, .rolling_window = 32 }, 4);
     defer ablation_data.deinit();
     try std.testing.expectEqual(@as(usize, 6), ablation_data.reports.items.len);
+}
+
+pub fn runSingleVariant(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, bits: u8, variant: cfg.NetworkVariant) !ExperimentData {
+    var loaded = try loadBundle(io, allocator, corpus_cfg);
+    defer allocator.free(loaded.corpus);
+    defer loaded.bundle.deinit(allocator);
+
+    var data = ExperimentData{
+        .allocator = allocator,
+        .meta = makeMeta(corpus_cfg, &loaded.bundle, corpus_cfg.dataset_path, "single_variant"),
+    };
+
+    try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, bits, variant));
+    try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
+    return data;
+}
+
+pub fn runSingleCustom(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig) !ExperimentData {
+    var loaded = try loadBundle(io, allocator, corpus_cfg);
+    defer allocator.free(loaded.corpus);
+    defer loaded.bundle.deinit(allocator);
+
+    var data = ExperimentData{
+        .allocator = allocator,
+        .meta = makeMeta(corpus_cfg, &loaded.bundle, corpus_cfg.dataset_path, "single_variant"),
+    };
+
+    try data.reports.append(allocator, try runSbanConfig(allocator, &loaded.bundle, corpus_cfg, model_name, variant_name, net_config));
+    try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
+    return data;
 }

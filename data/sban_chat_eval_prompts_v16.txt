@@ -1,0 +1,36 @@
+hello are you ok
+can you help me
+what can you do
+give me a status update
+what happened in the long run
+are you still there
+say hello back
+tell me what you are doing
+who are you
+what are the current limitations
+what should improve next
+can you summarize the project
+what changed in v16
+why is v16 different
+what is the architecture now
+what is the strongest result
+can it scale
+what is the main risk
+how does the model answer
+what does the long run prove
+what is still missing
+what did you test
+did the build succeed
+what should i read first
+can you explain the hybrid experts
+is the system coherent
+what is regime aware routing
+what does the recent expert do
+why add a recent expert
+how does v16 handle drift
+what is the long horizon goal
+what is better in chat mode
+what still looks weak
+explain the new routing logic
+how do you respond when the prompt is only loosely related
+thank you

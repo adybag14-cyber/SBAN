@@ -1,0 +1,4 @@
+prompt=how good is the one million run
+mode=hybrid-anchor
+matched_prompt=how good is the one million run
+response=The completed 1M run reached 51.4534 percent, which is far above the packaged v16 line.

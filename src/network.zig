@@ -308,6 +308,48 @@ fn clampI16(value: i32) i16 {
     return @intCast(value);
 }
 
+const hybrid_expert_count: usize = 6;
+const expert_sban_idx: usize = 0;
+const expert_markov1_idx: usize = 1;
+const expert_markov2_idx: usize = 2;
+const expert_markov3_idx: usize = 3;
+const expert_burst_idx: usize = 4;
+const expert_recent_markov2_idx: usize = 5;
+const default_hybrid_weights = [hybrid_expert_count]i16{ 1088, 320, 832, 960, 640, 1152 };
+const recent_row2_sentinel: u32 = std.math.maxInt(u32);
+
+const ScoreTop = struct {
+    token: u8,
+    top_score: i32,
+    second_score: i32,
+};
+
+fn contextKey(prev: u8, current: u8) usize {
+    return (@as(usize, prev) << 8) | @as(usize, current);
+}
+
+fn contextKey3(prev2: u8, prev1: u8, current: u8) u32 {
+    return (@as(u32, prev2) << 16) | (@as(u32, prev1) << 8) | @as(u32, current);
+}
+
+fn findTop2(scores: []const i32) ScoreTop {
+    var top_token: u8 = 0;
+    var top_score: i32 = std.math.minInt(i32);
+    var second_score: i32 = std.math.minInt(i32);
+    for (scores, 0..) |score, idx| {
+        if (score > top_score) {
+            second_score = top_score;
+            top_score = score;
+            top_token = @intCast(idx);
+        } else if (score > second_score) {
+            second_score = score;
+        }
+    }
+    if (top_score == std.math.minInt(i32)) top_score = 0;
+    if (second_score == std.math.minInt(i32)) second_score = 0;
+    return .{ .token = top_token, .top_score = top_score, .second_score = second_score };
+}
+
 pub const Network = struct {
     allocator: std.mem.Allocator,
     config: cfg.NetworkConfig,
@@ -327,6 +369,15 @@ pub const Network = struct {
     score_values: std.ArrayList(i32) = .empty,
     score_marks: std.ArrayList(u32) = .empty,
     output_scores: std.ArrayList(i32) = .empty,
+    order1_counts: []u32,
+    order2_counts: []u32,
+    order3_row_map: std.AutoHashMap(u32, u32),
+    order3_rows: std.ArrayList(u16) = .empty,
+    recent_order2_counts: []u16,
+    recent_row2_ring: []u32,
+    burst_next: []u8,
+    burst_streak: []u8,
+    burst_last_step: []u32,
     region_marks: []u32,
     region_output_scores: []i32,
     free_memory_ids: std.ArrayList(u32) = .empty,
@@ -355,7 +406,14 @@ pub const Network = struct {
     interval_surprises: u32 = 0,
     interval_births: u32 = 0,
     interval_correct: u32 = 0,
+    interval_confident: u32 = 0,
     last_birth_step: u32 = 0,
+    recent_ring_pos: usize = 0,
+    recent_ring_count: usize = 0,
+    hybrid_weights: [hybrid_expert_count]i16 = default_hybrid_weights,
+    last_expert_tokens: [hybrid_expert_count]u8 = [_]u8{0} ** hybrid_expert_count,
+    last_expert_scores: [hybrid_expert_count]i32 = [_]i32{0} ** hybrid_expert_count,
+    last_expert_active: [hybrid_expert_count]bool = [_]bool{false} ** hybrid_expert_count,
 
     pub fn init(allocator: std.mem.Allocator, config: cfg.NetworkConfig) !Network {
         const clamped_regions = @max(@as(u16, 1), @min(config.initial_regions, config.max_regions));
@@ -364,12 +422,27 @@ pub const Network = struct {
             .allocator = allocator,
             .config = config,
             .signature_map = std.AutoHashMap(u64, u32).init(allocator),
+            .order3_row_map = std.AutoHashMap(u32, u32).init(allocator),
             .recent_tokens = try allocator.alloc(u8, @max(@as(usize, 1), @as(usize, config.history_lags) - 1)),
+            .order1_counts = try allocator.alloc(u32, @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
+            .order2_counts = try allocator.alloc(u32, @as(usize, config.vocab_size) * @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
+            .recent_order2_counts = try allocator.alloc(u16, @as(usize, config.vocab_size) * @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
+            .recent_row2_ring = try allocator.alloc(u32, @max(@as(usize, 1), @as(usize, config.recent_expert_window))),
+            .burst_next = try allocator.alloc(u8, @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
+            .burst_streak = try allocator.alloc(u8, @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
+            .burst_last_step = try allocator.alloc(u32, @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
             .region_marks = try allocator.alloc(u32, config.max_regions),
             .region_output_scores = try allocator.alloc(i32, @as(usize, config.max_regions) * @as(usize, config.vocab_size)),
             .open_region_count = clamped_regions,
             .global_short_target = initial_target,
         };
+        @memset(self.order1_counts, 0);
+        @memset(self.order2_counts, 0);
+        @memset(self.recent_order2_counts, 0);
+        @memset(self.recent_row2_ring, recent_row2_sentinel);
+        @memset(self.burst_next, 0);
+        @memset(self.burst_streak, 0);
+        @memset(self.burst_last_step, 0);
         @memset(self.region_marks, 0);
         @memset(self.region_output_scores, 0);
 
@@ -423,6 +496,15 @@ pub const Network = struct {
         self.score_values.deinit(self.allocator);
         self.score_marks.deinit(self.allocator);
         self.output_scores.deinit(self.allocator);
+        self.allocator.free(self.order1_counts);
+        self.allocator.free(self.order2_counts);
+        self.order3_row_map.deinit();
+        self.order3_rows.deinit(self.allocator);
+        self.allocator.free(self.recent_order2_counts);
+        self.allocator.free(self.recent_row2_ring);
+        self.allocator.free(self.burst_next);
+        self.allocator.free(self.burst_streak);
+        self.allocator.free(self.burst_last_step);
         self.free_memory_ids.deinit(self.allocator);
         self.protected_memories.deinit(self.allocator);
         self.signature_map.deinit();
@@ -431,9 +513,23 @@ pub const Network = struct {
         self.allocator.free(self.region_output_scores);
     }
 
+    fn clearLocalExpertState(self: *Network) void {
+        @memset(self.recent_order2_counts, 0);
+        @memset(self.recent_row2_ring, recent_row2_sentinel);
+        @memset(self.burst_next, 0);
+        @memset(self.burst_streak, 0);
+        @memset(self.burst_last_step, 0);
+        self.recent_ring_pos = 0;
+        self.recent_ring_count = 0;
+        self.hybrid_weights = default_hybrid_weights;
+    }
+
     pub fn resetTransient(self: *Network) void {
         self.recent_len = 0;
         self.carry_memories.clearRetainingCapacity();
+        if (self.config.reset_local_experts_on_boundary) {
+            self.clearLocalExpertState();
+        }
     }
 
     fn ensureScratchForNeuronCount(self: *Network) !void {
@@ -582,6 +678,22 @@ pub const Network = struct {
         return self.region_marks[primary_idx] == self.mark_epoch and self.region_marks[secondary_idx] == self.mark_epoch;
     }
 
+    fn birthPressureHigh(self: *const Network) bool {
+        if (self.interval_births >= self.config.birth_pressure_soft_threshold) return true;
+        if (self.global_short_target == 0) return false;
+        return self.alive_short_memories * 1000 >= self.global_short_target * 900;
+    }
+
+    fn birthSaturationHigh(self: *const Network) bool {
+        if (self.global_short_target == 0) return false;
+        return @as(u64, self.alive_short_memories) * 1_000_000 >= @as(u64, self.global_short_target) * self.config.birth_saturation_soft_ppm;
+    }
+
+    fn severeSurprise(self: *const Network, prediction: Prediction) bool {
+        _ = self;
+        return prediction.actual_rank > 6 or prediction.margin <= -cfg.score_scale / 2;
+    }
+
     fn memoryContributionBonus(self: *const Network, neuron: Neuron) i32 {
         var bonus: i32 = 0;
         if (self.config.use_reputation) {
@@ -728,7 +840,252 @@ pub const Network = struct {
         }
     }
 
-    fn scoreOutputs(self: *Network, actual_next: u8) Prediction {
+    fn recordExpertPrediction(self: *Network, expert_idx: usize, token: u8, score: i32, active: bool) void {
+        self.last_expert_tokens[expert_idx] = token;
+        self.last_expert_scores[expert_idx] = score;
+        self.last_expert_active[expert_idx] = active;
+    }
+
+    fn lookupOrder3Row(self: *const Network, key: u32) ?[]const u16 {
+        const row_idx = self.order3_row_map.get(key) orelse return null;
+        const row_len = @as(usize, self.config.vocab_size);
+        const base = @as(usize, row_idx) * row_len;
+        return self.order3_rows.items[base .. base + row_len];
+    }
+
+    fn getOrCreateOrder3Row(self: *Network, key: u32) ![]u16 {
+        if (self.order3_row_map.get(key)) |row_idx| {
+            const row_len = @as(usize, self.config.vocab_size);
+            const base = @as(usize, row_idx) * row_len;
+            return self.order3_rows.items[base .. base + row_len];
+        }
+
+        const row_len = @as(usize, self.config.vocab_size);
+        const row_idx: u32 = @intCast(self.order3_rows.items.len / row_len);
+        try self.order3_row_map.put(key, row_idx);
+        const base = self.order3_rows.items.len;
+        try self.order3_rows.resize(self.allocator, base + row_len);
+        @memset(self.order3_rows.items[base .. base + row_len], 0);
+        return self.order3_rows.items[base .. base + row_len];
+    }
+
+    fn expertReliabilityPpm(self: *const Network, total: u32, top_count: u32, second_count: u32) u32 {
+        if (total == 0 or top_count == 0 or top_count <= second_count) return 0;
+        const gap = top_count - second_count;
+        const support_ppm = if (self.config.hybrid_support_prior == 0)
+            @as(u32, 1000)
+        else
+            @as(u32, @intCast(@divTrunc(@as(u64, total) * 1000, @as(u64, total) + @as(u64, self.config.hybrid_support_prior))));
+        const evidence_ppm = if (self.config.hybrid_evidence_prior == 0)
+            @as(u32, 1000)
+        else
+            @as(u32, @intCast(@divTrunc(@as(u64, gap) * 1000, @as(u64, gap) + @as(u64, self.config.hybrid_evidence_prior))));
+        return @intCast(@divTrunc(@as(u64, support_ppm) * @as(u64, evidence_ppm), 1000));
+    }
+
+    fn blendDistribution(self: *Network, row: []const u32, base_bonus_ppm: u16, expert_idx: usize) void {
+        if (!self.config.enable_hybrid_experts) return;
+        var total: u32 = 0;
+        var top_token: u8 = 0;
+        var top_count: u32 = 0;
+        var second_count: u32 = 0;
+        for (row, 0..) |count, idx| {
+            total +%= count;
+            if (count > top_count) {
+                second_count = top_count;
+                top_count = count;
+                top_token = @intCast(idx);
+            } else if (count > second_count) {
+                second_count = count;
+            }
+        }
+        if (total == 0 or top_count == 0) {
+            self.recordExpertPrediction(expert_idx, 0, 0, false);
+            return;
+        }
+        const scaled_bonus = @divTrunc(@as(i32, base_bonus_ppm) * @as(i32, self.hybrid_weights[expert_idx]), 1024);
+        const reliability_ppm: i32 = @intCast(self.expertReliabilityPpm(total, top_count, second_count));
+        const effective_bonus = @divTrunc(scaled_bonus * reliability_ppm, 1000);
+        if (effective_bonus == 0) {
+            self.recordExpertPrediction(expert_idx, 0, 0, false);
+            return;
+        }
+        for (row, 0..) |count, idx| {
+            if (count == 0) continue;
+            const delta: i32 = @intCast(@divTrunc(@as(i64, effective_bonus) * @as(i64, count), @as(i64, total)));
+            self.output_scores.items[idx] += delta;
+        }
+        const confidence: i32 = @intCast(@divTrunc(@as(i64, effective_bonus) * @as(i64, top_count - second_count), @as(i64, total)));
+        self.recordExpertPrediction(expert_idx, top_token, confidence, true);
+    }
+
+    fn blendDistributionU16(self: *Network, row: []const u16, base_bonus_ppm: u16, expert_idx: usize) void {
+        if (!self.config.enable_hybrid_experts) return;
+        var total: u32 = 0;
+        var top_token: u8 = 0;
+        var top_count: u16 = 0;
+        var second_count: u16 = 0;
+        for (row, 0..) |count, idx| {
+            total +%= count;
+            if (count > top_count) {
+                second_count = top_count;
+                top_count = count;
+                top_token = @intCast(idx);
+            } else if (count > second_count) {
+                second_count = count;
+            }
+        }
+        if (total == 0 or top_count == 0) {
+            self.recordExpertPrediction(expert_idx, 0, 0, false);
+            return;
+        }
+        const scaled_bonus = @divTrunc(@as(i32, base_bonus_ppm) * @as(i32, self.hybrid_weights[expert_idx]), 1024);
+        const reliability_ppm: i32 = @intCast(self.expertReliabilityPpm(total, top_count, second_count));
+        const effective_bonus = @divTrunc(scaled_bonus * reliability_ppm, 1000);
+        if (effective_bonus == 0) {
+            self.recordExpertPrediction(expert_idx, 0, 0, false);
+            return;
+        }
+        for (row, 0..) |count, idx| {
+            if (count == 0) continue;
+            const delta: i32 = @intCast(@divTrunc(@as(i64, effective_bonus) * @as(i64, count), @as(i64, total)));
+            self.output_scores.items[idx] += delta;
+        }
+        const confidence: i32 = @intCast(@divTrunc(@as(i64, effective_bonus) * @as(i64, top_count - second_count), @as(i64, total)));
+        self.recordExpertPrediction(expert_idx, top_token, confidence, true);
+    }
+
+    fn applyBurstExpert(self: *Network, prev_token: u8, current_token: u8) void {
+        if (!self.config.enable_hybrid_experts) return;
+        const key = contextKey(prev_token, current_token);
+        const token = self.burst_next[key];
+        const streak = self.burst_streak[key];
+        const last_step = self.burst_last_step[key];
+        if (streak < self.config.burst_min_streak or last_step == 0) {
+            self.recordExpertPrediction(expert_burst_idx, 0, 0, false);
+            return;
+        }
+        const age = self.step_index -| last_step;
+        if (age > self.config.burst_max_age) {
+            self.recordExpertPrediction(expert_burst_idx, 0, 0, false);
+            return;
+        }
+        const scaled_bonus = @divTrunc(@as(i32, self.config.burst_bonus_ppm) * @as(i32, self.hybrid_weights[expert_burst_idx]), 1024);
+        const freshness_ppm: u32 = @intCast(@divTrunc(@as(u64, self.config.burst_max_age - age) * 1000, @max(@as(u64, 1), self.config.burst_max_age)));
+        const streak_bonus = @min(@as(i32, streak), 6);
+        const delta = @divTrunc(@divTrunc(scaled_bonus * streak_bonus, 2) * @as(i32, @intCast(freshness_ppm)), 1000);
+        self.output_scores.items[token] += delta;
+        self.recordExpertPrediction(expert_burst_idx, token, delta, true);
+    }
+
+    fn applyHybridExperts(self: *Network, current_token: u8) void {
+        for (0..hybrid_expert_count) |idx| self.recordExpertPrediction(idx, 0, 0, false);
+        const sban_top = findTop2(self.output_scores.items);
+        self.recordExpertPrediction(expert_sban_idx, sban_top.token, sban_top.top_score - sban_top.second_score, true);
+        self.blendDistribution(self.order1_counts[@as(usize, current_token) * @as(usize, self.config.vocab_size) .. (@as(usize, current_token) + 1) * @as(usize, self.config.vocab_size)], self.config.markov1_bonus_ppm, expert_markov1_idx);
+        if (self.recent_len >= 1) {
+            const prev_token = self.recent_tokens[0];
+            const base = contextKey(prev_token, current_token) * @as(usize, self.config.vocab_size);
+            self.blendDistribution(self.order2_counts[base .. base + @as(usize, self.config.vocab_size)], self.config.markov2_bonus_ppm, expert_markov2_idx);
+            self.applyBurstExpert(prev_token, current_token);
+            self.blendDistributionU16(self.recent_order2_counts[base .. base + @as(usize, self.config.vocab_size)], self.config.recent_markov2_bonus_ppm, expert_recent_markov2_idx);
+        }
+        if (self.recent_len >= 2) {
+            const prev1 = self.recent_tokens[0];
+            const prev2 = self.recent_tokens[1];
+            const key3 = contextKey3(prev2, prev1, current_token);
+            if (self.lookupOrder3Row(key3)) |row| {
+                self.blendDistributionU16(row, self.config.markov3_bonus_ppm, expert_markov3_idx);
+            }
+        }
+    }
+
+    fn updateRecentExpertWindow(self: *Network, current_token: u8, actual_next: u8) void {
+        if (self.config.recent_expert_window == 0) return;
+        const window: usize = @intCast(self.config.recent_expert_window);
+        if (self.recent_ring_count == window) {
+            const evict_idx = self.recent_row2_ring[self.recent_ring_pos];
+            if (evict_idx != recent_row2_sentinel and self.recent_order2_counts[evict_idx] > 0) {
+                self.recent_order2_counts[evict_idx] -= 1;
+            }
+        } else {
+            self.recent_ring_count += 1;
+        }
+        var row2_idx: u32 = recent_row2_sentinel;
+        if (self.recent_len >= 1) {
+            const prev_token = self.recent_tokens[0];
+            row2_idx = @intCast(contextKey(prev_token, current_token) * @as(usize, self.config.vocab_size) + @as(usize, actual_next));
+            if (self.recent_order2_counts[row2_idx] < std.math.maxInt(u16)) self.recent_order2_counts[row2_idx] += 1;
+        }
+        self.recent_row2_ring[self.recent_ring_pos] = row2_idx;
+        self.recent_ring_pos = (self.recent_ring_pos + 1) % window;
+    }
+
+    fn updateHybridExpertWeights(self: *Network, actual_next: u8) void {
+        if (!self.config.enable_hybrid_experts) return;
+        var staged: [hybrid_expert_count]i32 = undefined;
+        var total_weight: i32 = 0;
+        for (0..hybrid_expert_count) |idx| {
+            var weight: i32 = self.hybrid_weights[idx];
+            const target: i32 = default_hybrid_weights[idx];
+            if (self.last_expert_active[idx]) {
+                const strength_bonus: i32 = @divTrunc(@max(self.last_expert_scores[idx], 0), 48);
+                if (self.last_expert_tokens[idx] == actual_next) {
+                    weight += self.config.hybrid_reward + strength_bonus;
+                } else {
+                    const penalty_bonus: i32 = @divTrunc(@max(self.last_expert_scores[idx], 0), 96);
+                    weight -= self.config.hybrid_penalty + penalty_bonus;
+                }
+            }
+            if (idx == expert_recent_markov2_idx and self.last_expert_active[expert_recent_markov2_idx] and self.last_expert_tokens[expert_recent_markov2_idx] == actual_next and self.last_expert_tokens[expert_markov2_idx] != actual_next and self.last_expert_scores[expert_recent_markov2_idx] > self.last_expert_scores[expert_markov2_idx]) {
+                weight += self.config.hybrid_recent_drift_bonus;
+            }
+            if (weight > target) weight -= self.config.hybrid_decay else if (weight < target) weight += self.config.hybrid_decay;
+            if (weight < self.config.hybrid_weight_min) weight = self.config.hybrid_weight_min;
+            if (weight > self.config.hybrid_weight_max) weight = self.config.hybrid_weight_max;
+            staged[idx] = weight;
+            total_weight += weight;
+        }
+        const share: i32 = self.config.hybrid_share_ppm;
+        const mean_weight: i32 = @divTrunc(total_weight, @as(i32, hybrid_expert_count));
+        for (0..hybrid_expert_count) |idx| {
+            var weight = staged[idx];
+            if (share > 0) {
+                weight = @divTrunc(weight * (1000 - share) + mean_weight * share, 1000);
+            }
+            if (weight < self.config.hybrid_weight_min) weight = self.config.hybrid_weight_min;
+            if (weight > self.config.hybrid_weight_max) weight = self.config.hybrid_weight_max;
+            self.hybrid_weights[idx] = @intCast(weight);
+        }
+    }
+
+    fn updateSequenceExperts(self: *Network, current_token: u8, actual_next: u8) !void {
+        const row1_idx = @as(usize, current_token) * @as(usize, self.config.vocab_size) + @as(usize, actual_next);
+        self.order1_counts[row1_idx] +|= 1;
+        self.updateRecentExpertWindow(current_token, actual_next);
+        if (self.recent_len >= 1) {
+            const prev_token = self.recent_tokens[0];
+            const key = contextKey(prev_token, current_token);
+            const row2_idx = key * @as(usize, self.config.vocab_size) + @as(usize, actual_next);
+            self.order2_counts[row2_idx] +|= 1;
+            if (self.burst_next[key] == actual_next) {
+                self.burst_streak[key] +|= 1;
+            } else {
+                self.burst_next[key] = actual_next;
+                self.burst_streak[key] = 1;
+            }
+            self.burst_last_step[key] = self.step_index;
+        }
+        if (self.recent_len >= 2) {
+            const prev1 = self.recent_tokens[0];
+            const prev2 = self.recent_tokens[1];
+            const row = try self.getOrCreateOrder3Row(contextKey3(prev2, prev1, current_token));
+            const next_idx = @as(usize, actual_next);
+            if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
+        }
+    }
+
+    fn scoreOutputs(self: *Network, current_token: u8, actual_next: u8) Prediction {
         @memset(self.output_scores.items, 0);
         @memset(self.region_output_scores, 0);
         for (self.predictive_nodes.items) |src_id| {
@@ -743,7 +1100,7 @@ pub const Network = struct {
                 const logical_index = target_idx - self.output_base;
                 var contribution = self.scaledValue(synapse.state) + self.synapseContributionBonus(synapse);
                 if (neuron.kind == .memory_long) {
-                    contribution = @divTrunc(contribution * @as(i32, self.config.long_term_bonus_ppm), 1000);
+                    contribution = @divTrunc(contribution * @as(i32, self.longTermContributionScalePpm(neuron.*)), 1000);
                 }
                 if (neuron.role == .bridge) {
                     if (self.bridgeSatisfied(neuron.*)) {
@@ -766,20 +1123,11 @@ pub const Network = struct {
             self.max_active_regions_seen = @intCast(self.active_regions.items.len);
         }
 
-        var top_token: u8 = 0;
-        var top_score: i32 = std.math.minInt(i32);
-        var second_score: i32 = std.math.minInt(i32);
-        for (self.output_scores.items, 0..) |score, idx| {
-            if (score > top_score) {
-                second_score = top_score;
-                top_score = score;
-                top_token = @intCast(idx);
-            } else if (score > second_score) {
-                second_score = score;
-            }
-        }
-        if (top_score == std.math.minInt(i32)) top_score = 0;
-        if (second_score == std.math.minInt(i32)) second_score = 0;
+        self.applyHybridExperts(current_token);
+        const top = findTop2(self.output_scores.items);
+        const top_token = top.token;
+        const top_score = top.top_score;
+        const second_score = top.second_score;
         const actual_score = self.output_scores.items[actual_next];
         var actual_rank: u16 = 1;
         for (self.output_scores.items) |score| {
@@ -794,6 +1142,29 @@ pub const Network = struct {
             .active_count = @intCast(self.active_now.items.len),
             .surprise = false,
         };
+    }
+
+
+
+    fn longTermContributionScalePpm(self: *const Network, neuron: Neuron) u16 {
+        if (neuron.kind != .memory_long) return 1000;
+        const precision = self.precisionPpm(neuron);
+        const low = self.config.long_term_low_precision_scale_ppm;
+        const high = self.config.long_term_bonus_ppm;
+        const gate = self.config.long_term_bonus_precision_ppm;
+        if (precision >= gate) return high;
+        const floor: u16 = 400;
+        const clamped = if (precision < floor) floor else precision;
+        const span = if (gate > floor) gate - floor else 1;
+        const num = @as(u32, clamped - floor) * @as(u32, high - low);
+        return @intCast(@as(u32, low) + @divTrunc(num, span));
+    }
+
+    fn longMemorySelectionBonus(self: *const Network, neuron: Neuron) i32 {
+        if (neuron.kind != .memory_long) return 0;
+        const precision = self.precisionPpm(neuron);
+        if (precision >= self.config.long_term_bonus_precision_ppm) return 64;
+        return -@as(i32, self.config.long_term_quality_penalty);
     }
 
     fn sortU32(ids: []u32) void {
@@ -844,7 +1215,7 @@ pub const Network = struct {
             if (memory_count < memories.len) {
                 var score = neuron.last_activation + @as(i32, neuron.utility) * 8;
                 if (self.config.use_reputation) score += @as(i32, neuron.reputation) * 4;
-                if (neuron.kind == .memory_long) score += 64;
+                score += self.longMemorySelectionBonus(neuron);
                 memories[memory_count] = .{ .id = id, .score = score };
                 memory_count += 1;
             }
@@ -910,6 +1281,112 @@ pub const Network = struct {
         return .{ .primary = primary, .secondary = secondary, .diversity = diversity };
     }
 
+    fn regionErrorPpm(self: *const Network, region: u16) u16 {
+        const idx: usize = region;
+        if (idx >= self.regions.items.len) return 500;
+        const entry = self.regions.items[idx];
+        const total = @as(u32, entry.recent_correct) + @as(u32, entry.recent_wrong);
+        if (total < 8) return 500;
+        return @intCast((@as(u32, entry.recent_wrong) * 1000) / total);
+    }
+
+    fn shouldCreateBridge(self: *const Network, primary: u16, secondary: u16, diversity: u8, prediction: Prediction) bool {
+        if (!self.config.enable_bridge_memories) return false;
+        if (secondary == cfg.invalid_region or diversity < self.config.bridge_birth_min_diversity) return false;
+        const surprise_gate = prediction.actual_rank > 6 or prediction.margin < 0;
+        if (!surprise_gate) return false;
+
+        const primary_error = self.regionErrorPpm(primary);
+        const secondary_error = self.regionErrorPpm(secondary);
+        const error_gap: u16 = if (secondary_error > primary_error) secondary_error - primary_error else 0;
+        if (secondary_error >= self.config.bridge_error_gate_ppm and error_gap >= self.config.bridge_error_gap_ppm) {
+            return true;
+        }
+        if (diversity >= self.config.bridge_fallback_diversity and prediction.actual_rank > 12 and prediction.margin < 0 and secondary_error + self.config.bridge_retire_error_slack_ppm >= primary_error) {
+            return true;
+        }
+        return false;
+    }
+
+    fn bestMergeTarget(self: *const Network, donor: u16) ?u16 {
+        var best: ?u16 = null;
+        var best_score: i32 = std.math.minInt(i32);
+        for (0..self.open_region_count) |idx_usize| {
+            const idx: u16 = @intCast(idx_usize);
+            if (idx == donor) continue;
+            const live = self.regionMemoryCount(idx);
+            if (live == 0) continue;
+            const err_ppm = self.regionErrorPpm(idx);
+            const score = @as(i32, @intCast(live)) * 4 - @as(i32, err_ppm);
+            if (score > best_score) {
+                best_score = score;
+                best = idx;
+            }
+        }
+        return best;
+    }
+
+    fn mergeTailRegionInto(self: *Network, donor: u16, target: u16) void {
+        if (donor == target or donor + 1 != self.open_region_count) return;
+
+        var converted_bridge_count: u32 = 0;
+        for (self.neurons.items) |*neuron| {
+            switch (neuron.kind) {
+                .memory_short, .memory_long => {
+                    if (neuron.region == donor) neuron.region = target;
+                    if (neuron.secondary_region == donor) neuron.secondary_region = target;
+                    if (neuron.role == .bridge and neuron.secondary_region == neuron.region) {
+                        neuron.role = .local;
+                        neuron.secondary_region = cfg.invalid_region;
+                        converted_bridge_count +|= 1;
+                    }
+                },
+                else => {},
+            }
+        }
+
+        self.regions.items[target].live_short +|= self.regions.items[donor].live_short;
+        self.regions.items[target].live_long +|= self.regions.items[donor].live_long;
+        self.regions.items[target].live_bridge +|= self.regions.items[donor].live_bridge;
+        if (self.regions.items[target].live_bridge >= converted_bridge_count) {
+            self.regions.items[target].live_bridge -= converted_bridge_count;
+        } else {
+            self.regions.items[target].live_bridge = 0;
+        }
+        self.regions.items[target].recent_births +|= self.regions.items[donor].recent_births;
+        self.regions.items[target].recent_active +|= self.regions.items[donor].recent_active;
+        self.regions.items[target].recent_correct +|= self.regions.items[donor].recent_correct;
+        self.regions.items[target].recent_wrong +|= self.regions.items[donor].recent_wrong;
+        if (self.regions.items[donor].last_active_step > self.regions.items[target].last_active_step) {
+            self.regions.items[target].last_active_step = self.regions.items[donor].last_active_step;
+        }
+        self.regions.items[donor] = .{};
+        self.open_region_count -= 1;
+        self.signature_map.clearRetainingCapacity();
+        self.rebalanceRegionTargets();
+    }
+
+    fn compactTailRegions(self: *Network) void {
+        if (!self.config.enable_region_compaction) return;
+        while (self.open_region_count > self.config.initial_regions) {
+            const donor: u16 = self.open_region_count - 1;
+            const live = self.regionMemoryCount(donor);
+            const idle = self.step_index - self.regions.items[donor].last_active_step;
+            if (live == 0) {
+                self.regions.items[donor] = .{};
+                self.open_region_count -= 1;
+                self.rebalanceRegionTargets();
+                continue;
+            }
+            if (live > self.config.region_merge_live_threshold or idle < self.config.region_merge_idle) break;
+            if (self.bestMergeTarget(donor)) |target| {
+                self.mergeTailRegionInto(donor, target);
+            } else {
+                break;
+            }
+        }
+    }
+
     fn adjustIncomingSynapseReputation(self: *Network, memory_id: u32, delta: i16) void {
         if (!self.config.use_reputation) return;
         for (self.active_now.items) |parent_id| {
@@ -920,10 +1397,11 @@ pub const Network = struct {
         }
     }
 
-    fn recordElasticityStep(self: *Network, was_correct: bool, surprise_like: bool) void {
+    fn recordElasticityStep(self: *Network, was_correct: bool, surprise_like: bool, confident_like: bool) void {
         self.interval_steps +|= 1;
         if (surprise_like) self.interval_surprises +|= 1;
         if (was_correct) self.interval_correct +|= 1;
+        if (confident_like) self.interval_confident +|= 1;
         for (self.active_regions.items) |region| {
             const idx: usize = region;
             if (idx >= self.regions.items.len) continue;
@@ -940,6 +1418,7 @@ pub const Network = struct {
         if (self.interval_steps == 0) return;
 
         const surprise_ppm: u32 = (self.interval_surprises * 1_000_000) / self.interval_steps;
+        const confident_ppm: u32 = (self.interval_confident * 1_000_000) / self.interval_steps;
         const util_ppm: u32 = if (self.global_short_target == 0) 0 else @intCast((self.alive_short_memories * 1_000_000) / self.global_short_target);
         var changed = false;
 
@@ -948,6 +1427,13 @@ pub const Network = struct {
             if (next_target != self.global_short_target) {
                 self.global_short_target = next_target;
                 self.elastic_grows += 1;
+                changed = true;
+            }
+        } else if (surprise_ppm < self.config.collapse_surprise_ppm and confident_ppm >= self.config.collapse_confident_ppm and self.interval_births <= self.config.shrink_birth_threshold and self.global_short_target > self.config.min_short_target and self.alive_short_memories + self.config.collapse_shrink_step < self.global_short_target) {
+            const next_target = @max(self.config.min_short_target, self.global_short_target - self.config.collapse_shrink_step);
+            if (next_target != self.global_short_target) {
+                self.global_short_target = next_target;
+                self.elastic_shrinks += 1;
                 changed = true;
             }
         } else if (surprise_ppm < self.config.shrink_surprise_ppm and self.interval_births <= self.config.shrink_birth_threshold and self.global_short_target > self.config.min_short_target and self.alive_short_memories + self.config.shrink_step < self.global_short_target) {
@@ -977,10 +1463,12 @@ pub const Network = struct {
         }
 
         if (changed) self.rebalanceRegionTargets();
+        self.compactTailRegions();
         self.interval_steps = 0;
         self.interval_surprises = 0;
         self.interval_births = 0;
         self.interval_correct = 0;
+        self.interval_confident = 0;
         for (self.regions.items) |*region| {
             region.recent_births = 0;
             region.recent_active = 0;
@@ -1063,14 +1551,18 @@ pub const Network = struct {
 
         var parent_ids: [24]u32 = undefined;
         const parent_count = self.collectBirthParents(current_token, &parent_ids);
-        if (parent_count < self.config.min_parents_for_birth) return;
+        const pressured_birth = self.birthPressureHigh();
+        const saturated_birth = self.birthSaturationHigh();
+        const severe_surprise = self.severeSurprise(prediction);
+        const min_parents_required: usize = self.config.min_parents_for_birth + @as(u16, if (pressured_birth and !severe_surprise) self.config.birth_pressure_parent_boost else 0) + @as(u16, if (saturated_birth and !severe_surprise) self.config.birth_saturation_parent_boost else 0);
+        if (parent_count < min_parents_required) return;
 
         var region_choice = self.regionChoiceFromParents(parent_ids[0..parent_count]);
         if (self.config.enable_elasticity and self.regionMemoryCount(region_choice.primary) >= self.regions.items[region_choice.primary].target_short and self.open_region_count < self.config.max_regions) {
             self.maybeGrowOpenRegions(self.open_region_count + 1);
             region_choice.primary = self.open_region_count - 1;
         }
-        const create_bridge = self.config.enable_bridge_memories and region_choice.diversity >= self.config.bridge_birth_min_diversity and region_choice.secondary != cfg.invalid_region and (prediction.actual_rank > 6 or prediction.margin < 0);
+        const create_bridge = self.shouldCreateBridge(region_choice.primary, region_choice.secondary, region_choice.diversity, prediction);
 
         var signature = signatureForParents(parent_ids[0..parent_count], actual_next);
         signature ^= (@as(u64, region_choice.primary) << 8);
@@ -1095,7 +1587,9 @@ pub const Network = struct {
             _ = self.signature_map.remove(signature);
         }
 
-        const threshold = cfg.score_scale * maxIntI32(2, @intCast(parent_count - 1)) + if (create_bridge) self.config.bridge_threshold_bonus else 0;
+        const pressure_bonus: i32 = if (pressured_birth and !severe_surprise) self.config.birth_pressure_threshold_bonus else 0;
+        const saturation_bonus: i32 = if (saturated_birth and !severe_surprise) self.config.birth_saturation_threshold_bonus else 0;
+        const threshold = cfg.score_scale * maxIntI32(2, @intCast(parent_count - 1)) + if (create_bridge) self.config.bridge_threshold_bonus else 0 + pressure_bonus + saturation_bonus;
         const memory_id = try self.addMemoryNeuron(.memory_short, threshold);
         const memory_idx: usize = @intCast(memory_id);
         self.neurons.items[memory_idx].signature = signature;
@@ -1149,6 +1643,14 @@ pub const Network = struct {
                 neuron.reputation = clampI16(@as(i32, neuron.reputation) + reward);
                 self.updateSynapseReputation(id, self.output_ids.items[actual_next], 2);
                 self.adjustIncomingSynapseReputation(id, 1);
+                if (neuron.role == .bridge and neuron.secondary_region != cfg.invalid_region) {
+                    const primary_error = self.regionErrorPpm(neuron.region);
+                    const secondary_error = self.regionErrorPpm(neuron.secondary_region);
+                    if (secondary_error + self.config.bridge_retire_error_slack_ppm < primary_error) {
+                        neuron.utility = @max(@as(i16, -64), neuron.utility - 1);
+                        neuron.reputation = clampI16(@as(i32, neuron.reputation) - 1);
+                    }
+                }
             } else if (prediction.actual_rank <= 5) {
                 neuron.support +|= 1;
                 if (self.config.use_reputation) neuron.reputation = clampI16(@as(i32, neuron.reputation) + 1);
@@ -1228,6 +1730,13 @@ pub const Network = struct {
     }
 
     fn refreshCarryMemories(self: *Network) !void {
+        var previous: [128]u32 = undefined;
+        var previous_count: usize = 0;
+        for (self.carry_memories.items) |id| {
+            if (previous_count >= previous.len) break;
+            previous[previous_count] = id;
+            previous_count += 1;
+        }
         self.carry_memories.clearRetainingCapacity();
         var candidates: [128]Candidate = undefined;
         var candidate_count: usize = 0;
@@ -1236,10 +1745,25 @@ pub const Network = struct {
             const neuron = self.neurons.items[idx];
             if (neuron.kind != .memory_short and neuron.kind != .memory_long) continue;
             if (candidate_count < candidates.len) {
-                var score = neuron.last_activation + @as(i32, neuron.utility) * 8;
+                const precision = self.precisionPpm(neuron);
+                var score = neuron.last_activation + @as(i32, neuron.utility) * 8 + @as(i32, neuron.support) * self.config.carry_support_bonus;
                 if (self.config.use_reputation) score += @as(i32, neuron.reputation) * 4;
-                if (neuron.kind == .memory_long) score += 64;
-                if (neuron.role == .bridge) score += 32;
+                score += self.longMemorySelectionBonus(neuron);
+                if (precision >= self.config.carry_precision_gate_ppm) {
+                    score += @divTrunc(@as(i32, precision - self.config.carry_precision_gate_ppm), 8);
+                } else {
+                    score -= self.config.carry_low_precision_penalty;
+                }
+                const win_balance_raw: i32 = @as(i32, neuron.wins) - @as(i32, neuron.losses);
+                const win_balance = if (win_balance_raw > 16) 16 else if (win_balance_raw < -8) -8 else win_balance_raw;
+                score += @divTrunc(win_balance * self.config.carry_quality_bonus, 2);
+                if (neuron.role == .bridge) score += 16;
+                for (previous[0..previous_count]) |prev_id| {
+                    if (prev_id == id) {
+                        score += self.config.carry_persistence_bonus;
+                        break;
+                    }
+                }
                 candidates[candidate_count] = .{ .id = id, .score = score };
                 candidate_count += 1;
             }
@@ -1247,11 +1771,26 @@ pub const Network = struct {
         sortCandidatesDesc(candidates[0..candidate_count]);
         const keep = @min(candidate_count, @as(usize, self.config.max_carry_memories));
         var region_taken: [32]bool = [_]bool{false} ** 32;
+        var signature_taken: [128]u64 = [_]u64{0} ** 128;
+        var signature_count: usize = 0;
         var selected: usize = 0;
         for (candidates[0..candidate_count]) |candidate| {
             if (selected >= keep) break;
             const region = self.nodeRegion(candidate.id);
             if (region >= region_taken.len or region_taken[region]) continue;
+            const neuron = self.neurons.items[@intCast(candidate.id)];
+            if (self.config.carry_signature_diversity and neuron.signature != 0) {
+                var duplicate = false;
+                for (signature_taken[0..signature_count]) |seen| {
+                    if (seen == neuron.signature) {
+                        duplicate = true;
+                        break;
+                    }
+                }
+                if (duplicate) continue;
+                signature_taken[signature_count] = neuron.signature;
+                signature_count += 1;
+            }
             region_taken[region] = true;
             try self.carry_memories.append(self.allocator, candidate.id);
             selected += 1;
@@ -1260,6 +1799,16 @@ pub const Network = struct {
             outer: for (candidates[0..candidate_count]) |candidate| {
                 for (self.carry_memories.items) |existing| {
                     if (existing == candidate.id) continue :outer;
+                }
+                const neuron = self.neurons.items[@intCast(candidate.id)];
+                if (self.config.carry_signature_diversity and neuron.signature != 0) {
+                    for (signature_taken[0..signature_count]) |seen| {
+                        if (seen == neuron.signature) continue :outer;
+                    }
+                    if (signature_count < signature_taken.len) {
+                        signature_taken[signature_count] = neuron.signature;
+                        signature_count += 1;
+                    }
                 }
                 try self.carry_memories.append(self.allocator, candidate.id);
                 selected += 1;
@@ -1454,12 +2003,52 @@ pub const Network = struct {
         return count;
     }
 
+    pub fn stepGenerated(self: *Network, current_token: u8) !Prediction {
+        try self.seedFromHistory(current_token);
+        try self.propagateMemories();
+        var prediction = self.scoreOutputs(current_token, current_token);
+        const actual_next = prediction.token;
+        prediction.actual_rank = 1;
+        prediction.actual_score = prediction.top_score;
+        const surprise_like = prediction.margin <= self.config.birth_margin;
+        const confident_like = prediction.margin >= cfg.score_scale / 2;
+        prediction.surprise = surprise_like;
+
+        for (self.predictive_nodes.items) |src_id| {
+            const idx: usize = @intCast(src_id);
+            const kind = self.neurons.items[idx].kind;
+            if (kind == .dead or kind == .output) continue;
+            const role = self.neurons.items[idx].role;
+            const strong_positive = (kind == .memory_short or kind == .memory_long) and (surprise_like or (role == .bridge and prediction.actual_rank > 4));
+            try self.touchOrCreateSynapse(src_id, self.output_ids.items[actual_next], true, strong_positive);
+            self.neurons.items[idx].last_active_step = self.step_index;
+        }
+
+        if (surprise_like) {
+            try self.spawnMemory(current_token, actual_next, prediction);
+        }
+        self.updateUtilities(prediction, actual_next);
+        self.maybePromoteOrDemote();
+        try self.refreshCarryMemories();
+        try self.updateSequenceExperts(current_token, actual_next);
+        self.recordElasticityStep(true, surprise_like, confident_like);
+        self.pushHistory(current_token);
+        if (self.step_index % self.config.elasticity_interval == 0) {
+            self.adjustElasticity();
+        }
+        if (self.step_index % self.config.prune_interval == 0) {
+            try self.prune();
+        }
+        return prediction;
+    }
+
     pub fn step(self: *Network, current_token: u8, actual_next: u8) !Prediction {
         try self.seedFromHistory(current_token);
         try self.propagateMemories();
-        var prediction = self.scoreOutputs(actual_next);
+        var prediction = self.scoreOutputs(current_token, actual_next);
         const was_correct = prediction.token == actual_next;
         const surprise_like = !was_correct or prediction.margin <= self.config.birth_margin;
+        const confident_like = was_correct and prediction.actual_rank == 1 and prediction.margin >= cfg.score_scale / 2;
         prediction.surprise = surprise_like;
 
         for (self.predictive_nodes.items) |src_id| {
@@ -1482,7 +2071,9 @@ pub const Network = struct {
         self.updateUtilities(prediction, actual_next);
         self.maybePromoteOrDemote();
         try self.refreshCarryMemories();
-        self.recordElasticityStep(was_correct, surprise_like);
+        try self.updateSequenceExperts(current_token, actual_next);
+        self.updateHybridExpertWeights(actual_next);
+        self.recordElasticityStep(was_correct, surprise_like, confident_like);
         self.pushHistory(current_token);
         if (self.step_index % self.config.elasticity_interval == 0) {
             self.adjustElasticity();

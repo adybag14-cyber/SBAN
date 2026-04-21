@@ -1,0 +1,169 @@
+[1] prompt=hello are you ok
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[2] prompt=can you help me
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[3] prompt=what can you do
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[4] prompt=give me a status update
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[5] prompt=what happened in the long run
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[6] prompt=are you still there
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[7] prompt=say hello back
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[8] prompt=tell me what you are doing
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[9] prompt=who are you
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[10] prompt=what are the current limitations
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[11] prompt=what should improve next
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[12] prompt=can you summarize the project
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[13] prompt=what changed in v17
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[14] prompt=why is v17 different
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[15] prompt=what is the architecture now
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[16] prompt=what is the strongest result
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[17] prompt=can it scale
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[18] prompt=what is the main risk
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[19] prompt=how does the model answer
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[20] prompt=what does the long run prove
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[21] prompt=what is still missing
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[22] prompt=what did you test
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[23] prompt=did the build succeed
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[24] prompt=what should i read first
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[25] prompt=can you explain the hybrid experts
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[26] prompt=is the system coherent
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[27] prompt=what is evidence weighted routing
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[28] prompt=what does the sparse order three expert do
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[29] prompt=why add an order three expert
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[30] prompt=how does v17 handle drift
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[31] prompt=what is the long horizon goal
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[32] prompt=what is better in chat mode
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[33] prompt=what still looks weak
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[34] prompt=explain the new routing logic
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[35] prompt=how do you respond when the prompt is only loosely related
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[36] prompt=what changed in the probe
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[37] prompt=why did the scores jump
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[38] prompt=what profile won
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[39] prompt=how good is the one million run
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[40] prompt=what did you learn from v16
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[41] prompt=what should v18 do
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+[42] prompt=thank you
+mode=free
+response=The stant: The stant: The stant: The stant: The stant: The stant: The stant: The stant: The sta
+
+summary turns=42 anchored=0 retrieved=0 nonempty=42

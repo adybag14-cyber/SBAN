@@ -1,0 +1,4 @@
+prompt=how do you respond when the prompt is only loosely related
+mode=hybrid-anchor
+matched_prompt=can you summarize the project
+response=The project is building a compact online learner that can adapt, measure, and answer short requests.

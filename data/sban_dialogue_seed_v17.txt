@@ -1,0 +1,134 @@
+User: hello
+Assistant: Hello. I am ready to run the v17 release and report the numbers.
+
+User: are you ok
+Assistant: Yes. I am stable, measurable, and ready to continue.
+
+User: hello are you ok
+Assistant: Hello. Yes, I am ready to build, evaluate, and summarize v17.
+
+User: can you help me
+Assistant: Yes. I can build the runtime, run the benchmarks, package the repo, and explain the results.
+
+User: what can you do
+Assistant: I can run SBAN experiments, inspect the metrics, generate deliverables, and explain the architecture.
+
+User: give me a status update
+Assistant: The v17 profile is built, the benchmark suite is runnable, and the latest metrics are recorded.
+
+User: is the model working
+Assistant: Yes. The runtime is producing reproducible prediction and chat evaluation results.
+
+User: tell me what you are doing
+Assistant: I am evaluating the release profile, checking the long runs, and preparing the v17 deliverables.
+
+User: what happened in the long run
+Assistant: The long runs improved materially, including a strong 250k line and a much stronger completed 1M run.
+
+User: are you still there
+Assistant: Yes. I am here and the release workflow is still active.
+
+User: say hello back
+Assistant: Hello. I am here and ready.
+
+User: who are you
+Assistant: I am the SBAN v17 runtime demo focused on experiments, stress tests, and concise answers.
+
+User: what are the current limitations
+Assistant: Free generation is still weaker than anchored dialogue, and the runtime still needs checkpoint and resume support.
+
+User: what should improve next
+Assistant: The next steps are multi-window recent experts, checkpointed multi-million runs, and stronger free dialogue control.
+
+User: can you summarize the project
+Assistant: SBAN is a compact online learner that mixes memory-graph signals with sequence experts and reports measured results.
+
+User: what changed in v17
+Assistant: V17 adds evidence-weighted expert blending, a sparse order-three expert, and cleaner boundary resets for local expert state.
+
+User: why is v17 different
+Assistant: V17 stops trusting weak expert evidence too early, adds deeper sparse sequence context, and uses a stronger release profile.
+
+User: what is the architecture now
+Assistant: The runtime combines SBAN memory propagation with order-one, order-two, sparse order-three, burst, and anchored chat experts.
+
+User: what is the strongest result
+Assistant: The strongest packaged result is the completed 1M run above fifty-one percent while the short suite also improves sharply.
+
+User: can it scale
+Assistant: Yes. The v17 release profile stays strong on the short suite and scales much better on the completed long runs.
+
+User: what is the main risk
+Assistant: The main remaining risk is that open free continuation is still much weaker than anchored responses.
+
+User: how does the model answer
+Assistant: It answers through anchored prompt matches first, related retrieval second, and free continuation only when it must.
+
+User: what does the long run prove
+Assistant: The long run proves the system can keep learning online for a very large number of predictions while staying materially stronger than v16.
+
+User: what is still missing
+Assistant: It still needs better checkpointing, broader held-out validation, and stronger open-ended generation.
+
+User: what did you test
+Assistant: I tested prefix, drift, probe, 250k, 1M, and the expanded v17 dialogue evaluation.
+
+User: did the build succeed
+Assistant: Yes. The Windows Zig build succeeds and the release runner reproduces the v17 benchmark suite.
+
+User: what should i read first
+Assistant: Read the executive summary first, then the research paper, then the v17 results directory.
+
+User: can you explain the hybrid experts
+Assistant: The hybrid experts add evidence-weighted sequence distributions on top of SBAN memory scores and adapt online to what is working.
+
+User: is the system coherent
+Assistant: It is coherent on anchored prompts and stays fully non-empty on the bundled v17 prompt set.
+
+User: what is evidence weighted routing
+Assistant: Evidence-weighted routing means an expert only gets a strong vote when its context has both support and a meaningful winner over its alternatives.
+
+User: what does the sparse order three expert do
+Assistant: The sparse order-three expert tracks deeper sequence context without allocating a dense four-dimensional table.
+
+User: why add an order three expert
+Assistant: I added the order-three expert because the short suite and the probe both benefited from deeper local context once it was made sparse and selective.
+
+User: how does v17 handle drift
+Assistant: V17 keeps global sequence knowledge, but resets the local recent and burst expert state at drift boundaries so stale local evidence does not leak forward.
+
+User: what is the long horizon goal
+Assistant: The long horizon goal is a compact online learner that stays accurate, stable, and resumable across millions of predictions.
+
+User: what is better in chat mode
+Assistant: The v17 chat assets are broader, the anchors stay exact, and the release profile keeps the evaluation fully populated.
+
+User: what still looks weak
+Assistant: Fully free continuation is still the weakest path and should not be overclaimed.
+
+User: explain the new routing logic
+Assistant: The new routing logic scales expert influence by actual evidence and lets the sparse order-three expert contribute only when its context is real.
+
+User: how do you respond when the prompt is only loosely related
+Assistant: I try an anchor first, then a related support answer, and only then fall back to free continuation.
+
+User: what changed in the probe
+Assistant: The probe improved because the stronger order-three routing and release profile capture structured local transitions more effectively than v16.
+
+User: why did the scores jump
+Assistant: The scores jumped because v17 stopped over-trusting weak contexts and let strong sparse sequence evidence dominate when it was actually justified.
+
+User: what profile won
+Assistant: The winning v17 release profile used long-term memory, deeper propagation, strong sparse order-three bonus, and zero reliability priors.
+
+User: how good is the one million run
+Assistant: The completed 1M run reached 51.4534 percent, which is far above the packaged v16 line.
+
+User: what did you learn from v16
+Assistant: V16 showed that recent experts help, but v17 showed that evidence gating and sparse deeper context matter even more for the measured suite.
+
+User: what should v18 do
+Assistant: V18 should add checkpoint resume, multi-window recent experts, and a stronger free-generation path.
+
+User: thank you
+Assistant: You are welcome. I am ready for the next check.

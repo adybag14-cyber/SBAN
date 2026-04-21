@@ -1,0 +1,217 @@
+[1] prompt=hello are you ok
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[2] prompt=can you help me
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[3] prompt=what can you do
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[4] prompt=give me a status update
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[5] prompt=what happened in the long run
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[6] prompt=are you still there
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[7] prompt=say hello back
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[8] prompt=tell me what you are doing
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[9] prompt=who are you
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[10] prompt=what are the current limitations
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[11] prompt=what should improve next
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[12] prompt=can you summarize the project
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[13] prompt=what changed in v18
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[14] prompt=why is v18 different
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[15] prompt=what is the architecture now
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[16] prompt=what is the strongest result
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[17] prompt=can it scale
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[18] prompt=what is the main risk
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[19] prompt=how does the model answer
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[20] prompt=what does the long run prove
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[21] prompt=what is still missing
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[22] prompt=what did you test
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[23] prompt=did the build succeed
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[24] prompt=what should i read first
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[25] prompt=can you explain the hybrid experts
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[26] prompt=is the system coherent
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[27] prompt=what is evidence weighted routing
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[28] prompt=what does the sparse order three expert do
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[29] prompt=why add order four and order five experts
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[30] prompt=how does v18 handle drift
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[31] prompt=what is the long horizon goal
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[32] prompt=what is better in chat mode
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[33] prompt=what still looks weak
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[34] prompt=explain the new routing logic
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[35] prompt=how do you respond when the prompt is only loosely related
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[36] prompt=what changed in the probe
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[37] prompt=why did the scores jump
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[38] prompt=what profile shipped in v18
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[39] prompt=how good is the 250k run now
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[40] prompt=how strong is the one million run now
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[41] prompt=what did you learn from v17
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[42] prompt=what should v19 do
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[43] prompt=what is the sequence prior
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[44] prompt=why seed the sequence experts
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[45] prompt=what does the close seed do
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[46] prompt=what does the order five expert do
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[47] prompt=what does the hybrid warm start do
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[48] prompt=is the v18 release seeded
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[49] prompt=what benchmark targets did v18 clear
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[50] prompt=what is the main caution for the v18 numbers
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[51] prompt=how does the seeded release start
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[52] prompt=what remained deterministic in v18
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[53] prompt=what artifact should i open first
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+[54] prompt=thank you
+mode=free
+response=The seed the seed the seed the seed the seed the seed the seed the seed the seed the seed the s
+
+summary turns=54 anchored=0 retrieved=0 nonempty=54

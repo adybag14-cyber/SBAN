@@ -1,0 +1,4 @@
+prompt=what changed in v18
+mode=hybrid-anchor
+matched_prompt=what changed in v18
+response=V18 adds sparse order-four and order-five experts, a seeded sequence prior, and a hybrid-weight warm start for the release profile.

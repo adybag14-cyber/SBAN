@@ -308,14 +308,16 @@ fn clampI16(value: i32) i16 {
     return @intCast(value);
 }
 
-const hybrid_expert_count: usize = 6;
+const hybrid_expert_count: usize = 8;
 const expert_sban_idx: usize = 0;
 const expert_markov1_idx: usize = 1;
 const expert_markov2_idx: usize = 2;
 const expert_markov3_idx: usize = 3;
-const expert_burst_idx: usize = 4;
-const expert_recent_markov2_idx: usize = 5;
-const default_hybrid_weights = [hybrid_expert_count]i16{ 1088, 320, 832, 960, 640, 1152 };
+const expert_markov4_idx: usize = 4;
+const expert_markov5_idx: usize = 5;
+const expert_burst_idx: usize = 6;
+const expert_recent_markov2_idx: usize = 7;
+const default_hybrid_weights = [hybrid_expert_count]i16{ 1088, 320, 832, 960, 1248, 1408, 640, 1152 };
 const recent_row2_sentinel: u32 = std.math.maxInt(u32);
 
 const ScoreTop = struct {
@@ -330,6 +332,14 @@ fn contextKey(prev: u8, current: u8) usize {
 
 fn contextKey3(prev2: u8, prev1: u8, current: u8) u32 {
     return (@as(u32, prev2) << 16) | (@as(u32, prev1) << 8) | @as(u32, current);
+}
+
+fn contextKey4(prev3: u8, prev2: u8, prev1: u8, current: u8) u32 {
+    return (@as(u32, prev3) << 24) | (@as(u32, prev2) << 16) | (@as(u32, prev1) << 8) | @as(u32, current);
+}
+
+fn contextKey5(prev4: u8, prev3: u8, prev2: u8, prev1: u8, current: u8) u64 {
+    return (@as(u64, prev4) << 32) | (@as(u64, prev3) << 24) | (@as(u64, prev2) << 16) | (@as(u64, prev1) << 8) | @as(u64, current);
 }
 
 fn findTop2(scores: []const i32) ScoreTop {
@@ -373,6 +383,10 @@ pub const Network = struct {
     order2_counts: []u32,
     order3_row_map: std.AutoHashMap(u32, u32),
     order3_rows: std.ArrayList(u16) = .empty,
+    order4_row_map: std.AutoHashMap(u32, u32),
+    order4_rows: std.ArrayList(u16) = .empty,
+    order5_row_map: std.AutoHashMap(u64, u32),
+    order5_rows: std.ArrayList(u16) = .empty,
     recent_order2_counts: []u16,
     recent_row2_ring: []u32,
     burst_next: []u8,
@@ -423,6 +437,8 @@ pub const Network = struct {
             .config = config,
             .signature_map = std.AutoHashMap(u64, u32).init(allocator),
             .order3_row_map = std.AutoHashMap(u32, u32).init(allocator),
+            .order4_row_map = std.AutoHashMap(u32, u32).init(allocator),
+            .order5_row_map = std.AutoHashMap(u64, u32).init(allocator),
             .recent_tokens = try allocator.alloc(u8, @max(@as(usize, 1), @as(usize, config.history_lags) - 1)),
             .order1_counts = try allocator.alloc(u32, @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
             .order2_counts = try allocator.alloc(u32, @as(usize, config.vocab_size) * @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
@@ -500,6 +516,10 @@ pub const Network = struct {
         self.allocator.free(self.order2_counts);
         self.order3_row_map.deinit();
         self.order3_rows.deinit(self.allocator);
+        self.order4_row_map.deinit();
+        self.order4_rows.deinit(self.allocator);
+        self.order5_row_map.deinit();
+        self.order5_rows.deinit(self.allocator);
         self.allocator.free(self.recent_order2_counts);
         self.allocator.free(self.recent_row2_ring);
         self.allocator.free(self.burst_next);
@@ -513,7 +533,7 @@ pub const Network = struct {
         self.allocator.free(self.region_output_scores);
     }
 
-    fn clearLocalExpertState(self: *Network) void {
+    fn clearRecentExpertState(self: *Network) void {
         @memset(self.recent_order2_counts, 0);
         @memset(self.recent_row2_ring, recent_row2_sentinel);
         @memset(self.burst_next, 0);
@@ -521,6 +541,10 @@ pub const Network = struct {
         @memset(self.burst_last_step, 0);
         self.recent_ring_pos = 0;
         self.recent_ring_count = 0;
+    }
+
+    fn clearLocalExpertState(self: *Network) void {
+        self.clearRecentExpertState();
         self.hybrid_weights = default_hybrid_weights;
     }
 
@@ -530,6 +554,43 @@ pub const Network = struct {
         if (self.config.reset_local_experts_on_boundary) {
             self.clearLocalExpertState();
         }
+    }
+
+    pub fn pretrainSequenceExperts(self: *Network, bytes: []const u8) !void {
+        if (bytes.len < 2) return;
+
+        self.clearLocalExpertState();
+        self.recent_len = 0;
+        self.step_index = 0;
+
+        var idx: usize = 0;
+        while (idx + 1 < bytes.len) : (idx += 1) {
+            self.step_index +|= 1;
+            try self.updateSequenceExperts(bytes[idx], bytes[idx + 1]);
+            self.pushHistory(bytes[idx]);
+        }
+
+        self.clearLocalExpertState();
+        self.recent_len = 0;
+        self.step_index = 0;
+
+        idx = 0;
+        while (idx + 1 < bytes.len) : (idx += 1) {
+            self.step_index +|= 1;
+            @memset(self.output_scores.items, 0);
+            self.applyHybridExperts(bytes[idx]);
+            self.recordExpertPrediction(expert_sban_idx, 0, 0, false);
+            self.updateHybridExpertWeights(bytes[idx + 1]);
+            self.updateLocalExpertState(bytes[idx], bytes[idx + 1]);
+            self.pushHistory(bytes[idx]);
+        }
+
+        const calibrated_weights = self.hybrid_weights;
+        self.clearRecentExpertState();
+        self.hybrid_weights = calibrated_weights;
+        for (0..hybrid_expert_count) |expert_idx| self.recordExpertPrediction(expert_idx, 0, 0, false);
+        self.recent_len = 0;
+        self.step_index = 0;
     }
 
     fn ensureScratchForNeuronCount(self: *Network) !void {
@@ -869,6 +930,52 @@ pub const Network = struct {
         return self.order3_rows.items[base .. base + row_len];
     }
 
+    fn lookupOrder4Row(self: *const Network, key: u32) ?[]const u16 {
+        const row_idx = self.order4_row_map.get(key) orelse return null;
+        const row_len = @as(usize, self.config.vocab_size);
+        const base = @as(usize, row_idx) * row_len;
+        return self.order4_rows.items[base .. base + row_len];
+    }
+
+    fn getOrCreateOrder4Row(self: *Network, key: u32) ![]u16 {
+        if (self.order4_row_map.get(key)) |row_idx| {
+            const row_len = @as(usize, self.config.vocab_size);
+            const base = @as(usize, row_idx) * row_len;
+            return self.order4_rows.items[base .. base + row_len];
+        }
+
+        const row_len = @as(usize, self.config.vocab_size);
+        const row_idx: u32 = @intCast(self.order4_rows.items.len / row_len);
+        try self.order4_row_map.put(key, row_idx);
+        const base = self.order4_rows.items.len;
+        try self.order4_rows.resize(self.allocator, base + row_len);
+        @memset(self.order4_rows.items[base .. base + row_len], 0);
+        return self.order4_rows.items[base .. base + row_len];
+    }
+
+    fn lookupOrder5Row(self: *const Network, key: u64) ?[]const u16 {
+        const row_idx = self.order5_row_map.get(key) orelse return null;
+        const row_len = @as(usize, self.config.vocab_size);
+        const base = @as(usize, row_idx) * row_len;
+        return self.order5_rows.items[base .. base + row_len];
+    }
+
+    fn getOrCreateOrder5Row(self: *Network, key: u64) ![]u16 {
+        if (self.order5_row_map.get(key)) |row_idx| {
+            const row_len = @as(usize, self.config.vocab_size);
+            const base = @as(usize, row_idx) * row_len;
+            return self.order5_rows.items[base .. base + row_len];
+        }
+
+        const row_len = @as(usize, self.config.vocab_size);
+        const row_idx: u32 = @intCast(self.order5_rows.items.len / row_len);
+        try self.order5_row_map.put(key, row_idx);
+        const base = self.order5_rows.items.len;
+        try self.order5_rows.resize(self.allocator, base + row_len);
+        @memset(self.order5_rows.items[base .. base + row_len], 0);
+        return self.order5_rows.items[base .. base + row_len];
+    }
+
     fn expertReliabilityPpm(self: *const Network, total: u32, top_count: u32, second_count: u32) u32 {
         if (total == 0 or top_count == 0 or top_count <= second_count) return 0;
         const gap = top_count - second_count;
@@ -998,6 +1105,25 @@ pub const Network = struct {
                 self.blendDistributionU16(row, self.config.markov3_bonus_ppm, expert_markov3_idx);
             }
         }
+        if (self.recent_len >= 3) {
+            const prev1 = self.recent_tokens[0];
+            const prev2 = self.recent_tokens[1];
+            const prev3 = self.recent_tokens[2];
+            const key4 = contextKey4(prev3, prev2, prev1, current_token);
+            if (self.lookupOrder4Row(key4)) |row| {
+                self.blendDistributionU16(row, self.config.markov4_bonus_ppm, expert_markov4_idx);
+            }
+        }
+        if (self.recent_len >= 4) {
+            const prev1 = self.recent_tokens[0];
+            const prev2 = self.recent_tokens[1];
+            const prev3 = self.recent_tokens[2];
+            const prev4 = self.recent_tokens[3];
+            const key5 = contextKey5(prev4, prev3, prev2, prev1, current_token);
+            if (self.lookupOrder5Row(key5)) |row| {
+                self.blendDistributionU16(row, self.config.markov5_bonus_ppm, expert_markov5_idx);
+            }
+        }
     }
 
     fn updateRecentExpertWindow(self: *Network, current_token: u8, actual_next: u8) void {
@@ -1019,6 +1145,21 @@ pub const Network = struct {
         }
         self.recent_row2_ring[self.recent_ring_pos] = row2_idx;
         self.recent_ring_pos = (self.recent_ring_pos + 1) % window;
+    }
+
+    fn updateLocalExpertState(self: *Network, current_token: u8, actual_next: u8) void {
+        self.updateRecentExpertWindow(current_token, actual_next);
+        if (self.recent_len < 1) return;
+
+        const prev_token = self.recent_tokens[0];
+        const key = contextKey(prev_token, current_token);
+        if (self.burst_next[key] == actual_next) {
+            self.burst_streak[key] +|= 1;
+        } else {
+            self.burst_next[key] = actual_next;
+            self.burst_streak[key] = 1;
+        }
+        self.burst_last_step[key] = self.step_index;
     }
 
     fn updateHybridExpertWeights(self: *Network, actual_next: u8) void {
@@ -1062,24 +1203,34 @@ pub const Network = struct {
     fn updateSequenceExperts(self: *Network, current_token: u8, actual_next: u8) !void {
         const row1_idx = @as(usize, current_token) * @as(usize, self.config.vocab_size) + @as(usize, actual_next);
         self.order1_counts[row1_idx] +|= 1;
-        self.updateRecentExpertWindow(current_token, actual_next);
+        self.updateLocalExpertState(current_token, actual_next);
         if (self.recent_len >= 1) {
             const prev_token = self.recent_tokens[0];
             const key = contextKey(prev_token, current_token);
             const row2_idx = key * @as(usize, self.config.vocab_size) + @as(usize, actual_next);
             self.order2_counts[row2_idx] +|= 1;
-            if (self.burst_next[key] == actual_next) {
-                self.burst_streak[key] +|= 1;
-            } else {
-                self.burst_next[key] = actual_next;
-                self.burst_streak[key] = 1;
-            }
-            self.burst_last_step[key] = self.step_index;
         }
         if (self.recent_len >= 2) {
             const prev1 = self.recent_tokens[0];
             const prev2 = self.recent_tokens[1];
             const row = try self.getOrCreateOrder3Row(contextKey3(prev2, prev1, current_token));
+            const next_idx = @as(usize, actual_next);
+            if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
+        }
+        if (self.recent_len >= 3) {
+            const prev1 = self.recent_tokens[0];
+            const prev2 = self.recent_tokens[1];
+            const prev3 = self.recent_tokens[2];
+            const row = try self.getOrCreateOrder4Row(contextKey4(prev3, prev2, prev1, current_token));
+            const next_idx = @as(usize, actual_next);
+            if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
+        }
+        if (self.recent_len >= 4) {
+            const prev1 = self.recent_tokens[0];
+            const prev2 = self.recent_tokens[1];
+            const prev3 = self.recent_tokens[2];
+            const prev4 = self.recent_tokens[3];
+            const row = try self.getOrCreateOrder5Row(contextKey5(prev4, prev3, prev2, prev1, current_token));
             const next_idx = @as(usize, actual_next);
             if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
         }

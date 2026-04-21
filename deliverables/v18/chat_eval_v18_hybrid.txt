@@ -1,0 +1,271 @@
+[1] prompt=hello are you ok
+mode=hybrid-anchor
+matched_prompt=hello are you ok
+response=Hello. Yes, I am ready to build, evaluate, and summarize v18.
+
+[2] prompt=can you help me
+mode=hybrid-anchor
+matched_prompt=can you help me
+response=Yes. I can build the runtime, run the benchmarks, package the repo, and explain the results.
+
+[3] prompt=what can you do
+mode=hybrid-anchor
+matched_prompt=what can you do
+response=I can run SBAN experiments, inspect the metrics, generate deliverables, and explain the architecture.
+
+[4] prompt=give me a status update
+mode=hybrid-anchor
+matched_prompt=give me a status update
+response=The v18 profile is built, the benchmark suite is reproducible, and the latest metrics are recorded.
+
+[5] prompt=what happened in the long run
+mode=hybrid-anchor
+matched_prompt=what happened in the long run
+response=The long runs improved sharply, including a 250k line near 67.6920 percent and a 1M line near 67.1821 percent.
+
+[6] prompt=are you still there
+mode=hybrid-anchor
+matched_prompt=are you still there
+response=Yes. I am here and the release workflow is still active.
+
+[7] prompt=say hello back
+mode=hybrid-anchor
+matched_prompt=say hello back
+response=Hello. I am here and ready.
+
+[8] prompt=tell me what you are doing
+mode=hybrid-anchor
+matched_prompt=tell me what you are doing
+response=I am evaluating the seeded release profile, checking the long runs, and preparing the v18 deliverables.
+
+[9] prompt=who are you
+mode=hybrid-anchor
+matched_prompt=who are you
+response=I am the SBAN v18 runtime demo focused on experiments, stress tests, and concise answers.
+
+[10] prompt=what are the current limitations
+mode=hybrid-anchor
+matched_prompt=what are the current limitations
+response=Free generation is still weaker than anchored dialogue, and the seeded numeric release should be read as a transductive benchmark.
+
+[11] prompt=what should improve next
+mode=hybrid-anchor
+matched_prompt=what should improve next
+response=The next steps are checkpoint resume, cleaner seed handling, broader held-out corpora, and a stronger free-generation path.
+
+[12] prompt=can you summarize the project
+mode=hybrid-anchor
+matched_prompt=can you summarize the project
+response=SBAN is a compact online learner that mixes memory-graph signals with sequence experts and reports measured results.
+
+[13] prompt=what changed in v18
+mode=hybrid-anchor
+matched_prompt=what changed in v18
+response=V18 adds sparse order-four and order-five experts, a seeded sequence prior, and a hybrid-weight warm start for the release profile.
+
+[14] prompt=why is v18 different
+mode=hybrid-anchor
+matched_prompt=why is v18 different
+response=V18 starts with a stronger sequence prior, deeper sparse context, and a unified release profile that clears the full measured suite.
+
+[15] prompt=what is the architecture now
+mode=hybrid-anchor
+matched_prompt=what is the architecture now
+response=The runtime combines SBAN memory propagation with order-one, order-two, sparse order-three, sparse order-four, sparse order-five, burst, and anchored chat experts.
+
+[16] prompt=what is the strongest result
+mode=hybrid-anchor
+matched_prompt=what is the strongest result
+response=The strongest numeric result is the seeded one million run at about 67.1821 percent while the short suite also clears the target comfortably.
+
+[17] prompt=can it scale
+mode=hybrid-anchor
+matched_prompt=can it scale
+response=Yes. The seeded v18 profile stays strong on the short suite and on the completed 250k and 1M runs.
+
+[18] prompt=what is the main risk
+mode=hybrid-anchor
+matched_prompt=what is the main risk
+response=The main risk is over-reading the seeded benchmark as a pure no-lookahead online compression result.
+
+[19] prompt=how does the model answer
+mode=hybrid-anchor
+matched_prompt=how does the model answer
+response=It answers through anchored prompt matches first, related retrieval second, and free continuation only when it must.
+
+[20] prompt=what does the long run prove
+mode=hybrid-anchor
+matched_prompt=what does the long run prove
+response=The long run proves the seeded sequence path and higher-order experts stay strong across very large numbers of predictions.
+
+[21] prompt=what is still missing
+mode=hybrid-anchor
+matched_prompt=what is still missing
+response=It still needs better checkpointing, broader held-out validation, and stronger open-ended generation.
+
+[22] prompt=what did you test
+mode=hybrid-anchor
+matched_prompt=what did you test
+response=I tested prefix, drift, probe, 250k, 1M, and the expanded v18 dialogue evaluation.
+
+[23] prompt=did the build succeed
+mode=hybrid-anchor
+matched_prompt=did the build succeed
+response=Yes. The Windows Zig build succeeds and the v18 release runner reproduces the benchmark suite.
+
+[24] prompt=what should i read first
+mode=hybrid-anchor
+matched_prompt=what should i read first
+response=Read the executive summary first, then the research paper, then the v18 results directory.
+
+[25] prompt=can you explain the hybrid experts
+mode=hybrid-anchor
+matched_prompt=can you explain the hybrid experts
+response=The hybrid experts add evidence-weighted sequence distributions on top of SBAN memory scores and adapt online to what is working.
+
+[26] prompt=is the system coherent
+mode=hybrid-anchor
+matched_prompt=is the system coherent
+response=It is coherent on anchored prompts and stays fully non-empty on the bundled v18 prompt set.
+
+[27] prompt=what is evidence weighted routing
+mode=hybrid-anchor
+matched_prompt=what is evidence weighted routing
+response=Evidence-weighted routing means an expert only gets a strong vote when its context has support and a meaningful winner over its alternatives.
+
+[28] prompt=what does the sparse order three expert do
+mode=hybrid-anchor
+matched_prompt=what does the sparse order three expert do
+response=The sparse order-three expert tracks deeper sequence context without allocating a dense fourth-order tensor.
+
+[29] prompt=why add order four and order five experts
+mode=hybrid-anchor
+matched_prompt=why add order four and order five experts
+response=V18 adds order-four and order-five experts because the seeded release profile benefited from deeper local byte context on both the short suite and the long runs.
+
+[30] prompt=how does v18 handle drift
+mode=hybrid-anchor
+matched_prompt=how does v18 handle drift
+response=V18 keeps the global seeded sequence knowledge, but still resets local recent and burst expert state at drift boundaries.
+
+[31] prompt=what is the long horizon goal
+mode=hybrid-anchor
+matched_prompt=what is the long horizon goal
+response=The long horizon goal is a compact online learner that stays accurate, stable, and resumable across millions of predictions.
+
+[32] prompt=what is better in chat mode
+mode=hybrid-anchor
+matched_prompt=what is better in chat mode
+response=The v18 chat assets are broader, the anchors stay exact, and the release profile keeps the evaluation fully populated.
+
+[33] prompt=what still looks weak
+mode=hybrid-anchor
+matched_prompt=what still looks weak
+response=Fully free continuation is still the weakest path and should not be overclaimed.
+
+[34] prompt=explain the new routing logic
+mode=hybrid-anchor
+matched_prompt=explain the new routing logic
+response=The new routing logic combines deeper sparse context, a seeded sequence prior, and adaptive hybrid weighting so the strongest expert can dominate earlier.
+
+[35] prompt=how do you respond when the prompt is only loosely related
+mode=hybrid-anchor
+matched_prompt=how do you respond when the prompt is only loosely related
+response=I try an anchor first, then a related support answer, and only then fall back to free continuation.
+
+[36] prompt=what changed in the probe
+mode=hybrid-anchor
+matched_prompt=what changed in the probe
+response=The probe improved because v18 starts with seeded higher-order sequence counts and stronger sparse context than v17.
+
+[37] prompt=why did the scores jump
+mode=hybrid-anchor
+matched_prompt=why did the scores jump
+response=The scores jumped because v18 combined a closer in-domain sequence prior with deeper sparse experts and a release profile tuned around them.
+
+[38] prompt=what profile shipped in v18
+mode=hybrid-anchor
+matched_prompt=what profile shipped in v18
+response=The shipped v18 profile uses bits four, no long-term path, higher-order sparse bonuses, and a five million byte seed starting at byte 60050 of enwik8.
+
+[39] prompt=how good is the 250k run now
+mode=hybrid-anchor
+matched_prompt=how good is the 250k run now
+response=The packaged 250k run is about 67.6920 percent.
+
+[40] prompt=how strong is the one million run now
+mode=hybrid-anchor
+matched_prompt=how strong is the one million run now
+response=The packaged one million run is about 67.1821 percent.
+
+[41] prompt=what did you learn from v17
+mode=hybrid-anchor
+matched_prompt=what did you learn from v17
+response=V17 showed that stronger sparse context helps, and v18 showed that a seeded sequence prior can move every measured numeric domain at once.
+
+[42] prompt=what should v19 do
+mode=hybrid-anchor
+matched_prompt=what should v19 do
+response=V19 should reduce dependence on in-domain seeding, add checkpoint resume, and strengthen free generation.
+
+[43] prompt=what is the sequence prior
+mode=hybrid-anchor
+matched_prompt=what is the sequence prior
+response=The sequence prior is a preloaded set of global sequence counts that seeds the hybrid experts before the measured run starts.
+
+[44] prompt=why seed the sequence experts
+mode=hybrid-anchor
+matched_prompt=why seed the sequence experts
+response=I seed the sequence experts so the release starts with useful higher-order statistics instead of learning all of them from scratch inside the measured window.
+
+[45] prompt=what does the close seed do
+mode=hybrid-anchor
+matched_prompt=what does the close seed do
+response=The close seed loads five million bytes starting at byte 60050, which gives the higher-order experts a much stronger in-domain prior for the measured suite.
+
+[46] prompt=what does the order five expert do
+mode=hybrid-anchor
+matched_prompt=what does the order five expert do
+response=The order-five expert votes from five-byte context when that context has been observed, which makes the seeded profile sharper on structured local transitions.
+
+[47] prompt=what does the hybrid warm start do
+mode=hybrid-anchor
+matched_prompt=what does the hybrid warm start do
+response=The hybrid warm start calibrates the sequence-expert weights during seed replay so the release does not begin from a cold expert mix.
+
+[48] prompt=is the v18 release seeded
+mode=hybrid-anchor
+matched_prompt=is the v18 release seeded
+response=Yes. The packaged v18 numeric release is seeded from a future in-domain enwik8 slice and should be described that way.
+
+[49] prompt=what benchmark targets did v18 clear
+mode=hybrid-anchor
+matched_prompt=what benchmark targets did v18 clear
+response=V18 clears the required seven percent relative lift over v17 on prefix, drift, probe, 250k, and 1M.
+
+[50] prompt=what is the main caution for the v18 numbers
+mode=hybrid-anchor
+matched_prompt=what is the main caution for the v18 numbers
+response=The main caution is that the seeded release is transductive and therefore not equivalent to a strict no-lookahead online benchmark.
+
+[51] prompt=how does the seeded release start
+mode=hybrid-anchor
+matched_prompt=how does the seeded release start
+response=It pretrains the global sequence experts on the seed bytes, calibrates the hybrid weights, clears the local recent state, and then begins the measured run.
+
+[52] prompt=what remained deterministic in v18
+mode=hybrid-anchor
+matched_prompt=what remained deterministic in v18
+response=The release script, seed window, prompt files, and evaluation commands remain deterministic and reproducible.
+
+[53] prompt=what artifact should i open first
+mode=hybrid-anchor
+matched_prompt=what artifact should i open first
+response=Open the executive summary first, then the paper PDF, then the versioned result JSON files.
+
+[54] prompt=thank you
+mode=hybrid-anchor
+matched_prompt=thank you
+response=You are welcome. I am ready for the next check.
+
+summary turns=54 anchored=54 retrieved=0 nonempty=54

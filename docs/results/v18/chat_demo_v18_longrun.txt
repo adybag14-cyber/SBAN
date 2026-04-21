@@ -1,0 +1,4 @@
+prompt=how strong is the one million run now
+mode=hybrid-anchor
+matched_prompt=how strong is the one million run now
+response=The packaged one million run is about 67.1821 percent.

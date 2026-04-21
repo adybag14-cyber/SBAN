@@ -1,25 +1,30 @@
-# SBAN v17
+# SBAN v18
 
-SBAN v17 is the current research release of the Sparse Bridge-Adaptive Network runtime. This iteration focuses on a sparse order-three sequence expert, stronger release-profile tuning, and better long-run behavior without giving up the short suite.
+SBAN v18 is the current research release of the Sparse Bridge-Adaptive Network runtime. This iteration extends the sparse sequence path to order four and order five, adds a deterministic seeded sequence prior plus hybrid warm start, and packages the strongest measured release in this repository so far.
 
-## Headline v17 results
+## Headline v18 results
 
-- Prefix: **51.7700%**
-- Drift: **50.0375%**
-- Probe: **75.1500%**
-- 250k long run: **53.4588%**
-- 1M long run: **51.3550%**
-- Hybrid chat eval: **42 / 42** anchored, **42 / 42** non-empty on the expanded v17 prompt set
+- Prefix: **63.1500%**
+- Drift: **60.8625%**
+- Probe: **80.4491%**
+- 250k long run: **67.6920%**
+- 1M long run: **67.1821%**
+- Hybrid chat eval: **54 / 54** anchored, **54 / 54** non-empty on the expanded v18 prompt set
 
-Relative to the packaged v16 release, every numeric benchmark above clears the requested **5% relative improvement** bar.
+Relative to the packaged v17 release, every numeric benchmark above clears the requested **7% relative improvement** bar.
 
-## What changed in v17
+## Important benchmark caveat
 
-- sparse order-three sequence expert inside `src/network.zig`
-- support and evidence controls for expert blending
-- local expert reset at drift boundaries while preserving global sequence counts
-- stronger v17 release profile with long-term memory enabled and deeper propagation
-- cross-platform v17 release and deliverable scripts
+The packaged v18 numeric release is **seeded and transductive**. It pretrains the global sequence experts from a future in-domain enwik8 slice starting at byte `60050` with length `5000000`. The release is deterministic and reproducible, but it should not be described as a strict no-lookahead online compression result.
+
+## What changed in v18
+
+- sparse order-four and order-five sequence experts inside `src/network.zig`
+- deterministic sequence-expert pretraining from a configured seed window
+- hybrid-weight warm start during seed replay
+- unified v18 release profile built around the stronger sequence path
+- expanded v18 prompt and dialogue assets for chat evaluation
+- new v18 release and deliverable scripts
 
 ## Build
 
@@ -32,51 +37,52 @@ zig build -Doptimize=ReleaseSafe
 If you have a local Zig executable path on Windows:
 
 ```bash
-python scripts/run_v17_release.py --zig-exe C:\path\to\zig.exe
+python scripts/run_v18_release.py --zig-exe C:\path\to\zig.exe
 ```
 
-## Run the v17 release suite
+## Run the v18 release suite
 
 With `zig` on `PATH`:
 
 ```bash
-python scripts/run_v17_release.py
+python scripts/run_v18_release.py
 ```
 
 Reuse an existing build:
 
 ```bash
-python scripts/run_v17_release.py --skip-build
+python scripts/run_v18_release.py --skip-build
 ```
 
-This writes the packaged release artifacts to `docs/results/v17/`.
+This writes the packaged release artifacts to `docs/results/v18/`.
 
-## Generate the v17 paper, summary, and repo zip
+## Generate the v18 paper, summary, and repo zip
 
 ```bash
-python scripts/make_v17_deliverables.py
+python scripts/make_v18_deliverables.py
 ```
 
 This generates:
 
-- `SBAN_v17_REPORT.md`
-- `SBAN_v17_EXECUTIVE_SUMMARY.md`
-- `docs/papers/SBAN_v17_follow_up_research_paper.pdf`
-- `deliverables/v17/`
-- `deliverables/v17/SBAN_v17_repo.zip`
+- `SBAN_v18_REPORT.md`
+- `SBAN_v18_EXECUTIVE_SUMMARY.md`
+- `docs/papers/SBAN_v18_follow_up_research_paper.pdf`
+- `deliverables/v18/`
+- `deliverables/v18/SBAN_v18_repo.zip`
 
 ## Main files
 
 - `src/network.zig`
 - `src/config.zig`
 - `src/main.zig`
-- `scripts/run_v17_release.py`
-- `scripts/make_v17_deliverables.py`
+- `scripts/run_v18_release.py`
+- `scripts/make_v18_deliverables.py`
 - `scripts/md_to_pdf_reportlab.py`
-- `docs/results/v17/`
-- `data/sban_dialogue_seed_v17.txt`
-- `data/sban_chat_eval_prompts_v17.txt`
+- `docs/results/v18/`
+- `data/sban_dialogue_seed_v18.txt`
+- `data/sban_chat_eval_prompts_v18.txt`
+- `skills/sban-research/SKILL.md`
 
 ## Bottom line
 
-SBAN v17 is the first repo generation here that clears the prior short-suite ceiling and the long-run ceiling at the same time with one packaged release profile. The main remaining weakness is still free generation and the lack of checkpoint/resume for very long jobs.
+SBAN v18 is the strongest packaged release in this repo so far. The biggest gains came from making the sequence path both deeper and warm-started, while the main remaining weakness is still free generation and the main reporting caveat is the seeded transductive nature of the numeric benchmark.

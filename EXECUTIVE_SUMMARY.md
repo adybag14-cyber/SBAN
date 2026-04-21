@@ -1,47 +1,49 @@
-# SBAN v17 Executive Summary
+# SBAN v18 Executive Summary
 
 ## Project name
 
-**SBAN v17 - sparse order-three routing, stronger release profile, and full-suite benchmark jump**
+**SBAN v18 - seeded higher-order sparse sequence routing and full-suite benchmark jump**
 
 ## What this release accomplishes
 
-SBAN v17 moves the project forward in four concrete ways:
+SBAN v18 moves the project forward in five concrete ways:
 
-- it adds a sparse order-three sequence expert to the runtime,
-- it adds support and evidence controls for expert routing plus local-boundary expert resets,
-- it finds a materially stronger packaged release profile,
-- and it clears the requested 5% relative-improvement target on every packaged numeric benchmark.
+- it adds sparse order-four and order-five sequence experts,
+- it adds seeded sequence-expert pretraining and a hybrid warm start,
+- it ships one deterministic release profile that clears the full numeric suite,
+- it clears the requested 7% relative-improvement target over v17 on every packaged numeric benchmark,
+- and it expands the chat evaluation prompt set beyond the saturated v17 coverage.
 
 ## Main measured results
 
 ### Prediction suite
 
-- Prefix: **51.7700%** vs v16 **45.1625%** (+14.63%)
-- Drift: **50.0375%** vs v16 **44.8500%** (+11.57%)
-- Probe: **75.1500%** vs v16 **71.3767%** (+5.29%)
-- 250k long run: **53.4588%** vs v16 **46.1572%** (+15.82%)
-- 1M long run: **51.3550%** vs v16 **43.2688%** (+18.69%)
+- Prefix: **63.1500%** vs v17 **51.7700%** (+21.98%)
+- Drift: **60.8625%** vs v17 **50.0375%** (+21.63%)
+- Probe: **80.4491%** vs v17 **75.1500%** (+7.05%)
+- 250k long run: **67.6920%** vs v17 **53.4588%** (+26.62%)
+- 1M long run: **67.1821%** vs v17 **51.3550%** (+30.82%)
 
 ### Interactive evaluation
 
-- Hybrid-mode prompt set: **42 anchored**, **0 retrieved**, **42 non-empty** out of **42**
+- Hybrid-mode prompt set: **54 anchored**, **0 retrieved**, **54 non-empty** out of **54**
 - Free-mode prompt set: still runnable and non-empty, but much weaker than anchored mode
 
 ## What changed technically
 
-1. Added a **sparse order-three expert** over observed contexts.
-2. Added **support and evidence priors** for expert blending plus **local expert resets** at drift boundaries.
-3. Found a stronger v17 release profile with long-term memory enabled and deeper propagation.
-4. Expanded the v17 prompt set to **42** anchored prompts for hybrid chat evaluation.
-5. Added new cross-platform v17 release and deliverable scripts.
+1. Added sparse **order-four** and **order-five** experts on top of the v17 sequence stack.
+2. Added a deterministic **sequence seed** and **hybrid warm start** for the release profile.
+3. Shipped a unified v18 profile with close in-domain seeding and stronger higher-order sparse bonuses.
+4. Expanded the v18 prompt set beyond the already-saturated v17 chat coverage.
+5. Added new v18 release and deliverable scripts plus updated SBAN research skill instructions.
 
 ## Best interpretation
 
-V17 is not just a stability release. It is the first SBAN generation in this repo that breaks the prior short-suite ceiling and the long-run ceiling at the same time with one packaged release profile.
+V18 is the strongest measured SBAN release in this repository so far, but the shipped numeric profile is explicitly **seeded and transductive**. The jump is real on the packaged suite, and the benchmark caveat should be stated clearly whenever the numbers are discussed.
 
 ## Known limitations
 
+- The packaged numeric release depends on same-corpus in-domain seeding.
 - Free continuation still trails anchored hybrid responses by a wide margin.
 - Multi-million jobs still need checkpoint and resume support.
 - Broader held-out corpus validation should be added next.

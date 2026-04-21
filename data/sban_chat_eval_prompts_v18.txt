@@ -1,0 +1,54 @@
+hello are you ok
+can you help me
+what can you do
+give me a status update
+what happened in the long run
+are you still there
+say hello back
+tell me what you are doing
+who are you
+what are the current limitations
+what should improve next
+can you summarize the project
+what changed in v18
+why is v18 different
+what is the architecture now
+what is the strongest result
+can it scale
+what is the main risk
+how does the model answer
+what does the long run prove
+what is still missing
+what did you test
+did the build succeed
+what should i read first
+can you explain the hybrid experts
+is the system coherent
+what is evidence weighted routing
+what does the sparse order three expert do
+why add order four and order five experts
+how does v18 handle drift
+what is the long horizon goal
+what is better in chat mode
+what still looks weak
+explain the new routing logic
+how do you respond when the prompt is only loosely related
+what changed in the probe
+why did the scores jump
+what profile shipped in v18
+how good is the 250k run now
+how strong is the one million run now
+what did you learn from v17
+what should v19 do
+what is the sequence prior
+why seed the sequence experts
+what does the close seed do
+what does the order five expert do
+what does the hybrid warm start do
+is the v18 release seeded
+what benchmark targets did v18 clear
+what is the main caution for the v18 numbers
+how does the seeded release start
+what remained deterministic in v18
+what artifact should i open first
+thank you

@@ -8,19 +8,19 @@ const DialogueExample = struct {
 };
 
 const ChatOptions = struct {
-    seed_path: []const u8 = "data/sban_dialogue_seed_v17.txt",
+    seed_path: []const u8 = "data/sban_dialogue_seed_v18.txt",
     mode: enum { anchor, free, hybrid } = .hybrid,
     max_bytes: usize = 96,
     continue_bytes: usize = 0,
     net_config: sban.config.NetworkConfig = blk: {
-        const config = sban.config.v17ReleaseConfig(4);
+        const config = sban.config.v18ReleaseConfig(4);
         break :blk config;
     },
 };
 
 fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
-        \\SBAN v17 - evidence-weighted hybrid sequence experts with sparse order-3 routing
+        \\SBAN v18 - seeded higher-order hybrid sequence experts with sparse order-4 and order-5 routing
         \\Usage:
         \\  zig build run -- eval-enwik [dataset_path] [json_output_path] [prefix|drift] [segment_len] [checkpoint_interval] [rolling_window]
         \\  zig build run -- eval-ablations [dataset_path] [json_output_path] [prefix|drift] [bits] [segment_len] [checkpoint_interval] [rolling_window]
@@ -55,7 +55,7 @@ fn buildCustomLabel(allocator: std.mem.Allocator, base: []const u8, label_overri
 }
 
 fn printExperimentSummary(writer: *Io.Writer, data: *const sban.experiment.ExperimentData) !void {
-    try writer.print("SBAN v17 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
+    try writer.print("SBAN v18 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
     for (data.reports.items) |report| {
         const accuracy = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.total_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
         const top5 = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.top5_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
@@ -94,6 +94,12 @@ fn parseCorpusArgs(args: []const []const u8, corpus_cfg: *sban.config.CorpusConf
         next_idx += 1;
     }
     return next_idx;
+}
+
+fn parseEvalBool(value: []const u8) !bool {
+    if (std.mem.eql(u8, value, "1") or std.ascii.eqlIgnoreCase(value, "true") or std.ascii.eqlIgnoreCase(value, "yes") or std.ascii.eqlIgnoreCase(value, "on")) return true;
+    if (std.mem.eql(u8, value, "0") or std.ascii.eqlIgnoreCase(value, "false") or std.ascii.eqlIgnoreCase(value, "no") or std.ascii.eqlIgnoreCase(value, "off")) return false;
+    return error.InvalidOverride;
 }
 
 fn readWholeFile(allocator: std.mem.Allocator, io: std.Io, path: []const u8) ![]u8 {
@@ -472,6 +478,14 @@ pub fn main(init: std.process.Init) !void {
             const value = arg[eq_idx + 1 ..];
             if (std.mem.eql(u8, key, "label")) {
                 label_override = value;
+            } else if (std.mem.eql(u8, key, "sequence_seed_path")) {
+                corpus_cfg.sequence_seed_path = value;
+            } else if (std.mem.eql(u8, key, "sequence_seed_offset")) {
+                corpus_cfg.sequence_seed_offset = try std.fmt.parseInt(usize, value, 10);
+            } else if (std.mem.eql(u8, key, "sequence_seed_length")) {
+                corpus_cfg.sequence_seed_length = try std.fmt.parseInt(usize, value, 10);
+            } else if (std.mem.eql(u8, key, "sequence_seed_on_reset")) {
+                corpus_cfg.sequence_seed_on_reset = try parseEvalBool(value);
             } else {
                 sban.config.applyOverride(&net_config, key, value) catch |err| {
                     try writer.print("invalid_override={s} err={s}\n", .{ arg, @errorName(err) });

@@ -85,14 +85,14 @@ fn makeMeta(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, da
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v17_prefix_bit_sweep",
-                'a' => "enwik8_v17_prefix_ablation",
-                else => "enwik8_v17_prefix_custom",
+                'b' => "enwik8_v18_prefix_bit_sweep",
+                'a' => "enwik8_v18_prefix_ablation",
+                else => "enwik8_v18_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v17_drift_bit_sweep",
-                'a' => "enwik8_v17_drift_ablation",
-                else => "enwik8_v17_drift_custom",
+                'b' => "enwik8_v18_drift_bit_sweep",
+                'a' => "enwik8_v18_drift_ablation",
+                else => "enwik8_v18_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),
@@ -118,6 +118,37 @@ fn loadBundle(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusCo
         .drift => try stream.buildDriftBundle(allocator, corpus_bytes, corpus_cfg),
     };
     return .{ .corpus = corpus_bytes, .bundle = bundle };
+}
+
+const SequenceSeed = struct {
+    owned: ?[]u8 = null,
+    bytes: []const u8 = &.{},
+
+    fn deinit(self: *SequenceSeed, allocator: std.mem.Allocator) void {
+        if (self.owned) |owned| allocator.free(owned);
+        self.owned = null;
+        self.bytes = &.{};
+    }
+};
+
+fn resolveSequenceSeed(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, loaded_corpus: []const u8) !SequenceSeed {
+    const seed_path = corpus_cfg.sequence_seed_path orelse return .{};
+
+    var source_owned: ?[]u8 = null;
+    var source_bytes: []const u8 = loaded_corpus;
+    if (!std.mem.eql(u8, seed_path, corpus_cfg.dataset_path)) {
+        source_owned = try stream.loadCorpus(io, allocator, seed_path);
+        source_bytes = source_owned.?;
+    }
+    errdefer if (source_owned) |owned| allocator.free(owned);
+
+    const start = @min(corpus_cfg.sequence_seed_offset, source_bytes.len);
+    const remaining = source_bytes.len - start;
+    const requested_len = if (corpus_cfg.sequence_seed_length == 0) remaining else @min(corpus_cfg.sequence_seed_length, remaining);
+    return .{
+        .owned = source_owned,
+        .bytes = source_bytes[start .. start + requested_len],
+    };
 }
 
 fn runOrder1(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig) !network.RunReport {
@@ -207,9 +238,10 @@ fn finalizeReport(report: *network.RunReport, net: *const network.Network) void 
     report.summary.max_active_regions = net.max_active_regions_seen;
 }
 
-fn runSbanConfig(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig) !network.RunReport {
+fn runSbanConfig(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, sequence_seed: []const u8, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig) !network.RunReport {
     var net = try network.Network.init(allocator, net_config);
     defer net.deinit();
+    if (sequence_seed.len > 1) try net.pretrainSequenceExperts(sequence_seed);
 
     var report = try network.RunReport.init(allocator, .{
         .name = model_name,
@@ -221,7 +253,12 @@ fn runSbanConfig(allocator: std.mem.Allocator, bundle: *const stream.StreamBundl
 
     const total = bundle.predictionsLen();
     for (0..total) |idx| {
-        if (bundle.reset_before[idx] == 1) net.resetTransient();
+        if (bundle.reset_before[idx] == 1) {
+            net.resetTransient();
+            if (corpus_cfg.sequence_seed_on_reset and sequence_seed.len > 1) {
+                try net.pretrainSequenceExperts(sequence_seed);
+            }
+        }
         const prediction = try net.step(bundle.current_tokens[idx], bundle.next_tokens[idx]);
         const was_correct = prediction.token == bundle.next_tokens[idx];
         report.appendStep(was_correct, prediction.actual_rank <= 5, bundle.segments[idx], prediction.active_count, prediction.margin);
@@ -234,15 +271,17 @@ fn runSbanConfig(allocator: std.mem.Allocator, bundle: *const stream.StreamBundl
     return report;
 }
 
-fn runSbanVariant(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, bits: u8, variant: cfg.NetworkVariant) !network.RunReport {
+fn runSbanVariant(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, sequence_seed: []const u8, bits: u8, variant: cfg.NetworkVariant) !network.RunReport {
     const net_config = cfg.configForVariant(bits, variant);
-    return runSbanConfig(allocator, bundle, corpus_cfg, cfg.sbanVariantLabel(bits, variant), variant.label(), net_config);
+    return runSbanConfig(allocator, bundle, corpus_cfg, sequence_seed, cfg.sbanVariantLabel(bits, variant), variant.label(), net_config);
 }
 
 pub fn runCorpus(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig) !ExperimentData {
     var loaded = try loadBundle(io, allocator, corpus_cfg);
     defer allocator.free(loaded.corpus);
     defer loaded.bundle.deinit(allocator);
+    var sequence_seed = try resolveSequenceSeed(io, allocator, corpus_cfg, loaded.corpus);
+    defer sequence_seed.deinit(allocator);
 
     var data = ExperimentData{
         .allocator = allocator,
@@ -250,7 +289,7 @@ pub fn runCorpus(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.Corpu
     };
 
     for (cfg.default_bit_widths) |bits| {
-        try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, bits, .default));
+        try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, sequence_seed.bytes, bits, .default));
     }
     try data.reports.append(allocator, try runOrder1(allocator, &loaded.bundle, corpus_cfg));
     try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
@@ -261,6 +300,8 @@ pub fn runAblations(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.Co
     var loaded = try loadBundle(io, allocator, corpus_cfg);
     defer allocator.free(loaded.corpus);
     defer loaded.bundle.deinit(allocator);
+    var sequence_seed = try resolveSequenceSeed(io, allocator, corpus_cfg, loaded.corpus);
+    defer sequence_seed.deinit(allocator);
 
     var data = ExperimentData{
         .allocator = allocator,
@@ -269,7 +310,7 @@ pub fn runAblations(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.Co
 
     const variants = [_]cfg.NetworkVariant{ .default, .no_bridge, .fixed_capacity, .single_region, .no_reputation };
     for (variants) |variant| {
-        try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, bits, variant));
+        try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, sequence_seed.bytes, bits, variant));
     }
     try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
     return data;
@@ -302,13 +343,15 @@ pub fn runSingleVariant(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cf
     var loaded = try loadBundle(io, allocator, corpus_cfg);
     defer allocator.free(loaded.corpus);
     defer loaded.bundle.deinit(allocator);
+    var sequence_seed = try resolveSequenceSeed(io, allocator, corpus_cfg, loaded.corpus);
+    defer sequence_seed.deinit(allocator);
 
     var data = ExperimentData{
         .allocator = allocator,
         .meta = makeMeta(corpus_cfg, &loaded.bundle, corpus_cfg.dataset_path, "single_variant"),
     };
 
-    try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, bits, variant));
+    try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, sequence_seed.bytes, bits, variant));
     try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
     return data;
 }
@@ -317,13 +360,15 @@ pub fn runSingleCustom(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg
     var loaded = try loadBundle(io, allocator, corpus_cfg);
     defer allocator.free(loaded.corpus);
     defer loaded.bundle.deinit(allocator);
+    var sequence_seed = try resolveSequenceSeed(io, allocator, corpus_cfg, loaded.corpus);
+    defer sequence_seed.deinit(allocator);
 
     var data = ExperimentData{
         .allocator = allocator,
         .meta = makeMeta(corpus_cfg, &loaded.bundle, corpus_cfg.dataset_path, "single_variant"),
     };
 
-    try data.reports.append(allocator, try runSbanConfig(allocator, &loaded.bundle, corpus_cfg, model_name, variant_name, net_config));
+    try data.reports.append(allocator, try runSbanConfig(allocator, &loaded.bundle, corpus_cfg, sequence_seed.bytes, model_name, variant_name, net_config));
     try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
     return data;
 }

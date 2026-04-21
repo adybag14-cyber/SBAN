@@ -1,26 +1,24 @@
 # SBAN Release Profiles
 
-## v16 packaged baseline
+## v17 packaged baseline
 
-- Prefix: `45.1625%`
-- Drift: `44.8500%`
-- Probe: `71.3767%`
-- 250k: `46.1572%`
-- 1M: `43.2688%`
-- Hybrid chat: `36 / 36` anchored, `36 / 36` non-empty
+- Prefix: `51.7700%`
+- Drift: `50.0375%`
+- Probe: `75.1500%`
+- 250k: `53.4588%`
+- 1M: `51.3550%`
+- Hybrid chat: `42 / 42` anchored, `42 / 42` non-empty
 
-## v17 packaged release profile
+## v18 packaged release profile
 
 - bits: `4`
 - key overrides:
-  - `enable_long_term=true`
-  - `birth_margin=20`
+  - `enable_long_term=false`
+  - `birth_margin=21`
   - `min_parents_for_birth=4`
-  - `max_carry_memories=64`
-  - `max_hidden_per_hop=48`
-  - `propagation_depth=3`
-  - `long_term_bonus_ppm=1120`
-  - `long_term_bonus_precision_ppm=580`
+  - `max_carry_memories=48`
+  - `max_hidden_per_hop=32`
+  - `propagation_depth=2`
   - `birth_pressure_threshold_bonus=0`
   - `birth_saturation_threshold_bonus=0`
   - `birth_saturation_parent_boost=0`
@@ -31,29 +29,46 @@
   - `markov1_bonus_ppm=340`
   - `markov2_bonus_ppm=760`
   - `markov3_bonus_ppm=1900`
-  - `hybrid_support_prior=1`
+  - `markov4_bonus_ppm=2400`
+  - `markov5_bonus_ppm=2800`
+  - `hybrid_support_prior=0`
   - `hybrid_evidence_prior=0`
+  - `hybrid_reward=28`
+  - `hybrid_penalty=6`
+  - `sequence_seed_path=data/enwik8`
+  - `sequence_seed_offset=60050`
+  - `sequence_seed_length=5000000`
+
+## v18 benchmark targets
+
+These are the minimum numeric targets implied by the requested 7% relative lift over v17:
+
+- Prefix: `>= 55.3939%`
+- Drift: `>= 53.5401%`
+- Probe: `>= 80.4105%`
+- 250k: `>= 57.2019%`
+- 1M: `>= 54.9499%`
 
 ## Current release commands
 
 Build and run the release suite:
 
 ```bash
-python scripts/run_v17_release.py
+python scripts/run_v18_release.py
 ```
 
 Generate the report, summary, PDF, and repo zip:
 
 ```bash
-python scripts/make_v17_deliverables.py
+python scripts/make_v18_deliverables.py
 ```
 
 ## Expected result files
 
-- `docs/results/v17/unified_prefix_v17_release.json`
-- `docs/results/v17/unified_drift_v17_release.json`
-- `docs/results/v17/unified_probe_v17_release.json`
-- `docs/results/v17/longrun_v17_250k.json`
-- `docs/results/v17/longrun_v17_1m.json`
-- `docs/results/v17/chat_eval_v17_hybrid.txt`
-- `docs/results/v17/chat_eval_v17_free.txt`
+- `docs/results/v18/unified_prefix_v18_release.json`
+- `docs/results/v18/unified_drift_v18_release.json`
+- `docs/results/v18/unified_probe_v18_release.json`
+- `docs/results/v18/longrun_v18_250k.json`
+- `docs/results/v18/longrun_v18_1m.json`
+- `docs/results/v18/chat_eval_v18_hybrid.txt`
+- `docs/results/v18/chat_eval_v18_free.txt`

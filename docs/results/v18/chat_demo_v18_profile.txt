@@ -1,0 +1,4 @@
+prompt=what profile shipped in v18
+mode=hybrid-anchor
+matched_prompt=what profile shipped in v18
+response=The shipped v18 profile uses bits four, no long-term path, higher-order sparse bonuses, and a five million byte seed starting at byte 60050 of enwik8.

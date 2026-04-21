@@ -8,19 +8,19 @@ const DialogueExample = struct {
 };
 
 const ChatOptions = struct {
-    seed_path: []const u8 = "data/sban_dialogue_seed_v18.txt",
+    seed_path: []const u8 = "data/sban_dialogue_seed_v19.txt",
     mode: enum { anchor, free, hybrid } = .hybrid,
     max_bytes: usize = 96,
     continue_bytes: usize = 0,
     net_config: sban.config.NetworkConfig = blk: {
-        const config = sban.config.v18ReleaseConfig(4);
+        const config = sban.config.v19ReleaseConfig(4);
         break :blk config;
     },
 };
 
 fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
-        \\SBAN v18 - seeded higher-order hybrid sequence experts with sparse order-4 and order-5 routing
+        \\SBAN v19 - deep continuation experts with a product demo and release packaging
         \\Usage:
         \\  zig build run -- eval-enwik [dataset_path] [json_output_path] [prefix|drift] [segment_len] [checkpoint_interval] [rolling_window]
         \\  zig build run -- eval-ablations [dataset_path] [json_output_path] [prefix|drift] [bits] [segment_len] [checkpoint_interval] [rolling_window]
@@ -55,7 +55,7 @@ fn buildCustomLabel(allocator: std.mem.Allocator, base: []const u8, label_overri
 }
 
 fn printExperimentSummary(writer: *Io.Writer, data: *const sban.experiment.ExperimentData) !void {
-    try writer.print("SBAN v18 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
+    try writer.print("SBAN v19 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
     for (data.reports.items) |report| {
         const accuracy = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.total_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
         const top5 = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.top5_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
@@ -478,6 +478,8 @@ pub fn main(init: std.process.Init) !void {
             const value = arg[eq_idx + 1 ..];
             if (std.mem.eql(u8, key, "label")) {
                 label_override = value;
+            } else if (std.mem.eql(u8, key, "reset_on_segment_boundary")) {
+                corpus_cfg.reset_on_segment_boundary = try parseEvalBool(value);
             } else if (std.mem.eql(u8, key, "sequence_seed_path")) {
                 corpus_cfg.sequence_seed_path = value;
             } else if (std.mem.eql(u8, key, "sequence_seed_offset")) {
@@ -486,6 +488,12 @@ pub fn main(init: std.process.Init) !void {
                 corpus_cfg.sequence_seed_length = try std.fmt.parseInt(usize, value, 10);
             } else if (std.mem.eql(u8, key, "sequence_seed_on_reset")) {
                 corpus_cfg.sequence_seed_on_reset = try parseEvalBool(value);
+            } else if (std.mem.eql(u8, key, "sequence_seed_align_to_segment")) {
+                corpus_cfg.sequence_seed_align_to_segment = try parseEvalBool(value);
+            } else if (std.mem.eql(u8, key, "sequence_seed_from_segment_end")) {
+                corpus_cfg.sequence_seed_from_segment_end = try parseEvalBool(value);
+            } else if (std.mem.eql(u8, key, "sequence_seed_replace_on_reset")) {
+                corpus_cfg.sequence_seed_replace_on_reset = try parseEvalBool(value);
             } else {
                 sban.config.applyOverride(&net_config, key, value) catch |err| {
                     try writer.print("invalid_override={s} err={s}\n", .{ arg, @errorName(err) });

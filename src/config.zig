@@ -33,15 +33,15 @@ pub const NetworkVariant = enum {
 
 pub fn sbanBitLabel(bits: u8) []const u8 {
     return switch (bits) {
-        1 => "sban_v18_1bit",
-        2 => "sban_v18_2bit",
-        3 => "sban_v18_3bit",
-        4 => "sban_v18_4bit",
-        5 => "sban_v18_5bit",
-        6 => "sban_v18_6bit",
-        7 => "sban_v18_7bit",
-        8 => "sban_v18_8bit",
-        else => "sban_v18_custom",
+        1 => "sban_v19_1bit",
+        2 => "sban_v19_2bit",
+        3 => "sban_v19_3bit",
+        4 => "sban_v19_4bit",
+        5 => "sban_v19_5bit",
+        6 => "sban_v19_6bit",
+        7 => "sban_v19_7bit",
+        8 => "sban_v19_8bit",
+        else => "sban_v19_custom",
     };
 }
 
@@ -50,61 +50,61 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
     return switch (bits) {
         1 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_1bit_no_bridge",
-            .fixed_capacity => "sban_v18_1bit_fixed_capacity",
-            .single_region => "sban_v18_1bit_single_region",
-            .no_reputation => "sban_v18_1bit_no_reputation",
+            .no_bridge => "sban_v19_1bit_no_bridge",
+            .fixed_capacity => "sban_v19_1bit_fixed_capacity",
+            .single_region => "sban_v19_1bit_single_region",
+            .no_reputation => "sban_v19_1bit_no_reputation",
         },
         2 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_2bit_no_bridge",
-            .fixed_capacity => "sban_v18_2bit_fixed_capacity",
-            .single_region => "sban_v18_2bit_single_region",
-            .no_reputation => "sban_v18_2bit_no_reputation",
+            .no_bridge => "sban_v19_2bit_no_bridge",
+            .fixed_capacity => "sban_v19_2bit_fixed_capacity",
+            .single_region => "sban_v19_2bit_single_region",
+            .no_reputation => "sban_v19_2bit_no_reputation",
         },
         3 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_3bit_no_bridge",
-            .fixed_capacity => "sban_v18_3bit_fixed_capacity",
-            .single_region => "sban_v18_3bit_single_region",
-            .no_reputation => "sban_v18_3bit_no_reputation",
+            .no_bridge => "sban_v19_3bit_no_bridge",
+            .fixed_capacity => "sban_v19_3bit_fixed_capacity",
+            .single_region => "sban_v19_3bit_single_region",
+            .no_reputation => "sban_v19_3bit_no_reputation",
         },
         4 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_4bit_no_bridge",
-            .fixed_capacity => "sban_v18_4bit_fixed_capacity",
-            .single_region => "sban_v18_4bit_single_region",
-            .no_reputation => "sban_v18_4bit_no_reputation",
+            .no_bridge => "sban_v19_4bit_no_bridge",
+            .fixed_capacity => "sban_v19_4bit_fixed_capacity",
+            .single_region => "sban_v19_4bit_single_region",
+            .no_reputation => "sban_v19_4bit_no_reputation",
         },
         5 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_5bit_no_bridge",
-            .fixed_capacity => "sban_v18_5bit_fixed_capacity",
-            .single_region => "sban_v18_5bit_single_region",
-            .no_reputation => "sban_v18_5bit_no_reputation",
+            .no_bridge => "sban_v19_5bit_no_bridge",
+            .fixed_capacity => "sban_v19_5bit_fixed_capacity",
+            .single_region => "sban_v19_5bit_single_region",
+            .no_reputation => "sban_v19_5bit_no_reputation",
         },
         6 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_6bit_no_bridge",
-            .fixed_capacity => "sban_v18_6bit_fixed_capacity",
-            .single_region => "sban_v18_6bit_single_region",
-            .no_reputation => "sban_v18_6bit_no_reputation",
+            .no_bridge => "sban_v19_6bit_no_bridge",
+            .fixed_capacity => "sban_v19_6bit_fixed_capacity",
+            .single_region => "sban_v19_6bit_single_region",
+            .no_reputation => "sban_v19_6bit_no_reputation",
         },
         7 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_7bit_no_bridge",
-            .fixed_capacity => "sban_v18_7bit_fixed_capacity",
-            .single_region => "sban_v18_7bit_single_region",
-            .no_reputation => "sban_v18_7bit_no_reputation",
+            .no_bridge => "sban_v19_7bit_no_bridge",
+            .fixed_capacity => "sban_v19_7bit_fixed_capacity",
+            .single_region => "sban_v19_7bit_single_region",
+            .no_reputation => "sban_v19_7bit_no_reputation",
         },
         8 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v18_8bit_no_bridge",
-            .fixed_capacity => "sban_v18_8bit_fixed_capacity",
-            .single_region => "sban_v18_8bit_single_region",
-            .no_reputation => "sban_v18_8bit_no_reputation",
+            .no_bridge => "sban_v19_8bit_no_bridge",
+            .fixed_capacity => "sban_v19_8bit_fixed_capacity",
+            .single_region => "sban_v19_8bit_single_region",
+            .no_reputation => "sban_v19_8bit_no_reputation",
         },
-        else => "sban_v18_custom_variant",
+        else => "sban_v19_custom_variant",
     };
 }
 
@@ -196,6 +196,11 @@ pub const NetworkConfig = struct {
     markov3_bonus_ppm: u16 = 900,
     markov4_bonus_ppm: u16 = 0,
     markov5_bonus_ppm: u16 = 0,
+    continuation_bonus_ppm: u16 = 0,
+    continuation_min_order: u8 = 0,
+    continuation_max_order: u8 = 0,
+    continuation_support_prior: u16 = 0,
+    continuation_min_support: u16 = 1,
     recent_markov2_bonus_ppm: u16 = 960,
     burst_bonus_ppm: u16 = 520,
     recent_expert_window: u32 = 32768,
@@ -240,6 +245,37 @@ pub fn configForVariant(bits: u8, variant: NetworkVariant) NetworkConfig {
             config.synapse_bad_reputation = -64;
         },
     }
+    return config;
+}
+
+pub fn v19ReleaseConfig(bits: u8) NetworkConfig {
+    var config = configForVariant(bits, .default);
+    config.enable_long_term = false;
+    config.history_lags = 32;
+    config.birth_margin = 21;
+    config.min_parents_for_birth = 4;
+    config.max_carry_memories = 48;
+    config.max_hidden_per_hop = 32;
+    config.propagation_depth = 2;
+    config.birth_pressure_threshold_bonus = 0;
+    config.birth_saturation_threshold_bonus = 0;
+    config.birth_saturation_parent_boost = 0;
+    config.hybrid_share_ppm = 0;
+    config.hybrid_recent_drift_bonus = 0;
+    config.recent_markov2_bonus_ppm = 0;
+    config.burst_bonus_ppm = 520;
+    config.markov1_bonus_ppm = 340;
+    config.markov2_bonus_ppm = 760;
+    config.markov3_bonus_ppm = 1900;
+    config.markov4_bonus_ppm = 2400;
+    config.markov5_bonus_ppm = 2800;
+    config.continuation_bonus_ppm = 8000;
+    config.continuation_min_order = 8;
+    config.continuation_max_order = 32;
+    config.continuation_support_prior = 0;
+    config.continuation_min_support = 1;
+    config.hybrid_support_prior = 0;
+    config.hybrid_evidence_prior = 0;
     return config;
 }
 
@@ -439,6 +475,16 @@ pub fn applyOverride(config: *NetworkConfig, key: []const u8, value: []const u8)
         config.markov4_bonus_ppm = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "markov5_bonus_ppm")) {
         config.markov5_bonus_ppm = try std.fmt.parseInt(u16, value, 10);
+    } else if (std.mem.eql(u8, key, "continuation_bonus_ppm")) {
+        config.continuation_bonus_ppm = try std.fmt.parseInt(u16, value, 10);
+    } else if (std.mem.eql(u8, key, "continuation_min_order")) {
+        config.continuation_min_order = try std.fmt.parseInt(u8, value, 10);
+    } else if (std.mem.eql(u8, key, "continuation_max_order")) {
+        config.continuation_max_order = try std.fmt.parseInt(u8, value, 10);
+    } else if (std.mem.eql(u8, key, "continuation_support_prior")) {
+        config.continuation_support_prior = try std.fmt.parseInt(u16, value, 10);
+    } else if (std.mem.eql(u8, key, "continuation_min_support")) {
+        config.continuation_min_support = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "recent_markov2_bonus_ppm")) {
         config.recent_markov2_bonus_ppm = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "burst_bonus_ppm")) {
@@ -495,10 +541,14 @@ pub const CorpusConfig = struct {
     segment_count: u8 = 4,
     checkpoint_interval: usize = 5_000,
     rolling_window: usize = 8_192,
+    reset_on_segment_boundary: bool = false,
     sequence_seed_path: ?[]const u8 = null,
     sequence_seed_offset: usize = 0,
     sequence_seed_length: usize = 0,
     sequence_seed_on_reset: bool = false,
+    sequence_seed_align_to_segment: bool = false,
+    sequence_seed_from_segment_end: bool = false,
+    sequence_seed_replace_on_reset: bool = false,
 
     pub fn totalPredictions(self: CorpusConfig) usize {
         return self.segment_len * self.segment_count;
@@ -512,7 +562,7 @@ pub const CorpusConfig = struct {
 
 test "bit labels cover default bit widths" {
     for (default_bit_widths) |bits| {
-        try std.testing.expect(std.mem.startsWith(u8, sbanBitLabel(bits), "sban_v18_"));
+        try std.testing.expect(std.mem.startsWith(u8, sbanBitLabel(bits), "sban_v19_"));
         var cfg_local = configForVariant(bits, .default);
         try applyOverride(&cfg_local, "history_lags", "9");
         try std.testing.expectEqual(@as(u8, 9), cfg_local.history_lags);

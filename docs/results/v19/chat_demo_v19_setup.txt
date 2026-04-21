@@ -1,0 +1,4 @@
+prompt=how do I start the Windows demo
+mode=hybrid-anchor
+matched_prompt=how do I start the Windows demo
+response=Open the Windows bundle and run SBAN_v19_Start.bat. It launches a prompt loop that calls the packaged binary with the bundled v19 seed file.

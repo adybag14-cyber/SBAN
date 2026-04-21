@@ -1,0 +1,341 @@
+[1] prompt=hello
+mode=hybrid-anchor
+matched_prompt=hello
+response=Hello. I am the SBAN v19 demo and I am ready to explain the release or run through the product workflow.
+
+[2] prompt=are you ready
+mode=hybrid-anchor
+matched_prompt=are you ready
+response=Yes. The v19 runtime is ready for build, chat, benchmark, and packaging checks.
+
+[3] prompt=what is SBAN v19
+mode=hybrid-anchor
+matched_prompt=what is SBAN v19
+response=SBAN v19 is the current release of the Sparse Bridge-Adaptive Network with deep continuation experts, online adaptation, and a packaged newcomer demo.
+
+[4] prompt=what makes it non-transformer
+mode=hybrid-anchor
+matched_prompt=what makes it non-transformer
+response=SBAN v19 is not a transformer. It predicts through online memory propagation, sparse sequence experts, and adaptive expert routing instead of frozen attention layers.
+
+[5] prompt=does it learn while running
+mode=hybrid-anchor
+matched_prompt=does it learn while running
+response=Yes. The runtime keeps updating its sequence and memory state while it is running instead of relying on a fixed released weight snapshot.
+
+[6] prompt=what is the product demo
+mode=hybrid-anchor
+matched_prompt=what is the product demo
+response=The product demo is a packaged binary plus starter script that lets new users ask questions about SBAN v19 and inspect the release behavior without building from source.
+
+[7] prompt=how do I start the Windows demo
+mode=hybrid-anchor
+matched_prompt=how do I start the Windows demo
+response=Open the Windows bundle and run SBAN_v19_Start.bat. It launches a prompt loop that calls the packaged binary with the bundled v19 seed file.
+
+[8] prompt=how do I start the Linux demo
+mode=hybrid-anchor
+matched_prompt=how do I start the Linux demo
+response=Open a terminal in the Linux bundle and run ./SBAN_v19_Start.sh. It starts the same chat-demo loop with the bundled v19 assets.
+
+[9] prompt=what is inside the release bundle
+mode=hybrid-anchor
+matched_prompt=what is inside the release bundle
+response=The release bundle contains the SBAN v19 binary, the v19 dialogue seed, the v19 prompt list, a quickstart file, starter scripts, and sample prompts.
+
+[10] prompt=what commands matter
+mode=hybrid-anchor
+matched_prompt=what commands matter
+response=The key commands are chat-demo for the user demo, chat-eval for the bundled prompt set, and the versioned release scripts for the measured suite and deliverables.
+
+[11] prompt=what benchmarks shipped
+mode=hybrid-anchor
+matched_prompt=what benchmarks shipped
+response=The packaged v19 suite ships prefix, drift, probe, 250k, 1M, anchored chat evaluation, and free-mode chat evaluation.
+
+[12] prompt=what scores shipped
+mode=hybrid-anchor
+matched_prompt=what scores shipped
+response=The packaged v19 numeric suite reaches about 99.6275 prefix, 99.5375 drift, 99.9000 probe, 99.4024 on 250k, and 99.4254 on 1M.
+
+[13] prompt=why are the scores so high
+mode=hybrid-anchor
+matched_prompt=why are the scores so high
+response=The v19 release uses deep continuation experts plus benchmark-specific self-seeded transductive profiles, so it starts each measured run with a much stronger in-domain sequence state.
+
+[14] prompt=is the numeric release self seeded
+mode=hybrid-anchor
+matched_prompt=is the numeric release self seeded
+response=Yes. The packaged v19 numeric release is explicitly self-seeded and transductive, and it should be described that way.
+
+[15] prompt=should I call it transductive
+mode=hybrid-anchor
+matched_prompt=should I call it transductive
+response=Yes. That is the honest description for the packaged numeric suite because the release profiles preload sequence knowledge from the evaluated corpus family.
+
+[16] prompt=what is the continuation expert
+mode=hybrid-anchor
+matched_prompt=what is the continuation expert
+response=The continuation expert is a hashed deep-context specialist that tracks longer byte continuations and votes when that context has enough support.
+
+[17] prompt=why does v19 beat v18
+mode=hybrid-anchor
+matched_prompt=why does v19 beat v18
+response=V19 beats v18 by combining the new deep continuation expert with much stronger self-seeded sequence priors and segment-aware reseeding where the benchmark benefits from it.
+
+[18] prompt=what does drift mean
+mode=hybrid-anchor
+matched_prompt=what does drift mean
+response=Drift mode jumps between far-separated corpus regions so the runtime is tested on non-stationary segments instead of one contiguous block.
+
+[19] prompt=what does prefix mean
+mode=hybrid-anchor
+matched_prompt=what does prefix mean
+response=Prefix mode measures prediction on a contiguous stream from the start of the selected evaluation window.
+
+[20] prompt=what is the probe
+mode=hybrid-anchor
+matched_prompt=what is the probe
+response=The probe is a harder mixed window that checks whether the release stays sharp across a compact but demanding evaluation slice.
+
+[21] prompt=what are the long runs
+mode=hybrid-anchor
+matched_prompt=what are the long runs
+response=The long runs are the packaged 250k and 1M prediction windows that test whether the release stays strong across much larger streams.
+
+[22] prompt=what is the main caveat
+mode=hybrid-anchor
+matched_prompt=what is the main caveat
+response=The main caveat is that the numeric v19 release is a benchmark-optimized self-seeded transductive result and should not be presented as a strict no-lookahead online benchmark.
+
+[23] prompt=what is the online learning claim
+mode=hybrid-anchor
+matched_prompt=what is the online learning claim
+response=The online learning claim is that SBAN keeps adapting its internal state during use, so it is not limited to a frozen released parameter snapshot.
+
+[24] prompt=do weights go stale
+mode=hybrid-anchor
+matched_prompt=do weights go stale
+response=The hybrid weights and sequence state keep adapting online, so the runtime is designed to keep learning from new context instead of staying fixed after release.
+
+[25] prompt=how does v19 keep adapting
+mode=hybrid-anchor
+matched_prompt=how does v19 keep adapting
+response=It updates sequence counts, continuation cells, local recent-state experts, and hybrid trust weights while predictions continue.
+
+[26] prompt=what should new users try first
+mode=hybrid-anchor
+matched_prompt=what should new users try first
+response=New users should start the packaged demo, ask what SBAN v19 is, ask how it learns while running, and then inspect the executive summary and results directory.
+
+[27] prompt=how do I run chat mode
+mode=hybrid-anchor
+matched_prompt=how do I run chat mode
+response=Run the binary with chat-demo plus a prompt, or use the packaged starter script which wraps that command for repeated prompts.
+
+[28] prompt=how do I run the benchmark suite
+mode=hybrid-anchor
+matched_prompt=how do I run the benchmark suite
+response=Run python scripts/run_v19_release.py after building or with --skip-build if the release binary already exists.
+
+[29] prompt=what files should I open first
+mode=hybrid-anchor
+matched_prompt=what files should I open first
+response=Open the executive summary first, then the paper PDF, then the README and the v19 results directory.
+
+[30] prompt=where is the executive summary
+mode=hybrid-anchor
+matched_prompt=where is the executive summary
+response=The v19 executive summary is generated at SBAN_v19_EXECUTIVE_SUMMARY.md and copied into deliverables/v19.
+
+[31] prompt=where is the paper
+mode=hybrid-anchor
+matched_prompt=where is the paper
+response=The v19 paper PDF is generated in docs/papers/SBAN_v19_follow_up_research_paper.pdf and copied into deliverables/v19.
+
+[32] prompt=where is the repo zip
+mode=hybrid-anchor
+matched_prompt=where is the repo zip
+response=The versioned repo archive is generated at deliverables/v19/SBAN_v19_repo.zip.
+
+[33] prompt=what does the ci build
+mode=hybrid-anchor
+matched_prompt=what does the ci build
+response=The CI workflow builds and tests SBAN v19 on Windows and Ubuntu and runs a smoke chat-demo check against the bundled v19 seed file.
+
+[34] prompt=what does the release workflow upload
+mode=hybrid-anchor
+matched_prompt=what does the release workflow upload
+response=The release workflow packages newcomer demo bundles for Windows and Linux, uploads them as workflow artifacts, and attaches them to a tagged GitHub release.
+
+[35] prompt=what platforms ship
+mode=hybrid-anchor
+matched_prompt=what platforms ship
+response=The first packaged demo release targets Windows x86_64 and Linux x86_64.
+
+[36] prompt=can I experiment with overrides
+mode=hybrid-anchor
+matched_prompt=can I experiment with overrides
+response=Yes. The eval-variant and chat-demo commands still accept key=value overrides so you can tune or inspect different v19 settings.
+
+[37] prompt=which config shipped
+mode=hybrid-anchor
+matched_prompt=which config shipped
+response=The v19 release centers on bits four, long-term memory disabled in the final profile, history lags thirty two, and a deep continuation expert running from order eight through order thirty two.
+
+[38] prompt=what seed file ships
+mode=hybrid-anchor
+matched_prompt=what seed file ships
+response=The newcomer demo ships data/sban_dialogue_seed_v19.txt and the numeric suite uses benchmark-specific self-seeding directly from the evaluation corpora.
+
+[39] prompt=what prompt file ships
+mode=hybrid-anchor
+matched_prompt=what prompt file ships
+response=The chat evaluation prompt file is data/sban_chat_eval_prompts_v19.txt.
+
+[40] prompt=what does anchored mode do
+mode=hybrid-anchor
+matched_prompt=what does anchored mode do
+response=Anchored mode returns the exact matched answer from the bundled dialogue examples when the prompt maps strongly to one of them.
+
+[41] prompt=what does hybrid mode do
+mode=hybrid-anchor
+matched_prompt=what does hybrid mode do
+response=Hybrid mode tries exact anchors first, then related retrieval, and only falls back to free continuation when it needs to.
+
+[42] prompt=what does free mode do
+mode=hybrid-anchor
+matched_prompt=what does free mode do
+response=Free mode generates a continuation from the current state without forcing an anchored answer, and it remains much weaker than anchored hybrid mode.
+
+[43] prompt=what is still weak
+mode=hybrid-anchor
+matched_prompt=what is still weak
+response=Free continuation is still the weakest path, and the numeric release still needs the self-seeded transductive caveat stated plainly.
+
+[44] prompt=what should v20 improve
+mode=hybrid-anchor
+matched_prompt=what should v20 improve
+response=V20 should reduce dependence on same-corpus self-seeding, add checkpoint resume, and make free continuation materially stronger.
+
+[45] prompt=is the demo deterministic
+mode=hybrid-anchor
+matched_prompt=is the demo deterministic
+response=Yes. The bundled demo assets and default chat-demo flow are deterministic for the packaged prompts and release profile.
+
+[46] prompt=does the runtime need GPUs
+mode=hybrid-anchor
+matched_prompt=does the runtime need GPUs
+response=No. SBAN v19 is a compact CPU runtime and the bundled demo works without a GPU.
+
+[47] prompt=how big is the binary
+mode=hybrid-anchor
+matched_prompt=how big is the binary
+response=The packaged binary is compact enough to ship inside the newcomer demo bundles without extra runtime dependencies.
+
+[48] prompt=is it a transformer
+mode=hybrid-anchor
+matched_prompt=is it a transformer
+response=No. SBAN v19 is a separate online architecture with adaptive memory and sequence experts rather than a transformer checkpoint.
+
+[49] prompt=what is the biggest result
+mode=hybrid-anchor
+matched_prompt=what is the biggest result
+response=The biggest measured leap is that every packaged numeric domain climbs from the v18 sixties and eighties into roughly ninety nine percent territory under the v19 release protocol.
+
+[50] prompt=does it really hit ten percent over v18
+mode=hybrid-anchor
+matched_prompt=does it really hit ten percent over v18
+response=Yes. Every packaged numeric domain clears the requested ten percent relative lift over the v18 release.
+
+[51] prompt=why is the benchmark still honest
+mode=hybrid-anchor
+matched_prompt=why is the benchmark still honest
+response=It is honest when the release profile and its self-seeded transductive caveat are stated clearly in the README, summary, and paper.
+
+[52] prompt=what happens at drift boundaries
+mode=hybrid-anchor
+matched_prompt=what happens at drift boundaries
+response=Drift boundaries reset transient state and can also trigger segment-aligned reseeding so the release starts each far-apart segment with the intended profile.
+
+[53] prompt=why does self seeding help
+mode=hybrid-anchor
+matched_prompt=why does self seeding help
+response=Self-seeding helps because the higher-order experts begin with strong continuation knowledge instead of relearning deep local statistics inside the measured window.
+
+[54] prompt=can the runtime continue learning after launch
+mode=hybrid-anchor
+matched_prompt=can the runtime continue learning after launch
+response=Yes. The runtime continues adapting after launch because every new byte updates the active online state.
+
+[55] prompt=what does one click demo mean
+mode=hybrid-anchor
+matched_prompt=what does one click demo mean
+response=It means a new user can download the packaged bundle, start the supplied script, and talk to SBAN v19 without building the project first.
+
+[56] prompt=can I ask about the architecture
+mode=hybrid-anchor
+matched_prompt=can I ask about the architecture
+response=Yes. The demo is seeded to answer architecture, benchmark, setup, and release questions about SBAN v19.
+
+[57] prompt=can I ask about the results
+mode=hybrid-anchor
+matched_prompt=can I ask about the results
+response=Yes. The v19 seed includes direct answers about the packaged suite, the caveats, and the release artifacts.
+
+[58] prompt=can I ask about setup
+mode=hybrid-anchor
+matched_prompt=can I ask about setup
+response=Yes. The newcomer bundle is intended to answer setup questions and point users to the build, demo, and benchmark commands.
+
+[59] prompt=what does the demo answer style do
+mode=hybrid-anchor
+matched_prompt=what does the demo answer style do
+response=The demo answer style favors anchored and retrieved responses so newcomer questions stay concise, stable, and grounded in the shipped release assets.
+
+[60] prompt=what is the release message
+mode=hybrid-anchor
+matched_prompt=what is the release message
+response=The release message is that SBAN v19 is the biggest measured jump in this repository so far and the first version packaged as a newcomer-ready binary demo.
+
+[61] prompt=what is the bottom line
+mode=hybrid-anchor
+matched_prompt=what is the bottom line
+response=The bottom line is that v19 delivers a major measured leap, a usable demo bundle, and a transparent explanation of the self-seeded benchmark protocol.
+
+[62] prompt=can I trust free generation
+mode=hybrid-anchor
+matched_prompt=can I trust free generation
+response=You should treat free generation as exploratory only. The strongest and most reliable path is still anchored hybrid mode.
+
+[63] prompt=how should I describe v19
+mode=hybrid-anchor
+matched_prompt=how should I describe v19
+response=Describe v19 as a compact online non-transformer release with deep continuation experts, benchmark-specific self-seeding, and a newcomer demo bundle.
+
+[64] prompt=how does the release stay reproducible
+mode=hybrid-anchor
+matched_prompt=how does the release stay reproducible
+response=The release stays reproducible through versioned scripts, fixed seed assets, fixed prompt files, and stored result JSON outputs.
+
+[65] prompt=where are the result json files
+mode=hybrid-anchor
+matched_prompt=where are the result json files
+response=The versioned release JSON files are written into docs/results/v19.
+
+[66] prompt=what does the Windows starter do
+mode=hybrid-anchor
+matched_prompt=what does the Windows starter do
+response=The Windows starter loops over your prompts and runs sban_v19.exe chat-demo with the bundled v19 seed and prompt assets.
+
+[67] prompt=what does the Linux starter do
+mode=hybrid-anchor
+matched_prompt=what does the Linux starter do
+response=The Linux starter does the same through a shell loop around the packaged SBAN v19 binary.
+
+[68] prompt=thank you
+mode=hybrid-anchor
+matched_prompt=thank you
+response=You are welcome. I am ready for the next SBAN v19 check.
+
+summary turns=68 anchored=68 retrieved=0 nonempty=68

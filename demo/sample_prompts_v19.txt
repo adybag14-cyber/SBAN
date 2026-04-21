@@ -1,0 +1,10 @@
+what is SBAN v19
+what makes it non-transformer
+does it learn while running
+how do I start the Windows demo
+how do I start the Linux demo
+what scores shipped
+is the numeric release self seeded
+what is the main caveat
+what does one click demo mean
+what should v20 improve

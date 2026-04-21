@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0-dev.87+9b177a7d2
+
+      - name: Run unit tests
+        run: zig build test
+
+      - name: Build release binary
+        run: zig build -Doptimize=ReleaseSafe
+
+      - name: Smoke demo
+        run: |
+          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); subprocess.run([str(exe), 'chat-demo', 'what is SBAN v19', '160', 'seed_path=data/sban_dialogue_seed_v19.txt'], check=True)"

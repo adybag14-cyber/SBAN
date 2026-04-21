@@ -1,0 +1,68 @@
+hello
+are you ready
+what is SBAN v19
+what makes it non-transformer
+does it learn while running
+what is the product demo
+how do I start the Windows demo
+how do I start the Linux demo
+what is inside the release bundle
+what commands matter
+what benchmarks shipped
+what scores shipped
+why are the scores so high
+is the numeric release self seeded
+should I call it transductive
+what is the continuation expert
+why does v19 beat v18
+what does drift mean
+what does prefix mean
+what is the probe
+what are the long runs
+what is the main caveat
+what is the online learning claim
+do weights go stale
+how does v19 keep adapting
+what should new users try first
+how do I run chat mode
+how do I run the benchmark suite
+what files should I open first
+where is the executive summary
+where is the paper
+where is the repo zip
+what does the ci build
+what does the release workflow upload
+what platforms ship
+can I experiment with overrides
+which config shipped
+what seed file ships
+what prompt file ships
+what does anchored mode do
+what does hybrid mode do
+what does free mode do
+what is still weak
+what should v20 improve
+is the demo deterministic
+does the runtime need GPUs
+how big is the binary
+is it a transformer
+what is the biggest result
+does it really hit ten percent over v18
+why is the benchmark still honest
+what happens at drift boundaries
+why does self seeding help
+can the runtime continue learning after launch
+what does one click demo mean
+can I ask about the architecture
+can I ask about the results
+can I ask about setup
+what does the demo answer style do
+what is the release message
+what is the bottom line
+can I trust free generation
+how should I describe v19
+how does the release stay reproducible
+where are the result json files
+what does the Windows starter do
+what does the Linux starter do
+thank you

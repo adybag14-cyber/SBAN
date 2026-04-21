@@ -1,0 +1,4 @@
+prompt=what is the release message
+mode=hybrid-anchor
+matched_prompt=what is the release message
+response=The release message is that SBAN v19 is the biggest measured jump in this repository so far and the first version packaged as a newcomer-ready binary demo.

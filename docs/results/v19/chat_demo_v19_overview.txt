@@ -1,0 +1,4 @@
+prompt=what is SBAN v19
+mode=hybrid-anchor
+matched_prompt=what is SBAN v19
+response=SBAN v19 is the current release of the Sparse Bridge-Adaptive Network with deep continuation experts, online adaptation, and a packaged newcomer demo.

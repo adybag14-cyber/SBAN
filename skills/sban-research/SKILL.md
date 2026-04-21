@@ -15,8 +15,10 @@ Read only the files that matter for the current subtask:
 - `src/network.zig` for the runtime and expert-routing logic
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and chat evaluation
-- `scripts/run_v18_release.py` for the packaged benchmark suite
-- `scripts/make_v18_deliverables.py` for report, summary, PDF, and repo zip generation
+- `scripts/run_v19_release.py` for the packaged benchmark suite
+- `scripts/make_v19_deliverables.py` for report, summary, PDF, demo bundle, and repo zip generation
+- `scripts/package_v19_demo.py` for the newcomer demo bundle
+- `references/release_profiles.md` for the current baseline, targets, and shipped profile details
 
 If you need the release targets or commands, read `references/release_profiles.md`.
 
@@ -28,6 +30,7 @@ If you need the release targets or commands, read `references/release_profiles.m
 4. Validate 250k next.
 5. Validate 1M only after the short suite and 250k look good.
 6. Regenerate deliverables only after the measured suite is stable.
+7. If the user asks for a product demo or release packaging, validate the newcomer demo bundle and GitHub workflow files before finishing.
 
 ## Guardrails
 
@@ -37,22 +40,24 @@ If you need the release targets or commands, read `references/release_profiles.m
   use exact prompt/seed files, and if the old metric is already saturated, expand the prompt set rather than pretending a 100% metric improved without adding coverage.
 - Prefer adding or tuning deterministic scripts in `scripts/` over leaving release logic in ad hoc shell history.
 - State clearly when a numeric release is seeded or otherwise transductive.
+- Separate the product demo story from the numeric benchmark story when the release uses transductive benchmarking.
 
 ## Architecture notes
 
 - `src/network.zig` contains the release-critical routing logic.
-- The v18 release extends the sparse path through order four and order five and adds seeded sequence-expert pretraining plus a hybrid warm start.
+- The v19 release adds a deep continuation expert and segment-aware reseeding controls on top of the earlier higher-order sparse path.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Deliverables
 
 For a new release:
 
-1. Run `python scripts/run_v17_release.py` or the next-generation equivalent.
-2. Run `python scripts/make_v18_deliverables.py` or the next-generation equivalent.
-3. Confirm the versioned paper PDF, executive summary, and repo zip exist under `deliverables/`.
+1. Run `python scripts/run_v19_release.py` or the next-generation equivalent.
+2. Run `python scripts/make_v19_deliverables.py` or the next-generation equivalent.
+3. Confirm the versioned paper PDF, executive summary, repo zip, and demo bundle exist under `deliverables/`.
 4. Update `README.md` so the current release can be reproduced without extra context.
+5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.
 
 ## When to read references
 
-- Read `references/release_profiles.md` when you need the current benchmark thresholds, release profile, or exact result filenames.
+- Read `references/release_profiles.md` when you need the current benchmark thresholds, release profile, exact result filenames, or the release caveat wording.

@@ -52,6 +52,7 @@ pub fn buildPrefixBundle(allocator: std.mem.Allocator, corpus: []const u8, corpu
         segment_offsets[segment_idx] = start;
         segment_lengths[segment_idx] = corpus_cfg.segment_len;
         @memset(segments[start..end], @intCast(segment_idx));
+        if (corpus_cfg.reset_on_segment_boundary and segment_idx != 0) reset_before[start] = 1;
     }
 
     return .{

@@ -1,0 +1,4 @@
+prompt=does it learn while running
+mode=hybrid-anchor
+matched_prompt=does it learn while running
+response=Yes. The runtime keeps updating its sequence and memory state while it is running instead of relying on a fixed released weight snapshot.

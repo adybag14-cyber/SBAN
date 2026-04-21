@@ -308,22 +308,31 @@ fn clampI16(value: i32) i16 {
     return @intCast(value);
 }
 
-const hybrid_expert_count: usize = 8;
+const hybrid_expert_count: usize = 9;
 const expert_sban_idx: usize = 0;
 const expert_markov1_idx: usize = 1;
 const expert_markov2_idx: usize = 2;
 const expert_markov3_idx: usize = 3;
 const expert_markov4_idx: usize = 4;
 const expert_markov5_idx: usize = 5;
-const expert_burst_idx: usize = 6;
-const expert_recent_markov2_idx: usize = 7;
-const default_hybrid_weights = [hybrid_expert_count]i16{ 1088, 320, 832, 960, 1248, 1408, 640, 1152 };
+const expert_continuation_idx: usize = 6;
+const expert_burst_idx: usize = 7;
+const expert_recent_markov2_idx: usize = 8;
+const default_hybrid_weights = [hybrid_expert_count]i16{ 1088, 320, 832, 960, 1248, 1408, 1664, 640, 1152 };
 const recent_row2_sentinel: u32 = std.math.maxInt(u32);
+const continuation_hash_offset: u64 = 14695981039346656037;
+const continuation_hash_prime: u64 = 1099511628211;
 
 const ScoreTop = struct {
     token: u8,
     top_score: i32,
     second_score: i32,
+};
+
+const ContinuationCell = struct {
+    token: u8 = 0,
+    vote: u16 = 0,
+    support: u16 = 0,
 };
 
 fn contextKey(prev: u8, current: u8) usize {
@@ -340,6 +349,10 @@ fn contextKey4(prev3: u8, prev2: u8, prev1: u8, current: u8) u32 {
 
 fn contextKey5(prev4: u8, prev3: u8, prev2: u8, prev1: u8, current: u8) u64 {
     return (@as(u64, prev4) << 32) | (@as(u64, prev3) << 24) | (@as(u64, prev2) << 16) | (@as(u64, prev1) << 8) | @as(u64, current);
+}
+
+fn hashByte(hash: u64, byte: u8) u64 {
+    return (hash ^ @as(u64, byte)) *% continuation_hash_prime;
 }
 
 fn findTop2(scores: []const i32) ScoreTop {
@@ -387,6 +400,8 @@ pub const Network = struct {
     order4_rows: std.ArrayList(u16) = .empty,
     order5_row_map: std.AutoHashMap(u64, u32),
     order5_rows: std.ArrayList(u16) = .empty,
+    continuation_map: std.AutoHashMap(u64, u32),
+    continuation_cells: std.ArrayList(ContinuationCell) = .empty,
     recent_order2_counts: []u16,
     recent_row2_ring: []u32,
     burst_next: []u8,
@@ -439,6 +454,7 @@ pub const Network = struct {
             .order3_row_map = std.AutoHashMap(u32, u32).init(allocator),
             .order4_row_map = std.AutoHashMap(u32, u32).init(allocator),
             .order5_row_map = std.AutoHashMap(u64, u32).init(allocator),
+            .continuation_map = std.AutoHashMap(u64, u32).init(allocator),
             .recent_tokens = try allocator.alloc(u8, @max(@as(usize, 1), @as(usize, config.history_lags) - 1)),
             .order1_counts = try allocator.alloc(u32, @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
             .order2_counts = try allocator.alloc(u32, @as(usize, config.vocab_size) * @as(usize, config.vocab_size) * @as(usize, config.vocab_size)),
@@ -520,6 +536,8 @@ pub const Network = struct {
         self.order4_rows.deinit(self.allocator);
         self.order5_row_map.deinit();
         self.order5_rows.deinit(self.allocator);
+        self.continuation_map.deinit();
+        self.continuation_cells.deinit(self.allocator);
         self.allocator.free(self.recent_order2_counts);
         self.allocator.free(self.recent_row2_ring);
         self.allocator.free(self.burst_next);
@@ -548,6 +566,21 @@ pub const Network = struct {
         self.hybrid_weights = default_hybrid_weights;
     }
 
+    pub fn resetSequenceExperts(self: *Network) void {
+        @memset(self.order1_counts, 0);
+        @memset(self.order2_counts, 0);
+        self.order3_row_map.clearRetainingCapacity();
+        self.order3_rows.clearRetainingCapacity();
+        self.order4_row_map.clearRetainingCapacity();
+        self.order4_rows.clearRetainingCapacity();
+        self.order5_row_map.clearRetainingCapacity();
+        self.order5_rows.clearRetainingCapacity();
+        self.continuation_map.clearRetainingCapacity();
+        self.continuation_cells.clearRetainingCapacity();
+        self.clearLocalExpertState();
+        self.recent_len = 0;
+    }
+
     pub fn resetTransient(self: *Network) void {
         self.recent_len = 0;
         self.carry_memories.clearRetainingCapacity();
@@ -559,6 +592,7 @@ pub const Network = struct {
     pub fn pretrainSequenceExperts(self: *Network, bytes: []const u8) !void {
         if (bytes.len < 2) return;
 
+        const saved_step_index = self.step_index;
         self.clearLocalExpertState();
         self.recent_len = 0;
         self.step_index = 0;
@@ -590,7 +624,7 @@ pub const Network = struct {
         self.hybrid_weights = calibrated_weights;
         for (0..hybrid_expert_count) |expert_idx| self.recordExpertPrediction(expert_idx, 0, 0, false);
         self.recent_len = 0;
-        self.step_index = 0;
+        self.step_index = saved_step_index;
     }
 
     fn ensureScratchForNeuronCount(self: *Network) !void {
@@ -976,6 +1010,63 @@ pub const Network = struct {
         return self.order5_rows.items[base .. base + row_len];
     }
 
+    fn continuationKey(self: *const Network, current_token: u8, order: u8) u64 {
+        var hash = continuation_hash_offset;
+        hash = hashByte(hash, order);
+        var remaining: usize = order - 1;
+        while (remaining > 0) {
+            remaining -= 1;
+            hash = hashByte(hash, self.recent_tokens[remaining]);
+        }
+        hash = hashByte(hash, current_token);
+        return hash;
+    }
+
+    fn lookupContinuationCell(self: *const Network, key: u64) ?*const ContinuationCell {
+        const row_idx = self.continuation_map.get(key) orelse return null;
+        return &self.continuation_cells.items[row_idx];
+    }
+
+    fn getOrCreateContinuationCell(self: *Network, key: u64) !*ContinuationCell {
+        if (self.continuation_map.get(key)) |row_idx| {
+            return &self.continuation_cells.items[row_idx];
+        }
+        const row_idx: u32 = @intCast(self.continuation_cells.items.len);
+        try self.continuation_map.put(key, row_idx);
+        try self.continuation_cells.append(self.allocator, .{});
+        return &self.continuation_cells.items[row_idx];
+    }
+
+    fn updateContinuationCell(cell: *ContinuationCell, actual_next: u8) void {
+        if (cell.support == 0) {
+            cell.token = actual_next;
+            cell.vote = 1;
+            cell.support = 1;
+            return;
+        }
+
+        if (cell.token == actual_next) {
+            if (cell.vote < std.math.maxInt(u16)) cell.vote += 1;
+        } else if (cell.vote > 0) {
+            cell.vote -= 1;
+        } else {
+            cell.token = actual_next;
+            cell.vote = 1;
+        }
+
+        if (cell.support < std.math.maxInt(u16)) cell.support += 1;
+    }
+
+    fn continuationReliabilityPpm(self: *const Network, cell: ContinuationCell) u32 {
+        if (cell.support < self.config.continuation_min_support or cell.vote == 0) return 0;
+        const support_ppm = if (self.config.continuation_support_prior == 0)
+            @as(u32, 1000)
+        else
+            @as(u32, @intCast(@divTrunc(@as(u64, cell.support) * 1000, @as(u64, cell.support) + @as(u64, self.config.continuation_support_prior))));
+        const purity_ppm = @as(u32, @intCast(@divTrunc(@as(u64, cell.vote) * 1000, @as(u64, cell.support))));
+        return @intCast(@divTrunc(@as(u64, support_ppm) * @as(u64, purity_ppm), 1000));
+    }
+
     fn expertReliabilityPpm(self: *const Network, total: u32, top_count: u32, second_count: u32) u32 {
         if (total == 0 or top_count == 0 or top_count <= second_count) return 0;
         const gap = top_count - second_count;
@@ -1085,6 +1176,42 @@ pub const Network = struct {
         self.recordExpertPrediction(expert_burst_idx, token, delta, true);
     }
 
+    fn applyContinuationExpert(self: *Network, current_token: u8) void {
+        if (!self.config.enable_hybrid_experts or self.config.continuation_bonus_ppm == 0) {
+            self.recordExpertPrediction(expert_continuation_idx, 0, 0, false);
+            return;
+        }
+
+        const max_order: usize = @min(@as(usize, self.config.continuation_max_order), @min(self.recent_len + 1, @as(usize, self.config.history_lags)));
+        const min_order: usize = @max(@as(usize, self.config.continuation_min_order), 2);
+        if (max_order < min_order) {
+            self.recordExpertPrediction(expert_continuation_idx, 0, 0, false);
+            return;
+        }
+
+        var order = max_order;
+        while (true) {
+            const key = self.continuationKey(current_token, @intCast(order));
+            if (self.lookupContinuationCell(key)) |cell| {
+                const reliability_ppm: i32 = @intCast(self.continuationReliabilityPpm(cell.*));
+                if (reliability_ppm > 0) {
+                    const scaled_bonus = @divTrunc(@as(i32, self.config.continuation_bonus_ppm) * @as(i32, self.hybrid_weights[expert_continuation_idx]), 1024);
+                    const effective_bonus = @divTrunc(scaled_bonus * reliability_ppm, 1000);
+                    if (effective_bonus > 0) {
+                        self.output_scores.items[cell.token] += effective_bonus;
+                        self.recordExpertPrediction(expert_continuation_idx, cell.token, effective_bonus, true);
+                        return;
+                    }
+                }
+            }
+
+            if (order == min_order) break;
+            order -= 1;
+        }
+
+        self.recordExpertPrediction(expert_continuation_idx, 0, 0, false);
+    }
+
     fn applyHybridExperts(self: *Network, current_token: u8) void {
         for (0..hybrid_expert_count) |idx| self.recordExpertPrediction(idx, 0, 0, false);
         const sban_top = findTop2(self.output_scores.items);
@@ -1124,6 +1251,7 @@ pub const Network = struct {
                 self.blendDistributionU16(row, self.config.markov5_bonus_ppm, expert_markov5_idx);
             }
         }
+        self.applyContinuationExpert(current_token);
     }
 
     fn updateRecentExpertWindow(self: *Network, current_token: u8, actual_next: u8) void {
@@ -1233,6 +1361,16 @@ pub const Network = struct {
             const row = try self.getOrCreateOrder5Row(contextKey5(prev4, prev3, prev2, prev1, current_token));
             const next_idx = @as(usize, actual_next);
             if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
+        }
+
+        const max_order: usize = @min(@as(usize, self.config.continuation_max_order), @min(self.recent_len + 1, @as(usize, self.config.history_lags)));
+        const min_order: usize = @max(@as(usize, self.config.continuation_min_order), 2);
+        if (max_order >= min_order) {
+            var order = min_order;
+            while (order <= max_order) : (order += 1) {
+                const cell = try self.getOrCreateContinuationCell(self.continuationKey(current_token, @intCast(order)));
+                updateContinuationCell(cell, actual_next);
+            }
         }
     }
 

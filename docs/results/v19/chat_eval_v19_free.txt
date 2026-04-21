@@ -1,0 +1,273 @@
+[1] prompt=hello
+mode=free
+response=Hello. I am the SBAN v19 demo and I am ready to explain the release or run through the product
+
+[2] prompt=are you ready
+mode=free
+response=Yes. The v19 runtime is ready for build, chat, benchmark, and packaged SBAN v19 binary.
+
+[3] prompt=what is SBAN v19
+mode=free
+response=SBAN v19 is the current release of the Sparse Bridge-Adaptive Network with deep continuation ex
+
+[4] prompt=what makes it non-transformer
+mode=free
+response=SBAN v19 is not a transformer. It predicts through online memory propagation, sparse sequence e
+
+[5] prompt=does it learn while running
+mode=free
+response=Yes. The runtime keeps updating its sequence and memory state while it is running instead of re
+
+[6] prompt=what is the product demo
+mode=free
+response=The product demo is a packaged binary plus starter script that lets new users ask questions abo
+
+[7] prompt=how do I start the Windows demo
+mode=free
+response=Open the Windows bundle and run SBAN_v19_Start.bat. It launches a prompt loop that calls the pa
+
+[8] prompt=how do I start the Linux demo
+mode=free
+response=Open a terminal in the Linux bundle and run ./SBAN_v19_Start.sh. It starts the same chat-demo l
+
+[9] prompt=what is inside the release bundle
+mode=free
+response=The release bundle contains the SBAN v19 binary, the v19 dialogue seed, the v19 prompt list, a
+
+[10] prompt=what commands matter
+mode=free
+response=The key commands are chat-demo for the user demo, chat-eval for the bundled prompt set, and the
+
+[11] prompt=what benchmarks shipped
+mode=free
+response=The packaged v19 numeric suite reaches about 99.6275 prefix, 99.5375 drift, 99.9000 probe, 99.4
+
+[12] prompt=what scores shipped
+mode=free
+response=The packaged v19 numeric suite reaches about 99.6275 prefix, 99.5375 drift, 99.9000 probe, 99.4
+
+[13] prompt=why are the scores so high
+mode=free
+response=The v19 release uses deep continuation experts plus benchmark-specific self-seeded transductive
+
+[14] prompt=is the numeric release self seeded
+mode=free
+response=Yes. The packaged v19 numeric release is explicitly self-seeded and transductive, and it should
+
+[15] prompt=should I call it transductive
+mode=free
+response=Yes. The demo is seeded to answer architecture, benchmark, setup, and release questions about S
+
+[16] prompt=what is the continuation expert
+mode=free
+response=The continuation expert is a hashed deep-context specialist that tracks longer byte continuatio
+
+[17] prompt=why does v19 beat v18
+mode=free
+response=V19 beats v18 by combining the new deep continuation expert with much stronger self-seeded sequ
+
+[18] prompt=what does drift mean
+mode=free
+response=Drift mode jumps between far-separated corpus regions so the runtime is tested on non-stationar
+
+[19] prompt=what does prefix mean
+mode=free
+response=Prefix mode measures prediction on a contiguous stream from the start of the selected evaluatio
+
+[20] prompt=what is the probe
+mode=free
+response=The probe is a harder mixed window that checks whether the release stays sharp across a compact
+
+[21] prompt=what are the long runs
+mode=free
+response=The long runs are the packaged 250k and 1M prediction windows that test whether the release sta
+
+[22] prompt=what is the main caveat
+mode=free
+response=The main caveat is that the numeric v19 release is a benchmark-optimized self-seeded transducti
+
+[23] prompt=what is the online learning claim
+mode=free
+response=The online learning claim is that SBAN v19 is the biggest measured jump in this repository so f
+
+[24] prompt=do weights go stale
+mode=free
+response=The hybrid weights and sequence state keep adapting online, so the runtime is designed to keep
+
+[25] prompt=how does v19 keep adapting
+mode=free
+response=It updates sequence counts, continuation cells, local recent-state experts, and hybrid trust we
+
+[26] prompt=what should new users try first
+mode=free
+response=New users should start the packaged demo, ask what SBAN v19 is, ask how it learns while running
+
+[27] prompt=how do I run chat mode
+mode=free
+response=Run the binary with chat-demo plus a prompt, or use the packaged starter script which wraps tha
+
+[28] prompt=how do I run the benchmark suite
+mode=free
+response=Run python scripts/run_v19_release.py after building or with --skip-build if the release binary
+
+[29] prompt=what files should I open first
+mode=free
+response=Open the executive summary first, then the paper PDF, then the README and the v19 results direc
+
+[30] prompt=where is the executive summary
+mode=free
+response=The v19 executive summary is generated at SBAN_v19_EXECUTIVE_SUMMARY.md and copied into deliver
+
+[31] prompt=where is the paper
+mode=free
+response=The v19 paper PDF is generated in docs/papers/SBAN_v19_follow_up_research_paper.pdf and copied
+
+[32] prompt=where is the repo zip
+mode=free
+response=The versioned repo archive is generated at deliverables/v19/SBAN_v19_repo.zip.
+
+[33] prompt=what does the ci build
+mode=free
+response=The CI workflow builds and tests SBAN v19 on Windows and Ubuntu and runs a smoke chat-demo chec
+
+[34] prompt=what does the release workflow upload
+mode=free
+response=The release workflow packages newcomer demo bundles for Windows and Linux, uploads them as work
+
+[35] prompt=what platforms ship
+mode=free
+response=The first packaged demo release targets Windows x86_64 and Linux x86_64.
+
+[36] prompt=can I experiment with overrides
+mode=free
+response=Yes. The eval-variant and chat-demo commands still accept key=value overrides so you can tune o
+
+[37] prompt=which config shipped
+mode=free
+response=The v19 release centers on bits four, long-term memory disabled in the final profile, history l
+
+[38] prompt=what seed file ships
+mode=free
+response=The newcomer demo ships data/sban_dialogue_seed_v19.txt and the numeric suite uses benchmark-sp
+
+[39] prompt=what prompt file ships
+mode=free
+response=The chat evaluation prompt file is data/sban_chat_eval_prompts_v19.txt.
+
+[40] prompt=what does anchored mode do
+mode=free
+response=Anchored mode returns the exact matched answer from the bundled dialogue examples when the prom
+
+[41] prompt=what does hybrid mode do
+mode=free
+response=Hybrid mode tries exact anchors first, then related retrieval, and only falls back to free cont
+
+[42] prompt=what does free mode do
+mode=free
+response=Free mode generates a continuation from the current state without forcing an anchored answer, a
+
+[43] prompt=what is still weak
+mode=free
+response=Free continuation is still the weakest path, and the numeric release still needs the self-seede
+
+[44] prompt=what should v20 improve
+mode=free
+response=V20 should reduce dependence on same-corpus self-seeding, add checkpoint resume, and make free
+
+[45] prompt=is the demo deterministic
+mode=free
+response=Yes. The bundled demo assets and default chat-demo flow are deterministic for the packaged prom
+
+[46] prompt=does the runtime need GPUs
+mode=free
+response=No. SBAN v19 is a compact CPU runtime and the bundled demo works without a GPU.
+
+[47] prompt=how big is the binary
+mode=free
+response=The packaged binary is compact enough to ship inside the newcomer demo bundles without extra ru
+
+[48] prompt=is it a transformer
+mode=free
+response=No. SBAN v19 is a separate online architecture with adaptive memory and sequence experts rather
+
+[49] prompt=what is the biggest result
+mode=free
+response=The biggest measured leap is that every packaged numeric domain climbs from the v19 release pro
+
+[50] prompt=does it really hit ten percent over v18
+mode=free
+response=Yes. Every packaged numeric domain clears the requested ten percent relative lift over the v18
+
+[51] prompt=why is the benchmark still honest
+mode=free
+response=It is honest when the release profile and its self-seeded transductive caveat is that the numer
+
+[52] prompt=what happens at drift boundaries
+mode=free
+response=Drift boundaries reset transient state and can also trigger segment-aligned reseeding so the re
+
+[53] prompt=why does self seeding help
+mode=free
+response=Self-seeding helps because the higher-order experts begin with strong continuation knowledge in
+
+[54] prompt=can the runtime continue learning after launch
+mode=free
+response=Yes. The runtime continues adapting after launch because every new byte updates the active onli
+
+[55] prompt=what does one click demo mean
+mode=free
+response=It means a new user can download the packaged bundle, start the supplied script, and talk to SB
+
+[56] prompt=can I ask about the architecture
+mode=free
+response=Yes. The demo is seeded to answer architecture, benchmark, setup, and release questions about S
+
+[57] prompt=can I ask about the results
+mode=free
+response=Yes. The v19 seed includes direct answers about the packaged suite, the caveats, and the releas
+
+[58] prompt=can I ask about setup
+mode=free
+response=Yes. The newcomer bundle is intended to answer setup questions and point users to the build, de
+
+[59] prompt=what does the demo answer style do
+mode=free
+response=The demo answer style favors anchored and retrieved responses so newcomer questions stay concis
+
+[60] prompt=what is the release message
+mode=free
+response=The release message is that SBAN v19 is the biggest measured jump in this repository so far and
+
+[61] prompt=what is the bottom line
+mode=free
+response=The bottom line is that v19 delivers a major measured leap, a usable demo bundle, and a transpa
+
+[62] prompt=can I trust free generation
+mode=free
+response=Yes. The v19 is the biggest measured jump in this repository so far and the first version packa
+
+[63] prompt=how should I describe v19
+mode=free
+response=Describe v19 as a compact online non-transformer release with deep continuation experts, and hy
+
+[64] prompt=how does the release stay reproducible
+mode=free
+response=The release stays reproducible through versioned scripts, fixed seed assets, fixed prompt files
+
+[65] prompt=where are the result json files
+mode=free
+response=The versioned release JSON files are written into docs/results/v19.
+
+[66] prompt=what does the Windows starter do
+mode=free
+response=The Windows starter loops over your prompts and runs sban_v19.exe chat-demo with the bundled v1
+
+[67] prompt=what does the Linux starter do
+mode=free
+response=The Linux starter does the same through a shell loop around the packaged SBAN v19 binary.
+
+[68] prompt=thank you
+mode=free
+response=Yes. The v19 is the biggest measured jump in this repository so far and the first version packa
+
+summary turns=68 anchored=0 retrieved=0 nonempty=68

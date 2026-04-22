@@ -5,7 +5,7 @@ const dialogue = sban.dialogue;
 
 fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
-        \\SBAN v21 - grounded dialogue, general session memory, and first CPU/GPU retrieval acceleration
+        \\SBAN v22 - grounded dialogue, broader paraphrase tolerance, natural session memory, and CPU/GPU retrieval acceleration
         \\Usage:
         \\  zig build run -- eval-enwik [dataset_path] [json_output_path] [prefix|drift] [segment_len] [checkpoint_interval] [rolling_window]
         \\  zig build run -- eval-ablations [dataset_path] [json_output_path] [prefix|drift] [bits] [segment_len] [checkpoint_interval] [rolling_window]
@@ -42,7 +42,7 @@ fn buildCustomLabel(allocator: std.mem.Allocator, base: []const u8, label_overri
 }
 
 fn printExperimentSummary(writer: *Io.Writer, data: *const sban.experiment.ExperimentData) !void {
-    try writer.print("SBAN v21 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
+    try writer.print("SBAN v22 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
     for (data.reports.items) |report| {
         const accuracy = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.total_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
         const top5 = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.top5_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
@@ -161,6 +161,7 @@ pub fn main(init: std.process.Init) !void {
 
         var net_config = sban.config.configForVariant(bits, variant);
         var label_override: ?[]const u8 = null;
+        var include_baseline = true;
         for (args[override_start..]) |arg| {
             const eq_idx = std.mem.indexOfScalar(u8, arg, '=') orelse {
                 try writer.print("invalid_override={s}\n", .{arg});
@@ -171,6 +172,8 @@ pub fn main(init: std.process.Init) !void {
             const value = arg[eq_idx + 1 ..];
             if (std.mem.eql(u8, key, "label")) {
                 label_override = value;
+            } else if (std.mem.eql(u8, key, "include_baseline")) {
+                include_baseline = try parseEvalBool(value);
             } else if (std.mem.eql(u8, key, "reset_on_segment_boundary")) {
                 corpus_cfg.reset_on_segment_boundary = try parseEvalBool(value);
             } else if (std.mem.eql(u8, key, "sequence_seed_path")) {
@@ -198,9 +201,9 @@ pub fn main(init: std.process.Init) !void {
 
         const model_name = try buildCustomLabel(arena, sban.config.sbanVariantLabel(bits, variant), label_override);
         var data = if (override_start < args.len)
-            try sban.experiment.runSingleCustom(io, arena, corpus_cfg, model_name, variant.label(), net_config)
+            try sban.experiment.runSingleCustomDetailed(io, arena, corpus_cfg, model_name, variant.label(), net_config, include_baseline)
         else
-            try sban.experiment.runSingleVariant(io, arena, corpus_cfg, bits, variant);
+            try sban.experiment.runSingleVariantDetailed(io, arena, corpus_cfg, bits, variant, include_baseline);
         defer data.deinit();
 
         try writeExperimentFile(io, args[3], &data);

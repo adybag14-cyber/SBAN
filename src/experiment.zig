@@ -64,6 +64,13 @@ const RowStat = struct {
     actual_rank: u16,
 };
 
+const SegmentLayout = struct {
+    total_predictions: usize,
+    segment_offsets: [cfg.max_segments]usize = [_]usize{0} ** cfg.max_segments,
+    segment_lengths: [cfg.max_segments]usize = [_]usize{0} ** cfg.max_segments,
+    segment_count: u8,
+};
+
 fn rowBestAndRank(row: []const u32, actual: u8) RowStat {
     var best_token: u8 = 0;
     var best_count: u32 = 0;
@@ -85,14 +92,14 @@ fn makeMeta(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, da
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v21_prefix_bit_sweep",
-                'a' => "enwik8_v21_prefix_ablation",
-                else => "enwik8_v21_prefix_custom",
+                'b' => "enwik8_v22_prefix_bit_sweep",
+                'a' => "enwik8_v22_prefix_ablation",
+                else => "enwik8_v22_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v21_drift_bit_sweep",
-                'a' => "enwik8_v21_drift_ablation",
-                else => "enwik8_v21_drift_custom",
+                'b' => "enwik8_v22_drift_bit_sweep",
+                'a' => "enwik8_v22_drift_ablation",
+                else => "enwik8_v22_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),
@@ -108,6 +115,68 @@ fn makeMeta(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, da
         .checkpoint_interval = corpus_cfg.checkpoint_interval,
         .rolling_window = corpus_cfg.rolling_window,
     };
+}
+
+fn makeMetaFromLayout(corpus_cfg: cfg.CorpusConfig, layout: SegmentLayout, dataset_path: []const u8, protocol: []const u8) ExperimentMeta {
+    return .{
+        .name = switch (corpus_cfg.mode) {
+            .prefix => switch (protocol[0]) {
+                'b' => "enwik8_v22_prefix_bit_sweep",
+                'a' => "enwik8_v22_prefix_ablation",
+                else => "enwik8_v22_prefix_custom",
+            },
+            .drift => switch (protocol[0]) {
+                'b' => "enwik8_v22_drift_bit_sweep",
+                'a' => "enwik8_v22_drift_ablation",
+                else => "enwik8_v22_drift_custom",
+            },
+        },
+        .dataset_name = std.fs.path.basename(dataset_path),
+        .mode = switch (corpus_cfg.mode) {
+            .prefix => "prefix",
+            .drift => "drift",
+        },
+        .protocol = protocol,
+        .total_predictions = layout.total_predictions,
+        .segment_count = layout.segment_count,
+        .segment_offsets = layout.segment_offsets,
+        .segment_lengths = layout.segment_lengths,
+        .checkpoint_interval = corpus_cfg.checkpoint_interval,
+        .rolling_window = corpus_cfg.rolling_window,
+    };
+}
+
+fn buildSegmentLayout(corpus_len: usize, corpus_cfg: cfg.CorpusConfig) !SegmentLayout {
+    if (corpus_cfg.segment_count == 0 or corpus_cfg.segment_count > cfg.max_segments) return error.InvalidSegmentCount;
+
+    var layout = SegmentLayout{
+        .total_predictions = corpus_cfg.totalPredictions(),
+        .segment_count = corpus_cfg.segment_count,
+    };
+
+    switch (corpus_cfg.mode) {
+        .prefix => {
+            if (corpus_len < layout.total_predictions + 1) return error.CorpusTooSmall;
+            for (0..corpus_cfg.segment_count) |segment_idx| {
+                const start = segment_idx * corpus_cfg.segment_len;
+                layout.segment_offsets[segment_idx] = start;
+                layout.segment_lengths[segment_idx] = corpus_cfg.segment_len;
+            }
+        },
+        .drift => {
+            if (corpus_cfg.segment_count != 4) return error.DriftRequiresFourSegments;
+            const offsets = corpus_cfg.driftOffsets();
+            for (0..corpus_cfg.segment_count) |segment_idx| {
+                const source_offset = offsets[segment_idx];
+                const needed = source_offset + corpus_cfg.segment_len + 1;
+                if (needed > corpus_len) return error.CorpusTooSmall;
+                layout.segment_offsets[segment_idx] = source_offset;
+                layout.segment_lengths[segment_idx] = corpus_cfg.segment_len;
+            }
+        },
+    }
+
+    return layout;
 }
 
 fn loadBundle(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig) !struct { corpus: []u8, bundle: stream.StreamBundle } {
@@ -148,18 +217,29 @@ fn resolveSequenceSeedSource(io: std.Io, allocator: std.mem.Allocator, corpus_cf
     };
 }
 
-fn sequenceSeedForSegment(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, source_bytes: []const u8, segment_idx: u8) []const u8 {
+fn sequenceSeedForLayoutSegment(corpus_cfg: cfg.CorpusConfig, layout: *const SegmentLayout, source_bytes: []const u8, segment_idx: u8) []const u8 {
     if (source_bytes.len == 0) return &.{};
 
     var start = corpus_cfg.sequence_seed_offset;
     if (corpus_cfg.sequence_seed_align_to_segment) {
-        const base = bundle.segment_offsets[segment_idx] + if (corpus_cfg.sequence_seed_from_segment_end) bundle.segment_lengths[segment_idx] else 0;
+        const idx: usize = segment_idx;
+        const base = layout.segment_offsets[idx] + if (corpus_cfg.sequence_seed_from_segment_end) layout.segment_lengths[idx] else 0;
         start = base +| corpus_cfg.sequence_seed_offset;
     }
     start = @min(start, source_bytes.len);
     const remaining = source_bytes.len - start;
     const requested_len = if (corpus_cfg.sequence_seed_length == 0) remaining else @min(corpus_cfg.sequence_seed_length, remaining);
     return source_bytes[start .. start + requested_len];
+}
+
+fn sequenceSeedForSegment(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, source_bytes: []const u8, segment_idx: u8) []const u8 {
+    const layout = SegmentLayout{
+        .total_predictions = bundle.predictionsLen(),
+        .segment_offsets = bundle.segment_offsets,
+        .segment_lengths = bundle.segment_lengths,
+        .segment_count = bundle.segment_count,
+    };
+    return sequenceSeedForLayoutSegment(corpus_cfg, &layout, source_bytes, segment_idx);
 }
 
 fn runOrder1(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig) !network.RunReport {
@@ -286,9 +366,68 @@ fn runSbanConfig(allocator: std.mem.Allocator, bundle: *const stream.StreamBundl
     return report;
 }
 
+fn shouldResetBeforeSegment(corpus_cfg: cfg.CorpusConfig, segment_idx: u8) bool {
+    if (segment_idx == 0) return false;
+    return switch (corpus_cfg.mode) {
+        .prefix => corpus_cfg.reset_on_segment_boundary,
+        .drift => true,
+    };
+}
+
+fn runSbanConfigStreamed(allocator: std.mem.Allocator, corpus: []const u8, corpus_cfg: cfg.CorpusConfig, layout: SegmentLayout, sequence_seed_source: []const u8, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig) !network.RunReport {
+    var net = try network.Network.init(allocator, net_config);
+    defer net.deinit();
+    const initial_seed = sequenceSeedForLayoutSegment(corpus_cfg, &layout, sequence_seed_source, 0);
+    if (initial_seed.len > 1) try net.pretrainSequenceExperts(initial_seed);
+
+    var report = try network.RunReport.init(allocator, .{
+        .name = model_name,
+        .kind = "sban",
+        .weight_bits = net_config.weight_bits,
+        .segment_count = layout.segment_count,
+        .variant = variant_name,
+    }, corpus_cfg.checkpoint_interval, corpus_cfg.rolling_window);
+
+    var step_idx: usize = 0;
+    for (0..layout.segment_count) |segment_idx_usize| {
+        const segment_idx: u8 = @intCast(segment_idx_usize);
+        if (shouldResetBeforeSegment(corpus_cfg, segment_idx)) {
+            net.resetTransient();
+            const segment_seed = sequenceSeedForLayoutSegment(corpus_cfg, &layout, sequence_seed_source, segment_idx);
+            const should_seed = (corpus_cfg.sequence_seed_on_reset or corpus_cfg.sequence_seed_align_to_segment) and segment_seed.len > 1;
+            if (should_seed) {
+                if (corpus_cfg.sequence_seed_replace_on_reset) net.resetSequenceExperts();
+                try net.pretrainSequenceExperts(segment_seed);
+            }
+        }
+
+        const source_offset = layout.segment_offsets[segment_idx_usize];
+        const segment_len = layout.segment_lengths[segment_idx_usize];
+        for (0..segment_len) |local_idx| {
+            const current = corpus[source_offset + local_idx];
+            const actual = corpus[source_offset + local_idx + 1];
+            const prediction = try net.step(current, actual);
+            const was_correct = prediction.token == actual;
+            report.appendStep(was_correct, prediction.actual_rank <= 5, segment_idx, prediction.active_count, prediction.margin);
+            if ((step_idx + 1) % corpus_cfg.checkpoint_interval == 0) {
+                try report.maybeCheckpoint(step_idx, net.countAliveShortMemories(), net.countAliveLongMemories(), net.countAliveBridgeMemories(), net.countLiveRegions(), net.currentShortTarget(), net.countAliveSynapses(), net.births, net.bridge_births, net.promotions, net.recycled_slots, false);
+            }
+            step_idx += 1;
+        }
+    }
+    if (step_idx > 0) try report.maybeCheckpoint(step_idx - 1, net.countAliveShortMemories(), net.countAliveLongMemories(), net.countAliveBridgeMemories(), net.countLiveRegions(), net.currentShortTarget(), net.countAliveSynapses(), net.births, net.bridge_births, net.promotions, net.recycled_slots, true);
+    finalizeReport(&report, &net);
+    return report;
+}
+
 fn runSbanVariant(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, sequence_seed_source: []const u8, bits: u8, variant: cfg.NetworkVariant) !network.RunReport {
     const net_config = cfg.configForVariant(bits, variant);
     return runSbanConfig(allocator, bundle, corpus_cfg, sequence_seed_source, cfg.sbanVariantLabel(bits, variant), variant.label(), net_config);
+}
+
+fn runSbanVariantStreamed(allocator: std.mem.Allocator, corpus: []const u8, corpus_cfg: cfg.CorpusConfig, layout: SegmentLayout, sequence_seed_source: []const u8, bits: u8, variant: cfg.NetworkVariant) !network.RunReport {
+    const net_config = cfg.configForVariant(bits, variant);
+    return runSbanConfigStreamed(allocator, corpus, corpus_cfg, layout, sequence_seed_source, cfg.sbanVariantLabel(bits, variant), variant.label(), net_config);
 }
 
 pub fn runCorpus(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig) !ExperimentData {
@@ -355,6 +494,26 @@ test "experiment can build prefix bundle and run reports" {
 }
 
 pub fn runSingleVariant(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, bits: u8, variant: cfg.NetworkVariant) !ExperimentData {
+    return runSingleVariantDetailed(io, allocator, corpus_cfg, bits, variant, true);
+}
+
+pub fn runSingleVariantDetailed(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, bits: u8, variant: cfg.NetworkVariant, include_baseline: bool) !ExperimentData {
+    if (!include_baseline) {
+        const corpus = try stream.loadCorpus(io, allocator, corpus_cfg.dataset_path);
+        defer allocator.free(corpus);
+        const layout = try buildSegmentLayout(corpus.len, corpus_cfg);
+        var sequence_seed_source = try resolveSequenceSeedSource(io, allocator, corpus_cfg, corpus);
+        defer sequence_seed_source.deinit(allocator);
+
+        var data = ExperimentData{
+            .allocator = allocator,
+            .meta = makeMetaFromLayout(corpus_cfg, layout, corpus_cfg.dataset_path, "single_variant"),
+        };
+
+        try data.reports.append(allocator, try runSbanVariantStreamed(allocator, corpus, corpus_cfg, layout, sequence_seed_source.bytes, bits, variant));
+        return data;
+    }
+
     var loaded = try loadBundle(io, allocator, corpus_cfg);
     defer allocator.free(loaded.corpus);
     defer loaded.bundle.deinit(allocator);
@@ -367,11 +526,31 @@ pub fn runSingleVariant(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cf
     };
 
     try data.reports.append(allocator, try runSbanVariant(allocator, &loaded.bundle, corpus_cfg, sequence_seed_source.bytes, bits, variant));
-    try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
+    if (include_baseline) try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
     return data;
 }
 
 pub fn runSingleCustom(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig) !ExperimentData {
+    return runSingleCustomDetailed(io, allocator, corpus_cfg, model_name, variant_name, net_config, true);
+}
+
+pub fn runSingleCustomDetailed(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig, include_baseline: bool) !ExperimentData {
+    if (!include_baseline) {
+        const corpus = try stream.loadCorpus(io, allocator, corpus_cfg.dataset_path);
+        defer allocator.free(corpus);
+        const layout = try buildSegmentLayout(corpus.len, corpus_cfg);
+        var sequence_seed_source = try resolveSequenceSeedSource(io, allocator, corpus_cfg, corpus);
+        defer sequence_seed_source.deinit(allocator);
+
+        var data = ExperimentData{
+            .allocator = allocator,
+            .meta = makeMetaFromLayout(corpus_cfg, layout, corpus_cfg.dataset_path, "single_variant"),
+        };
+
+        try data.reports.append(allocator, try runSbanConfigStreamed(allocator, corpus, corpus_cfg, layout, sequence_seed_source.bytes, model_name, variant_name, net_config));
+        return data;
+    }
+
     var loaded = try loadBundle(io, allocator, corpus_cfg);
     defer allocator.free(loaded.corpus);
     defer loaded.bundle.deinit(allocator);
@@ -384,6 +563,43 @@ pub fn runSingleCustom(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg
     };
 
     try data.reports.append(allocator, try runSbanConfig(allocator, &loaded.bundle, corpus_cfg, sequence_seed_source.bytes, model_name, variant_name, net_config));
-    try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
+    if (include_baseline) try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
     return data;
+}
+
+test "single variant streamed no-baseline path matches bundled SBAN report" {
+    const allocator = std.testing.allocator;
+    const corpus = try allocator.alloc(u8, 4096);
+    defer allocator.free(corpus);
+    for (corpus, 0..) |*byte, idx| byte.* = @intCast(idx % 256);
+
+    const tmp_path = "/tmp/sban_v22_stream_test_enwik8.bin";
+    try std.fs.cwd().writeFile(.{ .sub_path = tmp_path, .data = corpus });
+    defer std.fs.cwd().deleteFile(tmp_path) catch {};
+
+    var threaded = std.Io.Threaded.init(allocator, .{});
+    defer threaded.deinit();
+    const io = threaded.io();
+
+    const corpus_cfg = cfg.CorpusConfig{
+        .dataset_path = tmp_path,
+        .mode = .prefix,
+        .segment_len = 128,
+        .segment_count = 4,
+        .checkpoint_interval = 64,
+        .rolling_window = 32,
+    };
+
+    var with_baseline = try runSingleVariantDetailed(io, allocator, corpus_cfg, 4, .default, true);
+    defer with_baseline.deinit();
+    var streamed = try runSingleVariantDetailed(io, allocator, corpus_cfg, 4, .default, false);
+    defer streamed.deinit();
+
+    const bundled_report = &with_baseline.reports.items[0];
+    const streamed_report = &streamed.reports.items[0];
+    try std.testing.expectEqual(bundled_report.summary.total_predictions, streamed_report.summary.total_predictions);
+    try std.testing.expectEqual(bundled_report.summary.total_correct, streamed_report.summary.total_correct);
+    try std.testing.expectEqual(bundled_report.summary.top5_correct, streamed_report.summary.top5_correct);
+    try std.testing.expectEqualSlices(usize, bundled_report.summary.segment_total[0..bundled_report.summary.segment_count], streamed_report.summary.segment_total[0..streamed_report.summary.segment_count]);
+    try std.testing.expectEqualSlices(usize, bundled_report.summary.segment_correct[0..bundled_report.summary.segment_count], streamed_report.summary.segment_correct[0..streamed_report.summary.segment_count]);
 }

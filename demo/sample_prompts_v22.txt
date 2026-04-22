@@ -1,0 +1,18 @@
+what is SBAN v22
+how is v22 different from v21
+what is bridge memory
+compare SBAN to transformers in detail
+hi i am tom and i need help
+can you recall my name
+i live in london
+what city do i live in
+our lab is sbx
+what is our lab
+can you remember my role if i tell you
+my role is researcher
+what is my role
+what is 3.5 + 1.2
+what is 3 / 0
+do you support gpus
+how do i launch it on linux
+tell me a joke

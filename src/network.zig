@@ -1338,14 +1338,14 @@ pub const Network = struct {
             const row2_idx = key * @as(usize, self.config.vocab_size) + @as(usize, actual_next);
             self.order2_counts[row2_idx] +|= 1;
         }
-        if (self.recent_len >= 2) {
+        if (self.config.markov3_bonus_ppm != 0 and self.recent_len >= 2) {
             const prev1 = self.recent_tokens[0];
             const prev2 = self.recent_tokens[1];
             const row = try self.getOrCreateOrder3Row(contextKey3(prev2, prev1, current_token));
             const next_idx = @as(usize, actual_next);
             if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
         }
-        if (self.recent_len >= 3) {
+        if (self.config.markov4_bonus_ppm != 0 and self.recent_len >= 3) {
             const prev1 = self.recent_tokens[0];
             const prev2 = self.recent_tokens[1];
             const prev3 = self.recent_tokens[2];
@@ -1353,7 +1353,7 @@ pub const Network = struct {
             const next_idx = @as(usize, actual_next);
             if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
         }
-        if (self.recent_len >= 4) {
+        if (self.config.markov5_bonus_ppm != 0 and self.recent_len >= 4) {
             const prev1 = self.recent_tokens[0];
             const prev2 = self.recent_tokens[1];
             const prev3 = self.recent_tokens[2];
@@ -1363,9 +1363,10 @@ pub const Network = struct {
             if (row[next_idx] < std.math.maxInt(u16)) row[next_idx] += 1;
         }
 
+        const continuation_enabled = self.config.enable_hybrid_experts and self.config.continuation_bonus_ppm != 0 and self.config.continuation_max_order >= 2;
         const max_order: usize = @min(@as(usize, self.config.continuation_max_order), @min(self.recent_len + 1, @as(usize, self.config.history_lags)));
         const min_order: usize = @max(@as(usize, self.config.continuation_min_order), 2);
-        if (max_order >= min_order) {
+        if (continuation_enabled and max_order >= min_order) {
             var order = min_order;
             while (order <= max_order) : (order += 1) {
                 const cell = try self.getOrCreateContinuationCell(self.continuationKey(current_token, @intCast(order)));
@@ -2135,6 +2136,8 @@ pub const Network = struct {
         if (neuron.role == .bridge and self.regions.items[neuron.region].live_bridge > 0) {
             self.regions.items[neuron.region].live_bridge -= 1;
         }
+        neuron.outgoing.deinit(self.allocator);
+        neuron.outgoing = .empty;
         neuron.reset(.dead, 0);
         self.free_memory_ids.append(self.allocator, id) catch {};
         self.pruned_neurons += 1;

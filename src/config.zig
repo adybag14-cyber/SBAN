@@ -287,6 +287,10 @@ pub fn v21ReleaseConfig(bits: u8) NetworkConfig {
     return v20ReleaseConfig(bits);
 }
 
+pub fn v22ReleaseConfig(bits: u8) NetworkConfig {
+    return v21ReleaseConfig(bits);
+}
+
 pub fn v18ReleaseConfig(bits: u8) NetworkConfig {
     var config = configForVariant(bits, .default);
     config.enable_long_term = true;

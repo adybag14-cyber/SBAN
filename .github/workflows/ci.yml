@@ -39,4 +39,4 @@ jobs:
 
       - name: Smoke demo
         run: |
-          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); subprocess.run([str(exe), 'chat-demo', 'what is SBAN v19', '160', 'seed_path=data/sban_dialogue_seed_v19.txt'], check=True)"
+          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); session = pathlib.Path('ci_session_v20.txt'); session.unlink(missing_ok=True); subprocess.run([str(exe), 'chat-demo', 'hi im tom', '160', 'mode=free', 'seed_path=data/sban_dialogue_seed_v20.txt', f'session_path={session}'], check=True); subprocess.run([str(exe), 'chat-demo', 'can you recall my name', '160', 'mode=free', 'seed_path=data/sban_dialogue_seed_v20.txt', f'session_path={session}'], check=True); subprocess.run([str(exe), 'chat-demo', 'what is 2 + 2', '160', 'mode=free', 'seed_path=data/sban_dialogue_seed_v20.txt'], check=True); session.unlink(missing_ok=True)"

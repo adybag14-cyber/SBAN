@@ -1,0 +1,7 @@
+prompt=hi im tom
+mode=session-memory
+response=Hi Tom. I will remember your name for this session.
+
+prompt=can you recall my name
+mode=session-recall
+response=Your name is Tom.

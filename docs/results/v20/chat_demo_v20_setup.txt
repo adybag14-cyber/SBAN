@@ -1,0 +1,4 @@
+prompt=how do I start the Windows demo
+mode=hybrid-anchor
+matched_prompt=how do I start the Windows demo
+response=Open the Windows bundle and run SBAN_v20_Start.bat. It launches a prompt loop that reuses one v20 session transcript so the chat keeps context across turns.

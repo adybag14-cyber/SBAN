@@ -1,0 +1,4 @@
+prompt=what is SBAN v20
+mode=hybrid-anchor
+matched_prompt=what is SBAN v20
+response=SBAN v20 is the current SBAN release focused on real usability. It keeps the numeric health suite near the v19 baseline while improving free chat, session memory, and simple unseen-prompt robustness.

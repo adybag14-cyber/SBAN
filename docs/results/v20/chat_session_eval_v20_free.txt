@@ -1,0 +1,45 @@
+[1] prompt=hi im tom
+mode=session-memory
+response=Hi Tom. I will remember your name for this session.
+
+expect_contains=remember your name
+expect_pass=true
+
+[2] prompt=can you recall my name
+mode=session-recall
+response=Your name is Tom.
+
+expect_contains=Tom
+expect_pass=true
+
+[3] prompt=what is 2 + 2
+mode=symbolic-math
+response=2 + 2 = 4.
+
+expect_contains=4
+expect_pass=true
+
+[4] prompt=what changed in v20
+mode=free-retrieved
+matched_prompt=what changed in v20
+response=V20 adds persistent session transcripts, symbolic recall for user facts like names, simple arithmetic handling, a session evaluation path, and a newcomer demo that keeps talking without restarting from scratch.
+
+expect_contains=session
+expect_pass=true
+
+[5] prompt=help
+mode=symbolic-help
+response=I can answer release questions, continue a session, remember facts you tell me in this chat, and handle simple arithmetic prompts.
+
+expect_contains=remember facts
+expect_pass=true
+
+[6] prompt=thank you
+mode=free-retrieved
+matched_prompt=thank you
+response=You are welcome. I am ready for the next SBAN v20 check.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=6 anchored=0 retrieved=2 symbolic=4 nonempty=6 expectations=6 passed=6

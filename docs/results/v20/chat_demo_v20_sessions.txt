@@ -1,0 +1,4 @@
+prompt=how do sessions work
+mode=free-retrieved
+matched_prompt=how do sessions work
+response=The v20 demo can persist a plain-text session transcript through session_path, so each new turn reloads the prior conversation and keeps continuity without starting from an empty chat.

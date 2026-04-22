@@ -1,0 +1,18 @@
+# SBAN v20 scripted session evaluation
+User: hi im tom
+Expect: remember your name
+
+User: can you recall my name
+Expect: Tom
+
+User: what is 2 + 2
+Expect: 4
+
+User: what changed in v20
+Expect: session
+
+User: help
+Expect: remember facts
+
+User: thank you
+Expect: welcome

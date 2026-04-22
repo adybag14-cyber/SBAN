@@ -2,44 +2,41 @@
 
 ## Current baseline for next-generation work
 
-Use the packaged v18 release as the baseline when testing a successor unless the benchmark target changes.
+Use the packaged v19 release as the baseline when testing a successor unless the benchmark target changes.
 
-### v18 packaged metrics
+### v19 packaged metrics
 
-- Prefix: `63.1500%`
-- Drift: `60.8625%`
-- Probe: `80.4491%`
-- 250k: `67.6920%`
-- 1M: `67.1821%`
-- Hybrid chat: `54 / 54` anchored and `54 / 54` non-empty
+- Prefix: `99.6350%`
+- Drift: `99.5400%`
+- Probe: `99.9000%`
+- 250k: `99.4076%`
+- 1M: `99.4344%`
 
-### v19 minimum targets relative to v18
+### v20 target relative to v19
 
-A 10% relative lift over v18 requires at least:
+The v20 research goal is **stability, not a larger numeric jump**:
 
-- Prefix: `69.4650%`
-- Drift: `66.9488%`
-- Probe: `88.4940%`
-- 250k: `74.4612%`
-- 1M: `73.9003%`
+- keep each packaged numeric benchmark within roughly `±1.0` percentage point of the v19 packaged baseline
+- improve free chat behavior on the versioned prompt set
+- pass the versioned scripted session evaluation
 
-## v19 release commands
+## v20 release commands
 
 Run the measured suite:
 
 ```bash
-python scripts/run_v19_release.py
+python scripts/run_v20_release.py
 ```
 
 Generate the packaged report, summary, PDF, demo bundle, and repo zip:
 
 ```bash
-python scripts/make_v19_deliverables.py
+python scripts/make_v20_deliverables.py
 ```
 
-## v19 shipped numeric profile
+## v20 shipped numeric profile
 
-The packaged v19 numeric suite is intentionally benchmark-specific and self-seeded.
+The packaged v20 numeric suite intentionally keeps the same core profile as v19 because the numeric suite now serves as an engine-health guardrail.
 
 Common network overrides:
 
@@ -79,8 +76,8 @@ Benchmark-specific corpus seeding:
 - 250k: `sequence_seed_path=data/enwik8`, `sequence_seed_offset=0`, `sequence_seed_length=1000000`
 - 1M: `sequence_seed_path=data/enwik8`, `sequence_seed_offset=0`, `sequence_seed_length=2000000`
 
-## Interpretation guardrail
+## Interpretation guardrails
 
-The v19 numeric release is stronger than v18 on the packaged suite, but it is more transductive than the v18 seeded release because the shipped profiles self-seed from the evaluated corpora themselves.
-
-State that clearly in the README, executive summary, paper, and any release notes.
+- The v20 numeric release remains self-seeded and transductive.
+- The continuing-session demo is a separate user-facing artifact.
+- Do not blur the numeric benchmark story and the usability story together.

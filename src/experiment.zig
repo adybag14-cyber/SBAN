@@ -85,14 +85,14 @@ fn makeMeta(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, da
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v19_prefix_bit_sweep",
-                'a' => "enwik8_v19_prefix_ablation",
-                else => "enwik8_v19_prefix_custom",
+                'b' => "enwik8_v20_prefix_bit_sweep",
+                'a' => "enwik8_v20_prefix_ablation",
+                else => "enwik8_v20_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v19_drift_bit_sweep",
-                'a' => "enwik8_v19_drift_ablation",
-                else => "enwik8_v19_drift_custom",
+                'b' => "enwik8_v20_drift_bit_sweep",
+                'a' => "enwik8_v20_drift_ablation",
+                else => "enwik8_v20_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),

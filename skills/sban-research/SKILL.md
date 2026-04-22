@@ -15,9 +15,9 @@ Read only the files that matter for the current subtask:
 - `src/network.zig` for the runtime and expert-routing logic
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and chat evaluation
-- `scripts/run_v19_release.py` for the packaged benchmark suite
-- `scripts/make_v19_deliverables.py` for report, summary, PDF, demo bundle, and repo zip generation
-- `scripts/package_v19_demo.py` for the newcomer demo bundle
+- `scripts/run_v20_release.py` for the packaged benchmark suite
+- `scripts/make_v20_deliverables.py` for report, summary, PDF, demo bundle, and repo zip generation
+- `scripts/package_v20_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, and shipped profile details
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -38,6 +38,7 @@ If you need the release targets or commands, read `references/release_profiles.m
 - Do not claim a new generation unless the benchmark JSON files exist in `docs/results/`.
 - Keep chat evaluation honest:
   use exact prompt/seed files, and if the old metric is already saturated, expand the prompt set rather than pretending a 100% metric improved without adding coverage.
+- When the release focus is usability rather than another numeric jump, keep the numeric suite stable and add a versioned session evaluation instead of inventing a misleading one-shot metric.
 - Prefer adding or tuning deterministic scripts in `scripts/` over leaving release logic in ad hoc shell history.
 - State clearly when a numeric release is seeded or otherwise transductive.
 - Separate the product demo story from the numeric benchmark story when the release uses transductive benchmarking.
@@ -46,14 +47,15 @@ If you need the release targets or commands, read `references/release_profiles.m
 
 - `src/network.zig` contains the release-critical routing logic.
 - The v19 release adds a deep continuation expert and segment-aware reseeding controls on top of the earlier higher-order sparse path.
+- The v20 release keeps the v19 numeric core but upgrades `src/main.zig`, the prompt assets, and the demo packaging around continuing-session usability.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Deliverables
 
 For a new release:
 
-1. Run `python scripts/run_v19_release.py` or the next-generation equivalent.
-2. Run `python scripts/make_v19_deliverables.py` or the next-generation equivalent.
+1. Run `python scripts/run_v20_release.py` or the next-generation equivalent.
+2. Run `python scripts/make_v20_deliverables.py` or the next-generation equivalent.
 3. Confirm the versioned paper PDF, executive summary, repo zip, and demo bundle exist under `deliverables/`.
 4. Update `README.md` so the current release can be reproduced without extra context.
 5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.

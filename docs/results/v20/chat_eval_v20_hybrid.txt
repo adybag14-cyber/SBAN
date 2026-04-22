@@ -1,0 +1,261 @@
+[1] prompt=hello
+mode=hybrid-anchor
+matched_prompt=hello
+response=Hello. I am the SBAN v20 demo and I am ready for a continuing session, release questions, and quick reasoning checks.
+
+[2] prompt=are you ready
+mode=hybrid-anchor
+matched_prompt=are you ready
+response=Yes. The v20 runtime is ready for build, chat, benchmark, and packaging checks.
+
+[3] prompt=what is SBAN v20
+mode=hybrid-anchor
+matched_prompt=what is SBAN v20
+response=SBAN v20 is the current SBAN release focused on real usability. It keeps the numeric health suite near the v19 baseline while improving free chat, session memory, and simple unseen-prompt robustness.
+
+[4] prompt=what changed in v20
+mode=hybrid-anchor
+matched_prompt=what changed in v20
+response=V20 adds persistent session transcripts, symbolic recall for user facts like names, simple arithmetic handling, a session evaluation path, and a newcomer demo that keeps talking without restarting from scratch.
+
+[5] prompt=what makes it non-transformer
+mode=hybrid-anchor
+matched_prompt=what makes it non-transformer
+response=SBAN v20 is not a transformer. It predicts through online memory propagation, sparse sequence experts, and adaptive routing instead of frozen attention layers.
+
+[6] prompt=does it learn while running
+mode=hybrid-anchor
+matched_prompt=does it learn while running
+response=Yes. SBAN keeps updating its sequence state and memory state while it runs instead of staying fixed like a released transformer checkpoint.
+
+[7] prompt=what is the v20 goal
+mode=hybrid-anchor
+matched_prompt=what is the v20 goal
+response=The v20 goal is practical usability: keep the strong release-health scores, make chat continue across turns, and answer simple unseen prompts more reliably.
+
+[8] prompt=what improved from v19
+mode=hybrid-anchor
+matched_prompt=what improved from v19
+response=V20 shifts attention from raw benchmark chasing toward product behavior. The major gains are better free chat behavior, persistent session memory, and stronger responses on prompts that were not explicitly seeded.
+
+[9] prompt=what is the product demo
+mode=hybrid-anchor
+matched_prompt=what is the product demo
+response=The product demo is a packaged binary plus starter script that opens a continuing chat session so new users can ask questions, test recall, and inspect the release from one click.
+
+[10] prompt=how do I start the Windows demo
+mode=hybrid-anchor
+matched_prompt=how do I start the Windows demo
+response=Open the Windows bundle and run SBAN_v20_Start.bat. It launches a prompt loop that reuses one v20 session transcript so the chat keeps context across turns.
+
+[11] prompt=how do I start the Linux demo
+mode=hybrid-anchor
+matched_prompt=how do I start the Linux demo
+response=Open a terminal in the Linux bundle and run ./SBAN_v20_Start.sh. It starts the same continuing v20 chat flow with the bundled assets.
+
+[12] prompt=how do sessions work
+mode=hybrid-anchor
+matched_prompt=how do sessions work
+response=The v20 demo can persist a plain-text session transcript through session_path, so each new turn reloads the prior conversation and keeps continuity without starting from an empty chat.
+
+[13] prompt=how do I keep chatting
+mode=hybrid-anchor
+matched_prompt=how do I keep chatting
+response=Use chat-demo with session_path, or start the packaged v20 demo scripts which already keep one session file alive for the whole conversation.
+
+[14] prompt=what commands matter
+mode=hybrid-anchor
+matched_prompt=what commands matter
+response=The main commands are chat-demo, chat-eval, chat-session-eval, and the versioned v20 release scripts for the numeric suite and deliverables.
+
+[15] prompt=what benchmarks shipped
+mode=hybrid-anchor
+matched_prompt=what benchmarks shipped
+response=The packaged v20 health suite still ships prefix, drift, probe, 250k, and 1M numeric checks, while the chat side adds stronger free-mode and multi-turn session evaluation.
+
+[16] prompt=why keep the same numeric suite
+mode=hybrid-anchor
+matched_prompt=why keep the same numeric suite
+response=The numeric suite remains the engine health check. V20 is about proving the runtime can become more usable without sacrificing the strong measured core.
+
+[17] prompt=what is the main caveat
+mode=hybrid-anchor
+matched_prompt=what is the main caveat
+response=The numeric v20 release keeps the same benchmark caveat as v19: the packaged numeric profile is self-seeded and transductive, so it must be described honestly.
+
+[18] prompt=should I call it transductive
+mode=hybrid-anchor
+matched_prompt=should I call it transductive
+response=Yes. That is the correct label for the packaged numeric benchmark profile.
+
+[19] prompt=what does free mode do now
+mode=hybrid-anchor
+matched_prompt=what does free mode do now
+response=In v20, free mode is stronger because it can use session memory, simple symbolic reasoning, and grounded retrieval instead of relying only on raw continuation.
+
+[20] prompt=what does hybrid mode do
+mode=hybrid-anchor
+matched_prompt=what does hybrid mode do
+response=Hybrid mode still prefers exact anchors first, then related retrieval, and then free continuation when it needs to.
+
+[21] prompt=what does anchored mode do
+mode=hybrid-anchor
+matched_prompt=what does anchored mode do
+response=Anchored mode returns the exact matched answer from the bundled dialogue examples when the prompt maps strongly to a stored example.
+
+[22] prompt=what is chat session eval
+mode=hybrid-anchor
+matched_prompt=what is chat session eval
+response=Chat-session-eval runs a scripted multi-turn conversation with expected substrings so the release can measure recall, arithmetic, and continuing-session behavior honestly.
+
+[23] prompt=what session eval shipped
+mode=hybrid-anchor
+matched_prompt=what session eval shipped
+response=The v20 release ships a versioned scripted session evaluation file covering name recall, arithmetic, and newcomer-oriented conversation flow.
+
+[24] prompt=what is the release message
+mode=hybrid-anchor
+matched_prompt=what is the release message
+response=The release message is that SBAN v20 keeps the strong engine-health baseline while making the architecture meaningfully more usable for real users.
+
+[25] prompt=how should I describe v20
+mode=hybrid-anchor
+matched_prompt=how should I describe v20
+response=Describe v20 as a compact online non-transformer runtime that keeps learning while running, now with continuing-session chat, lightweight symbolic recall, and the same strong numeric health checks.
+
+[26] prompt=what files should I open first
+mode=hybrid-anchor
+matched_prompt=what files should I open first
+response=Open the executive summary first, then the paper PDF, then the README and the v20 results directory.
+
+[27] prompt=where is the executive summary
+mode=hybrid-anchor
+matched_prompt=where is the executive summary
+response=The v20 executive summary is generated at SBAN_v20_EXECUTIVE_SUMMARY.md and copied into deliverables/v20.
+
+[28] prompt=where is the paper
+mode=hybrid-anchor
+matched_prompt=where is the paper
+response=The v20 paper PDF is generated in docs/papers/SBAN_v20_follow_up_research_paper.pdf and copied into deliverables/v20.
+
+[29] prompt=where is the repo zip
+mode=hybrid-anchor
+matched_prompt=where is the repo zip
+response=The versioned repo archive is generated at deliverables/v20/SBAN_v20_repo.zip.
+
+[30] prompt=what does the ci build
+mode=hybrid-anchor
+matched_prompt=what does the ci build
+response=The CI workflow builds and tests SBAN v20 on Windows and Ubuntu and runs smoke checks against the bundled v20 chat assets.
+
+[31] prompt=what does the release workflow upload
+mode=hybrid-anchor
+matched_prompt=what does the release workflow upload
+response=The release workflow packages newcomer demo bundles for Windows and Linux and uploads them to the tagged GitHub release.
+
+[32] prompt=what platforms ship
+mode=hybrid-anchor
+matched_prompt=what platforms ship
+response=The packaged v20 demo targets Windows x86_64 and Linux x86_64.
+
+[33] prompt=can I experiment with overrides
+mode=hybrid-anchor
+matched_prompt=can I experiment with overrides
+response=Yes. The eval-variant, chat-demo, and chat-session-eval commands still accept key=value overrides so you can inspect or tune the runtime.
+
+[34] prompt=what prompt file ships
+mode=hybrid-anchor
+matched_prompt=what prompt file ships
+response=The chat evaluation prompt file is data/sban_chat_eval_prompts_v20.txt and the session script is data/sban_session_eval_v20.txt.
+
+[35] prompt=can you do simple math
+mode=hybrid-anchor
+matched_prompt=can you do simple math
+response=Yes. V20 includes lightweight arithmetic handling for short prompts like what is 2 plus 2 or 7 * 8.
+
+[36] prompt=what is 2 + 2
+mode=symbolic-math
+response=2 + 2 = 4.
+
+[37] prompt=can you remember my name
+mode=session-recall-miss
+response=I do not know your name yet. Tell me with 'my name is ...' and I will remember it for this session.
+
+[38] prompt=what is still weak
+mode=hybrid-anchor
+matched_prompt=what is still weak
+response=V20 is much stronger for practical chat than v19, but the numeric benchmark caveat still remains and the symbolic helpers are intentionally lightweight rather than broad open-domain reasoning.
+
+[39] prompt=does the runtime need GPUs
+mode=hybrid-anchor
+matched_prompt=does the runtime need GPUs
+response=No. SBAN v20 is a compact CPU runtime and the bundled demo works without a GPU.
+
+[40] prompt=what can you do
+mode=symbolic-help
+response=I can answer release questions, continue a session, remember facts you tell me in this chat, and handle simple arithmetic prompts.
+
+[41] prompt=can the runtime continue learning after launch
+mode=hybrid-anchor
+matched_prompt=can the runtime continue learning after launch
+response=Yes. The runtime continues adapting after launch because every new byte updates the online state.
+
+[42] prompt=does free mode stay grounded
+mode=hybrid-anchor
+matched_prompt=does free mode stay grounded
+response=V20 makes free mode more grounded by combining the learned runtime with retrieval and lightweight symbolic responses for specific cases like recall and arithmetic.
+
+[43] prompt=what is the bottom line
+mode=hybrid-anchor
+matched_prompt=what is the bottom line
+response=The bottom line is that v20 keeps the release-health core stable while making SBAN much easier to use as an actual continuing chat demo.
+
+[44] prompt=thank you
+mode=hybrid-anchor
+matched_prompt=thank you
+response=You are welcome. I am ready for the next SBAN v20 check.
+
+[45] prompt=help
+mode=symbolic-help
+response=I can answer release questions, continue a session, remember facts you tell me in this chat, and handle simple arithmetic prompts.
+
+[46] prompt=what can i ask first
+mode=symbolic-help
+response=I do not have a grounded answer yet. Ask about SBAN v20, tell me your name, or try a short factual prompt.
+
+[47] prompt=is it a transformer
+mode=hybrid-anchor
+matched_prompt=what makes it non-transformer
+response=SBAN v20 is not a transformer. It predicts through online memory propagation, sparse sequence experts, and adaptive routing instead of frozen attention layers.
+
+[48] prompt=does it go stale
+mode=hybrid-anchor
+matched_prompt=does it learn while running
+response=Yes. SBAN keeps updating its sequence state and memory state while it runs instead of staying fixed like a released transformer checkpoint.
+
+[49] prompt=how do I continue a session without a fresh chat
+mode=hybrid-anchor
+matched_prompt=what is chat session eval
+response=Chat-session-eval runs a scripted multi-turn conversation with expected substrings so the release can measure recall, arithmetic, and continuing-session behavior honestly.
+
+[50] prompt=how does session_path work
+mode=hybrid-anchor
+matched_prompt=what is chat session eval
+response=Chat-session-eval runs a scripted multi-turn conversation with expected substrings so the release can measure recall, arithmetic, and continuing-session behavior honestly.
+
+[51] prompt=what is the newcomer demo
+mode=hybrid-anchor
+matched_prompt=what is the product demo
+response=The product demo is a packaged binary plus starter script that opens a continuing chat session so new users can ask questions, test recall, and inspect the release from one click.
+
+[52] prompt=what should new users try first
+mode=hybrid-anchor
+matched_prompt=what files should I open first
+response=Open the executive summary first, then the paper PDF, then the README and the v20 results directory.
+
+[53] prompt=what should v21 improve
+mode=hybrid-anchor
+matched_prompt=what files should I open first
+response=Open the executive summary first, then the paper PDF, then the README and the v20 results directory.
+
+summary turns=53 anchored=48 retrieved=0 symbolic=5 nonempty=53

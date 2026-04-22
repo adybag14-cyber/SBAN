@@ -1,0 +1,53 @@
+hello
+are you ready
+what is SBAN v20
+what changed in v20
+what makes it non-transformer
+does it learn while running
+what is the v20 goal
+what improved from v19
+what is the product demo
+how do I start the Windows demo
+how do I start the Linux demo
+how do sessions work
+how do I keep chatting
+what commands matter
+what benchmarks shipped
+why keep the same numeric suite
+what is the main caveat
+should I call it transductive
+what does free mode do now
+what does hybrid mode do
+what does anchored mode do
+what is chat session eval
+what session eval shipped
+what is the release message
+how should I describe v20
+what files should I open first
+where is the executive summary
+where is the paper
+where is the repo zip
+what does the ci build
+what does the release workflow upload
+what platforms ship
+can I experiment with overrides
+what prompt file ships
+can you do simple math
+what is 2 + 2
+can you remember my name
+what is still weak
+does the runtime need GPUs
+what can you do
+can the runtime continue learning after launch
+does free mode stay grounded
+what is the bottom line
+thank you
+help
+what can i ask first
+is it a transformer
+does it go stale
+how do I continue a session without a fresh chat
+how does session_path work
+what is the newcomer demo
+what should new users try first
+what should v21 improve

@@ -10,6 +10,15 @@ Assistant: SBAN v22 is the usability and hardening release. It keeps the establi
 User: what changed in v22
 Assistant: V22 keeps the v21 grounding contract but improves the product surface in four ways: broader paraphrase retrieval, more natural fact memory, explicit symbolic edge-case handling such as division by zero, and uncapped continuing-session retention. It also adds longer 10M and near-100M hardening runs and keeps CPU fallback with optional GPU retrieval acceleration.
 
+User: what is SBAN v22.5
+Assistant: SBAN v22.5 is the technical follow-up to v22. It keeps the grounded dialogue behavior and numeric guardrail stable while adding a real CUDA backend for NVIDIA RTX GPUs, a conservative multithreaded retrieval path, a raw accel-bench command, and an experimental multithreaded numeric scoring path that remains optional because the current release suite still favors the proven single-thread numeric profile.
+
+User: what changed in v22.5
+Assistant: V22.5 is a backend and tooling release rather than a dialogue-behavior rewrite. It adds real NVIDIA CUDA retrieval acceleration, a raw accelerator benchmark command, multithreaded retrieval support with conservative worker selection, an experimental multithreaded numeric scorer, and keeps the shipped numeric suite on the single-thread fallback when the new path does not beat it.
+
+User: how is v22.5 different from v22
+Assistant: V22 focused on usability hardening. V22.5 keeps that user-facing behavior but upgrades the runtime plumbing underneath it: CUDA support for NVIDIA RTX-class GPUs, measured accelerator benchmarking, optional multithreaded retrieval, and an experimental numeric parallel scorer that is available for tuning without replacing the stable release profile by default.
+
 User: how is v22 different from v21
 Assistant: V21 made SBAN trustworthy enough to stop bluffing. V22 makes that trustworthy runtime easier to use in ordinary language by recognizing broader paraphrases, storing more natural session facts, keeping the full session instead of pruning after a fixed turn cap, and validating the engine with longer hardening runs.
 
@@ -92,7 +101,7 @@ User: how do you handle unknown questions
 Assistant: Unknown questions should receive an honest uncertainty response unless the answer is supported by a grounded SBAN example, a remembered session fact, or a short symbolic calculation.
 
 User: what commands matter
-Assistant: The main runtime commands are chat-demo, chat-eval, chat-session-eval, accel-info, eval-enwik, eval-ablations, eval-variant, and inspect.
+Assistant: The main runtime commands are chat-demo, chat-eval, chat-session-eval, accel-info, accel-bench, eval-enwik, eval-ablations, eval-variant, and inspect.
 
 User: what benchmarks shipped
 Assistant: The v22 release still ships the engine-health checks for prefix, drift, probe, 250k, and 1M, and extends the hardening profile with longer 10M and near-100M runs. The chat side adds broader paraphrase and session-behavior coverage.
@@ -146,25 +155,40 @@ User: where is the repo zip
 Assistant: The versioned repo archive is generated at deliverables/v22/SBAN_v22_repo.zip.
 
 User: what does the ci build
-Assistant: The CI workflow builds and tests SBAN v22 on Windows and Ubuntu, runs the session smoke checks against the bundled v22 chat assets, and validates the release scripts.
+Assistant: The CI workflow builds and tests SBAN on Windows and Ubuntu, runs the session smoke checks against the grounded chat assets, and validates the current versioned release scripts.
 
 User: what does the release workflow upload
-Assistant: The release workflow packages newcomer demo bundles for Windows and Linux and uploads them to the tagged GitHub release.
+Assistant: The release workflow packages newcomer demo bundles for Windows and Linux and uploads them to the tagged GitHub release for the current version.
 
 User: what platforms ship
-Assistant: The packaged v22 demo targets Windows x86_64 and Linux x86_64, with retrieval able to run on CPU or use an OpenCL-capable GPU when available.
+Assistant: The packaged demo targets Windows x86_64 and Linux x86_64. Retrieval can run on CPU, use CUDA on NVIDIA RTX-class GPUs, or fall back to the OpenCL path when that is the available GPU interface.
 
 User: does the runtime need GPUs
-Assistant: No. SBAN v22 still runs on CPU by default. GPU support is an optional retrieval accelerator, not a requirement for the product demo.
+Assistant: No. SBAN still runs on CPU by default. GPU support is an optional retrieval accelerator, not a requirement for the product demo.
 
 User: do you support gpus
-Assistant: Yes. The v22 runtime supports CPU execution by default and can use an optional OpenCL GPU backend for retrieval scoring on compatible systems.
+Assistant: Yes. The current runtime supports CPU execution by default, a real CUDA backend for NVIDIA RTX GPUs, and an OpenCL fallback path for compatible GPU systems.
+
+User: do you support nvidia rtx gpus
+Assistant: Yes. V22.5 adds a CUDA backend for NVIDIA RTX-class GPUs, so compatible NVIDIA systems can use direct CUDA retrieval acceleration instead of relying only on OpenCL.
 
 User: how does gpu acceleration work
-Assistant: The GPU path in v22 accelerates retrieval scoring through an optional OpenCL backend. The runtime can fall back to CPU automatically when no compatible GPU path is available.
+Assistant: The GPU path accelerates retrieval scoring. On NVIDIA RTX systems v22.5 can use a CUDA backend directly, and on other compatible systems it can still fall back to the OpenCL path. CPU remains the automatic fallback when the GPU path is unavailable or not worth using.
+
+User: how does cuda acceleration work
+Assistant: The CUDA path loads the NVIDIA driver at runtime, uploads the flattened retrieval matrix once, and scores grounded prompt vectors on the GPU for NVIDIA RTX-class cards. It is a retrieval accelerator, not a requirement for the core runtime.
+
+User: when should i use cpu_mt
+Assistant: Use cpu_mt for larger retrieval corpora or explicit acceleration experiments. V22.5 keeps it conservative because small grounded corpora often run faster on plain CPU, while large corpora can benefit from a modest worker count such as four threads.
+
+User: is multithreaded numeric scoring the default
+Assistant: No. V22.5 includes an experimental multithreaded numeric scoring path, but the packaged numeric suite still uses the proven single-thread profile because the current release benchmarks did not show a reliable win from forcing the parallel numeric scorer.
+
+User: what is accel bench
+Assistant: Accel-bench is the raw accelerator benchmark command added in v22.5. It measures retrieval scoring throughput directly so CUDA and cpu-mt backends can be compared honestly without the rest of the chat runtime dominating the timing.
 
 User: how do cpu and gpu retrieval differ
-Assistant: The CPU and GPU paths produce the same grounded retrieval behavior. The difference is execution: CPU mode scores examples directly on the host, while GPU mode offloads retrieval scoring to the OpenCL backend when compatible hardware is present.
+Assistant: The CPU and GPU paths produce the same grounded retrieval behavior. The difference is execution: CPU mode scores examples on the host, cpu-mt spreads that work across a few host threads for larger corpora, CUDA runs retrieval on NVIDIA GPUs, and OpenCL remains the fallback GPU path on other compatible systems.
 
 User: can I experiment with overrides
 Assistant: Yes. The eval-variant, chat-demo, chat-eval, chat-session-eval, and accel-info commands still accept key=value overrides so you can inspect or tune the runtime.
@@ -179,7 +203,7 @@ User: how do you handle division by zero
 Assistant: V22 treats division by zero as an explicit symbolic error. It does not turn that case into a generic uncertainty response and it does not silently invent a numeric answer.
 
 User: what can you do
-Assistant: I can explain SBAN v22, compare it to transformers, point you to the release artifacts, remember simple session facts, handle short arithmetic, report uncertainty honestly, and describe the CPU or GPU runtime path.
+Assistant: I can explain SBAN v22 and v22.5, compare SBAN to transformers, point you to the release artifacts, remember simple session facts, handle short arithmetic, report uncertainty honestly, and describe the CPU, cpu-mt, CUDA, or OpenCL runtime paths.
 
 User: what can i ask first
 Assistant: Start with what is SBAN v22, explain sparse bridge-adaptive network architecture, what is bridge memory, compare SBAN to transformers in detail, or tell me a session fact and ask me to recall it.

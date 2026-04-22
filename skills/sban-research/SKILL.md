@@ -16,9 +16,9 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/run_v22_release.py` for the packaged benchmark and dialogue suite
-- `scripts/make_v22_deliverables.py` for report, summary, PDF, demo bundle, and repo zip generation
-- `scripts/package_v22_demo.py` for the newcomer demo bundle
+- `scripts/run_v22_5_release.py` for the current packaged benchmark and dialogue suite
+- `scripts/make_v22_5_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v22_5_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -43,7 +43,9 @@ If you need the release targets or commands, read `references/release_profiles.m
 - Prefer adding or tuning deterministic scripts in `scripts/` over leaving release logic in ad hoc shell history.
 - State clearly when a numeric release uses a seeded or otherwise transductive protocol.
 - Separate the product demo story from the numeric benchmark story when the release uses a specialized benchmark profile.
-- For GPU support, keep CPU fallback automatic and validate `accel-info` rather than assuming compatible OpenCL hardware exists everywhere.
+- For GPU support, keep CPU fallback automatic and validate `accel-info` plus `nvidia-smi` rather than assuming compatible OpenCL or CUDA hardware exists everywhere.
+- Treat backend speed claims as measured claims. Add or update an explicit accelerator benchmark instead of inferring GPU wins from chat latency alone.
+- Remember the dialogue loader safety cap: oversized synthetic seed assets will fail around 4 MiB unless you redesign the loader.
 
 ## Architecture notes
 
@@ -52,10 +54,15 @@ If you need the release targets or commands, read `references/release_profiles.m
 - The v20 release keeps the v19 numeric core but upgrades the chat and demo packaging around continuing-session usability.
 - The v21 release adds a dedicated `src/dialogue.zig` runtime with stricter grounding, general session facts, safer persistence, stronger symbolic handling, and an optional OpenCL retrieval path.
 - The v22 release keeps that grounding contract but broadens paraphrase tolerance, makes fact memory more natural, removes the retained-turn cap, adds explicit divide-by-zero handling, and extends the hardening suite to 10M and near-100M runs.
+- The v22.5 release keeps the v22 product behavior but adds a real CUDA backend for NVIDIA RTX GPUs, a raw `accel-bench` command, conservative `cpu_mt` retrieval support, and an experimental multithreaded numeric output scorer.
 - The v22 numeric release also learned three practical hardening lessons:
   use a streamed single-variant path when `include_baseline=false`,
   release dead-memory outgoing capacity in `src/network.zig` instead of retaining it forever,
   and keep the near-100M run on a memory-bounded long-horizon profile instead of forcing the full short-suite higher-order expert stack.
+- The v22.5 backend lessons are different:
+  verify the discrete GPU with `nvidia-smi` while the CUDA workload is live,
+  keep the packaged numeric suite on the single-thread path unless the multithreaded numeric scorer proves itself on the shipped profile,
+  and expect CUDA speedups to show up more clearly in raw retrieval benches than in short end-to-end chat timings.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes

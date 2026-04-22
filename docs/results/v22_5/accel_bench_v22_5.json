@@ -1,0 +1,40 @@
+{
+  "cpu": {
+    "backend": "cpu",
+    "worker_threads": "1",
+    "examples": "14800",
+    "prompts": "9600",
+    "iterations": "4",
+    "total_queries": "38400",
+    "total_scores": "568320000",
+    "elapsed_seconds": 33.282375,
+    "queries_per_second": 1153.76,
+    "scores_per_second": 17075704.43
+  },
+  "cpu_mt": {
+    "backend": "cpu_mt",
+    "worker_threads": "4",
+    "examples": "14800",
+    "prompts": "9600",
+    "iterations": "4",
+    "total_queries": "38400",
+    "total_scores": "568320000",
+    "elapsed_seconds": 35.072895,
+    "queries_per_second": 1094.86,
+    "scores_per_second": 16203965.92
+  },
+  "cuda": {
+    "backend": "cuda",
+    "worker_threads": "1",
+    "examples": "14800",
+    "prompts": "9600",
+    "iterations": "4",
+    "total_queries": "38400",
+    "total_scores": "568320000",
+    "elapsed_seconds": 29.824739,
+    "queries_per_second": 1287.52,
+    "scores_per_second": 19055322.14
+  },
+  "speedup_cuda_vs_cpu": 1.1159,
+  "speedup_cpu_mt_vs_cpu": 0.9489
+}

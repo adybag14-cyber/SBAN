@@ -5,7 +5,7 @@ const dialogue = sban.dialogue;
 
 fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
-        \\SBAN v22 - grounded dialogue, broader paraphrase tolerance, natural session memory, and CPU/GPU retrieval acceleration
+        \\SBAN v22.5 - grounded dialogue plus CUDA, cpu-mt, and technical backend validation
         \\Usage:
         \\  zig build run -- eval-enwik [dataset_path] [json_output_path] [prefix|drift] [segment_len] [checkpoint_interval] [rolling_window]
         \\  zig build run -- eval-ablations [dataset_path] [json_output_path] [prefix|drift] [bits] [segment_len] [checkpoint_interval] [rolling_window]
@@ -42,7 +42,7 @@ fn buildCustomLabel(allocator: std.mem.Allocator, base: []const u8, label_overri
 }
 
 fn printExperimentSummary(writer: *Io.Writer, data: *const sban.experiment.ExperimentData) !void {
-    try writer.print("SBAN v22 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
+    try writer.print("SBAN v22.5 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
     for (data.reports.items) |report| {
         const accuracy = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.total_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
         const top5 = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.top5_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
@@ -217,6 +217,8 @@ pub fn main(init: std.process.Init) !void {
         try dialogue.runChatSessionEval(arena, io, writer, args);
     } else if (std.mem.eql(u8, command, "accel-info")) {
         try dialogue.runAccelInfo(arena, io, writer, args);
+    } else if (std.mem.eql(u8, command, "accel-bench")) {
+        try dialogue.runAccelBench(arena, io, writer, args);
     } else if (std.mem.eql(u8, command, "inspect")) {
         var net = try sban.network.Network.init(arena, sban.config.configForVariant(4, .default));
         defer net.deinit();

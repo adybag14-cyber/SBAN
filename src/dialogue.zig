@@ -10,7 +10,8 @@ const legacy_session_magic = "SBAN_SESSION_V21";
 const max_top_candidates = 16;
 
 const ChatMode = enum { anchor, free, hybrid };
-const AccelBackend = enum { auto, cpu, gpu };
+const AccelBackend = enum { auto, cpu, cpu_mt, gpu, opencl, cuda };
+const AccelRuntime = enum { cpu, cpu_mt, opencl, cuda };
 
 pub const DialogueExample = struct {
     user: []const u8,
@@ -31,6 +32,8 @@ pub const ChatOptions = struct {
     session_path: ?[]const u8 = null,
     mode: ChatMode = .hybrid,
     backend: AccelBackend = .auto,
+    worker_threads: usize = 0,
+    iterations: usize = 1,
     max_bytes: usize = 160,
     continue_bytes: usize = 0,
     allow_generation: bool = false,
@@ -132,9 +135,15 @@ const PreparedExample = struct {
 
 const PreparedCorpus = struct {
     items: std.ArrayList(PreparedExample) = .empty,
+    flat_vectors: ?[]u16 = null,
 
     fn deinit(self: *PreparedCorpus, allocator: std.mem.Allocator) void {
+        if (self.flat_vectors) |flat| allocator.free(flat);
         self.items.deinit(allocator);
+    }
+
+    fn exampleCount(self: *const PreparedCorpus) usize {
+        return self.items.items.len;
     }
 };
 
@@ -168,6 +177,13 @@ const OpenClUnavailable = error{
     NoGpuDevice,
     InvalidKernel,
     OpenClFailure,
+};
+
+const CudaUnavailable = error{
+    NoCudaLoader,
+    NoCudaDevice,
+    InvalidKernel,
+    CudaFailure,
 };
 
 const cl_int = i32;
@@ -425,41 +441,319 @@ const OpenClScorer = struct {
     }
 };
 
-const ApproximateScorer = struct {
-    backend_used: enum { cpu, gpu },
-    gpu: ?OpenClScorer = null,
+const CpuScoreTask = struct {
+    flat_vectors: []const u16,
+    prompt_vector: *const [feature_dim]u16,
+    output: []u32,
+    start_index: usize,
+    end_index: usize,
+};
 
-    fn init(allocator: std.mem.Allocator, preference: AccelBackend, corpus: *const PreparedCorpus) !ApproximateScorer {
+fn scoreCpuRange(task: CpuScoreTask) void {
+    var idx = task.start_index;
+    while (idx < task.end_index) : (idx += 1) {
+        const base = idx * feature_dim;
+        task.output[idx] = dotProductFlat(task.prompt_vector, task.flat_vectors[base .. base + feature_dim]);
+    }
+}
+
+const CpuMtScorer = struct {
+    allocator: std.mem.Allocator,
+    worker_threads: usize,
+
+    fn init(allocator: std.mem.Allocator, corpus: *const PreparedCorpus, requested_threads: usize) CpuMtScorer {
+        const cpu_count = std.Thread.getCpuCount() catch 1;
+        const desired = if (requested_threads != 0) requested_threads else @min(cpu_count, @as(usize, 4));
+        var worker_threads = @max(@as(usize, 1), desired);
+        worker_threads = @min(worker_threads, @max(@as(usize, 1), corpus.exampleCount()));
+        return .{
+            .allocator = allocator,
+            .worker_threads = worker_threads,
+        };
+    }
+
+    fn score(self: *const CpuMtScorer, corpus: *const PreparedCorpus, prompt_vector: *const [feature_dim]u16, output: []u32) !void {
+        const flat = corpus.flat_vectors orelse return error.InvalidCorpus;
+        if (self.worker_threads <= 1 or output.len < 1024) {
+            scoreCpuRange(.{
+                .flat_vectors = flat,
+                .prompt_vector = prompt_vector,
+                .output = output,
+                .start_index = 0,
+                .end_index = output.len,
+            });
+            return;
+        }
+
+        const thread_count = @min(self.worker_threads, output.len);
+        var threads = try self.allocator.alloc(std.Thread, thread_count - 1);
+        defer self.allocator.free(threads);
+        var tasks = try self.allocator.alloc(CpuScoreTask, thread_count);
+        defer self.allocator.free(tasks);
+
+        const chunk_size = @divTrunc(output.len + thread_count - 1, thread_count);
+        var spawned: usize = 0;
+        errdefer {
+            for (threads[0..spawned]) |thread| thread.join();
+        }
+
+        for (0..thread_count) |worker_idx| {
+            const start_index = worker_idx * chunk_size;
+            const end_index = @min(output.len, start_index + chunk_size);
+            tasks[worker_idx] = .{
+                .flat_vectors = flat,
+                .prompt_vector = prompt_vector,
+                .output = output,
+                .start_index = start_index,
+                .end_index = end_index,
+            };
+            if (worker_idx == 0) continue;
+            threads[worker_idx - 1] = try std.Thread.spawn(.{}, scoreCpuRange, .{tasks[worker_idx]});
+            spawned += 1;
+        }
+
+        scoreCpuRange(tasks[0]);
+        for (threads[0..spawned]) |thread| thread.join();
+    }
+};
+
+const cu_result = u32;
+const cu_device = i32;
+const cu_context = ?*anyopaque;
+const cu_module = ?*anyopaque;
+const cu_function = ?*anyopaque;
+const cu_stream = ?*anyopaque;
+const cu_device_ptr = u64;
+
+const CuInitFn = *const fn(u32) callconv(.c) cu_result;
+const CuDeviceGetCountFn = *const fn(*i32) callconv(.c) cu_result;
+const CuDeviceGetFn = *const fn(*cu_device, i32) callconv(.c) cu_result;
+const CuDeviceGetNameFn = *const fn([*]u8, i32, cu_device) callconv(.c) cu_result;
+const CuCtxCreateFn = *const fn(*cu_context, u32, cu_device) callconv(.c) cu_result;
+const CuCtxDestroyFn = *const fn(cu_context) callconv(.c) cu_result;
+const CuModuleLoadDataExFn = *const fn(*cu_module, *const anyopaque, u32, ?[*]u32, ?[*]?*anyopaque) callconv(.c) cu_result;
+const CuModuleGetFunctionFn = *const fn(*cu_function, cu_module, [*:0]const u8) callconv(.c) cu_result;
+const CuModuleUnloadFn = *const fn(cu_module) callconv(.c) cu_result;
+const CuMemAllocFn = *const fn(*cu_device_ptr, usize) callconv(.c) cu_result;
+const CuMemFreeFn = *const fn(cu_device_ptr) callconv(.c) cu_result;
+const CuMemcpyHtoDFn = *const fn(cu_device_ptr, *const anyopaque, usize) callconv(.c) cu_result;
+const CuMemcpyDtoHFn = *const fn(*anyopaque, cu_device_ptr, usize) callconv(.c) cu_result;
+const CuLaunchKernelFn = *const fn(cu_function, u32, u32, u32, u32, u32, u32, u32, cu_stream, ?[*]?*anyopaque, ?[*]?*anyopaque) callconv(.c) cu_result;
+const CuCtxSynchronizeFn = *const fn() callconv(.c) cu_result;
+const CuGetErrorNameFn = *const fn(cu_result, *?[*:0]const u8) callconv(.c) cu_result;
+const CuGetErrorStringFn = *const fn(cu_result, *?[*:0]const u8) callconv(.c) cu_result;
+
+const CudaApi = struct {
+    init: CuInitFn,
+    device_get_count: CuDeviceGetCountFn,
+    device_get: CuDeviceGetFn,
+    device_get_name: CuDeviceGetNameFn,
+    ctx_create: CuCtxCreateFn,
+    ctx_destroy: CuCtxDestroyFn,
+    module_load_data_ex: CuModuleLoadDataExFn,
+    module_get_function: CuModuleGetFunctionFn,
+    module_unload: CuModuleUnloadFn,
+    mem_alloc: CuMemAllocFn,
+    mem_free: CuMemFreeFn,
+    memcpy_htod: CuMemcpyHtoDFn,
+    memcpy_dtoh: CuMemcpyDtoHFn,
+    launch_kernel: CuLaunchKernelFn,
+    ctx_synchronize: CuCtxSynchronizeFn,
+    get_error_name: ?CuGetErrorNameFn = null,
+    get_error_string: ?CuGetErrorStringFn = null,
+};
+
+const CudaScorer = struct {
+    allocator: std.mem.Allocator,
+    lib: DynamicLibrary,
+    api: CudaApi,
+    context: cu_context,
+    module: cu_module,
+    function: cu_function,
+    example_buffer: cu_device_ptr,
+    prompt_buffer: cu_device_ptr,
+    output_buffer: cu_device_ptr,
+    example_count: usize,
+    device_name: []u8,
+    platform_name: []u8,
+
+    fn init(allocator: std.mem.Allocator, flat_matrix: []const u16, example_count: usize) !CudaScorer {
+        var lib = try openCudaLibrary();
+        errdefer lib.close();
+        const api = try loadCudaApi(&lib);
+
+        try checkCuda(api, api.init(0));
+
+        var device_count: i32 = 0;
+        try checkCuda(api, api.device_get_count(&device_count));
+        if (device_count <= 0) return CudaUnavailable.NoCudaDevice;
+
+        var device: cu_device = 0;
+        try checkCuda(api, api.device_get(&device, 0));
+
+        var raw_name: [128]u8 = [_]u8{0} ** 128;
+        try checkCuda(api, api.device_get_name(&raw_name, raw_name.len, device));
+        const device_name = try allocator.dupe(u8, std.mem.sliceTo(&raw_name, 0));
+        errdefer allocator.free(device_name);
+        const platform_name = try allocator.dupe(u8, "NVIDIA CUDA");
+        errdefer allocator.free(platform_name);
+
+        var context: cu_context = null;
+        try checkCuda(api, api.ctx_create(&context, 0, device));
+        errdefer _ = api.ctx_destroy(context);
+
+        var module: cu_module = null;
+        try checkCuda(api, api.module_load_data_ex(&module, @ptrCast(cuda_kernel_ptx.ptr), 0, null, null));
+        errdefer _ = api.ctx_destroy(context);
+        errdefer _ = api.module_unload(module);
+
+        var function: cu_function = null;
+        try checkCuda(api, api.module_get_function(&function, module, "score_examples_cuda"));
+
+        var example_buffer: cu_device_ptr = 0;
+        try checkCuda(api, api.mem_alloc(&example_buffer, flat_matrix.len * @sizeOf(u16)));
+        errdefer _ = api.mem_free(example_buffer);
+        try checkCuda(api, api.memcpy_htod(example_buffer, @ptrCast(flat_matrix.ptr), flat_matrix.len * @sizeOf(u16)));
+
+        var prompt_buffer: cu_device_ptr = 0;
+        try checkCuda(api, api.mem_alloc(&prompt_buffer, feature_dim * @sizeOf(u16)));
+        errdefer _ = api.mem_free(prompt_buffer);
+
+        var output_buffer: cu_device_ptr = 0;
+        try checkCuda(api, api.mem_alloc(&output_buffer, example_count * @sizeOf(u32)));
+        errdefer _ = api.mem_free(output_buffer);
+
+        return .{
+            .allocator = allocator,
+            .lib = lib,
+            .api = api,
+            .context = context,
+            .module = module,
+            .function = function,
+            .example_buffer = example_buffer,
+            .prompt_buffer = prompt_buffer,
+            .output_buffer = output_buffer,
+            .example_count = example_count,
+            .device_name = device_name,
+            .platform_name = platform_name,
+        };
+    }
+
+    fn deinit(self: *CudaScorer) void {
+        _ = self.api.mem_free(self.output_buffer);
+        _ = self.api.mem_free(self.prompt_buffer);
+        _ = self.api.mem_free(self.example_buffer);
+        _ = self.api.module_unload(self.module);
+        _ = self.api.ctx_destroy(self.context);
+        self.lib.close();
+        self.allocator.free(self.device_name);
+        self.allocator.free(self.platform_name);
+    }
+
+    fn score(self: *CudaScorer, prompt_vector: *const [feature_dim]u16, output: []u32) !void {
+        if (output.len != self.example_count) return error.InvalidArgument;
+
+        try checkCuda(self.api, self.api.memcpy_htod(self.prompt_buffer, @ptrCast(prompt_vector), feature_dim * @sizeOf(u16)));
+
+        var prompt_arg = self.prompt_buffer;
+        var example_arg = self.example_buffer;
+        var output_arg = self.output_buffer;
+        var count_arg: u32 = @intCast(self.example_count);
+        var kernel_params = [_]?*anyopaque{
+            @ptrCast(&prompt_arg),
+            @ptrCast(&example_arg),
+            @ptrCast(&output_arg),
+            @ptrCast(&count_arg),
+        };
+
+        const block_x: u32 = 256;
+        const grid_x: u32 = @intCast(@divTrunc(self.example_count + block_x - 1, block_x));
+        try checkCuda(self.api, self.api.launch_kernel(self.function, grid_x, 1, 1, block_x, 1, 1, 0, null, &kernel_params, null));
+        try checkCuda(self.api, self.api.ctx_synchronize());
+        try checkCuda(self.api, self.api.memcpy_dtoh(output.ptr, self.output_buffer, output.len * @sizeOf(u32)));
+    }
+};
+
+const ApproximateScorer = struct {
+    allocator: std.mem.Allocator,
+    backend_used: AccelRuntime,
+    cpu_mt: ?CpuMtScorer = null,
+    opencl: ?OpenClScorer = null,
+    cuda: ?CudaScorer = null,
+
+    fn init(allocator: std.mem.Allocator, preference: AccelBackend, corpus: *const PreparedCorpus, requested_threads: usize) !ApproximateScorer {
+        const cpu_mt = CpuMtScorer.init(allocator, corpus, requested_threads);
         switch (preference) {
-            .cpu => return .{ .backend_used = .cpu, .gpu = null },
-            .gpu => return .{ .backend_used = .gpu, .gpu = try initGpuScorer(allocator, corpus) },
+            .cpu => return .{ .allocator = allocator, .backend_used = .cpu },
+            .cpu_mt => return .{ .allocator = allocator, .backend_used = if (cpu_mt.worker_threads > 1) .cpu_mt else .cpu, .cpu_mt = cpu_mt },
+            .cuda => return .{ .allocator = allocator, .backend_used = .cuda, .cuda = try initCudaScorer(allocator, corpus) },
+            .opencl => return .{ .allocator = allocator, .backend_used = .opencl, .opencl = try initOpenClScorer(allocator, corpus) },
+            .gpu => {
+                if (initCudaScorer(allocator, corpus)) |cuda| {
+                    return .{ .allocator = allocator, .backend_used = .cuda, .cuda = cuda };
+                } else |_| {
+                    return .{ .allocator = allocator, .backend_used = .opencl, .opencl = try initOpenClScorer(allocator, corpus) };
+                }
+            },
             .auto => {
-                const gpu = initGpuScorer(allocator, corpus) catch {
-                    return .{ .backend_used = .cpu, .gpu = null };
-                };
-                return .{ .backend_used = .gpu, .gpu = gpu };
+                if (corpus.exampleCount() >= 4096) {
+                    if (initCudaScorer(allocator, corpus)) |cuda| {
+                        return .{ .allocator = allocator, .backend_used = .cuda, .cuda = cuda };
+                    } else |_| {}
+                }
+                if (cpu_mt.worker_threads > 1 and corpus.exampleCount() >= 8192) {
+                    return .{ .allocator = allocator, .backend_used = .cpu_mt, .cpu_mt = cpu_mt };
+                }
+                return .{ .allocator = allocator, .backend_used = .cpu };
             },
         }
     }
 
     fn deinit(self: *ApproximateScorer) void {
-        if (self.gpu) |*gpu| gpu.deinit();
+        if (self.opencl) |*gpu| gpu.deinit();
+        if (self.cuda) |*gpu| gpu.deinit();
     }
 
     fn backendLabel(self: *const ApproximateScorer) []const u8 {
         return switch (self.backend_used) {
             .cpu => "cpu",
-            .gpu => "gpu",
+            .cpu_mt => "cpu_mt",
+            .opencl => "opencl",
+            .cuda => "cuda",
         };
     }
 
+    fn workerThreadCount(self: *const ApproximateScorer) usize {
+        return if (self.cpu_mt) |cpu_mt| cpu_mt.worker_threads else 1;
+    }
+
+    fn platformLabel(self: *const ApproximateScorer) ?[]const u8 {
+        if (self.cuda) |*gpu| return gpu.platform_name;
+        if (self.opencl) |*gpu| return gpu.platform_name;
+        return null;
+    }
+
+    fn deviceLabel(self: *const ApproximateScorer) ?[]const u8 {
+        if (self.cuda) |*gpu| return gpu.device_name;
+        if (self.opencl) |*gpu| return gpu.device_name;
+        return null;
+    }
+
     fn score(self: *ApproximateScorer, corpus: *const PreparedCorpus, prompt_vector: *const [feature_dim]u16, output: []u32) !void {
-        if (self.gpu) |*gpu| {
-            return gpu.score(prompt_vector, output);
+        if (self.cuda) |*gpu| return gpu.score(prompt_vector, output);
+        if (self.opencl) |*gpu| return gpu.score(prompt_vector, output);
+        if (self.backend_used == .cpu_mt) {
+            if (self.cpu_mt) |cpu_mt| return cpu_mt.score(corpus, prompt_vector, output);
         }
-        for (corpus.items.items, 0..) |item, idx| {
-            output[idx] = dotProduct(prompt_vector, &item.vector);
-        }
+
+        const flat = corpus.flat_vectors orelse return error.InvalidCorpus;
+        scoreCpuRange(.{
+            .flat_vectors = flat,
+            .prompt_vector = prompt_vector,
+            .output = output,
+            .start_index = 0,
+            .end_index = output.len,
+        });
     }
 };
 
@@ -469,6 +763,7 @@ pub fn printUsage(writer: *Io.Writer) !void {
         \\  zig build run -- chat-eval [prompt_file_path] [key=value ...]
         \\  zig build run -- chat-session-eval [script_file_path] [key=value ...]
         \\  zig build run -- accel-info [key=value ...]
+        \\  zig build run -- accel-bench [prompt_file_path] [key=value ...]
     );
 }
 
@@ -490,17 +785,94 @@ pub fn runAccelInfo(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer
     var corpus = try prepareCorpus(allocator, examples.items);
     defer corpus.deinit(allocator);
 
-    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus) catch |err| {
+    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
         try writer.print("backend=cpu\nreason={s}\n", .{@errorName(err)});
         return;
     };
     defer scorer.deinit();
 
-    if (scorer.gpu) |*gpu| {
-        try writer.print("backend=gpu\nplatform={s}\ndevice={s}\n", .{ gpu.platform_name, gpu.device_name });
+    if (scorer.platformLabel()) |platform| {
+        const device = scorer.deviceLabel() orelse "unknown";
+        try writer.print("backend={s}\nplatform={s}\ndevice={s}\n", .{ scorer.backendLabel(), platform, device });
     } else {
-        try writer.writeAll("backend=cpu\nreason=no_gpu_accelerator\n");
+        try writer.print("backend={s}\nworker_threads={d}\n", .{ scorer.backendLabel(), scorer.workerThreadCount() });
     }
+}
+
+pub fn runAccelBench(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer, args: []const []const u8) !void {
+    if (args.len < 3) {
+        try writer.writeAll("error=missing_prompt_file\n");
+        try writer.flush();
+        return;
+    }
+
+    var options = ChatOptions{};
+    parseChatOptions(writer, args, 3, &options) catch {
+        try writer.flush();
+        return;
+    };
+    if (options.iterations == 0) options.iterations = 1;
+
+    const seed_bytes = readWholeFileFriendly(allocator, io, writer, options.seed_path, "seed_path") orelse return;
+    defer allocator.free(seed_bytes);
+    const prompt_bytes = readWholeFileFriendly(allocator, io, writer, args[2], "prompt_path") orelse return;
+    defer allocator.free(prompt_bytes);
+
+    var examples = parseDialogueExamples(allocator, seed_bytes) catch {
+        try writer.writeAll("error=invalid_seed_format\n");
+        try writer.flush();
+        return;
+    };
+    defer examples.deinit(allocator);
+    var corpus = try prepareCorpus(allocator, examples.items);
+    defer corpus.deinit(allocator);
+    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
+        try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
+        try writer.flush();
+        return;
+    };
+    defer scorer.deinit();
+
+    var prompt_vectors = std.ArrayList([feature_dim]u16).empty;
+    defer prompt_vectors.deinit(allocator);
+    var iter = std.mem.splitScalar(u8, prompt_bytes, '\n');
+    while (iter.next()) |raw_line| {
+        const prompt = try sanitizeTurnText(allocator, trimLine(raw_line));
+        defer allocator.free(prompt);
+        if (prompt.len == 0 or prompt[0] == '#') continue;
+        var tokenized = try tokenizeText(allocator, prompt);
+        defer tokenized.deinit(allocator);
+        try prompt_vectors.append(allocator, tokenized.vector);
+    }
+
+    if (prompt_vectors.items.len == 0) {
+        try writer.writeAll("error=no_prompts\n");
+        try writer.flush();
+        return;
+    }
+
+    const output = try allocator.alloc(u32, corpus.exampleCount());
+    defer allocator.free(output);
+    var total_queries: usize = 0;
+    for (0..options.iterations) |_| {
+        for (prompt_vectors.items) |*vector| {
+            try scorer.score(&corpus, vector, output);
+            total_queries += 1;
+        }
+    }
+
+    try writer.print(
+        "backend={s}\nworker_threads={d}\nexamples={d}\nprompts={d}\niterations={d}\ntotal_queries={d}\ntotal_scores={d}\n",
+        .{
+            scorer.backendLabel(),
+            scorer.workerThreadCount(),
+            corpus.exampleCount(),
+            prompt_vectors.items.len,
+            options.iterations,
+            total_queries,
+            total_queries * corpus.exampleCount(),
+        },
+    );
 }
 
 pub fn runChatDemo(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer, args: []const []const u8) !void {
@@ -534,7 +906,7 @@ pub fn runChatDemo(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
     var corpus = try prepareCorpus(allocator, examples.items);
     defer corpus.deinit(allocator);
 
-    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus) catch |err| {
+    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
         try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
         try writer.flush();
         return;
@@ -582,7 +954,7 @@ pub fn runChatEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
     defer examples.deinit(allocator);
     var corpus = try prepareCorpus(allocator, examples.items);
     defer corpus.deinit(allocator);
-    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus) catch |err| {
+    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
         try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
         try writer.flush();
         return;
@@ -638,7 +1010,7 @@ pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.
     defer examples.deinit(allocator);
     var corpus = try prepareCorpus(allocator, examples.items);
     defer corpus.deinit(allocator);
-    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus) catch |err| {
+    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
         try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
         try writer.flush();
         return;
@@ -1095,10 +1467,14 @@ fn parseChatOptions(writer: *Io.Writer, args: []const []const u8, start_idx: usi
                 return error.InvalidOverride;
             }
         } else if (std.mem.eql(u8, key, "backend")) {
-            if (std.mem.eql(u8, value, "auto")) options.backend = .auto else if (std.mem.eql(u8, value, "cpu")) options.backend = .cpu else if (std.mem.eql(u8, value, "gpu")) options.backend = .gpu else {
+            if (std.mem.eql(u8, value, "auto")) options.backend = .auto else if (std.mem.eql(u8, value, "cpu")) options.backend = .cpu else if (std.mem.eql(u8, value, "cpu_mt")) options.backend = .cpu_mt else if (std.mem.eql(u8, value, "gpu")) options.backend = .gpu else if (std.mem.eql(u8, value, "opencl")) options.backend = .opencl else if (std.mem.eql(u8, value, "cuda")) options.backend = .cuda else {
                 try writer.print("invalid_backend={s}\n", .{value});
                 return error.InvalidOverride;
             }
+        } else if (std.mem.eql(u8, key, "threads")) {
+            options.worker_threads = try std.fmt.parseInt(usize, value, 10);
+        } else if (std.mem.eql(u8, key, "iterations")) {
+            options.iterations = try std.fmt.parseInt(usize, value, 10);
         } else if (std.mem.eql(u8, key, "continue_bytes")) {
             options.continue_bytes = try std.fmt.parseInt(usize, value, 10);
         } else if (std.mem.eql(u8, key, "allow_generation")) {
@@ -1127,6 +1503,11 @@ fn prepareCorpus(allocator: std.mem.Allocator, examples: []const DialogueExample
             .example = example,
             .vector = tokenized.vector,
         });
+    }
+    const flat = try allocator.alloc(u16, corpus.items.items.len * feature_dim);
+    corpus.flat_vectors = flat;
+    for (corpus.items.items, 0..) |item, idx| {
+        @memcpy(flat[idx * feature_dim .. (idx + 1) * feature_dim], item.vector[0..]);
     }
     return corpus;
 }
@@ -1720,14 +2101,16 @@ fn decodeField(allocator: std.mem.Allocator, encoded: []const u8) ![]u8 {
     return decoded;
 }
 
-fn initGpuScorer(allocator: std.mem.Allocator, corpus: *const PreparedCorpus) !OpenClScorer {
+fn initOpenClScorer(allocator: std.mem.Allocator, corpus: *const PreparedCorpus) !OpenClScorer {
     if (corpus.items.items.len == 0) return OpenClUnavailable.NoGpuDevice;
-    const flat = try allocator.alloc(u16, corpus.items.items.len * feature_dim);
-    defer allocator.free(flat);
-    for (corpus.items.items, 0..) |item, idx| {
-        @memcpy(flat[idx * feature_dim .. (idx + 1) * feature_dim], item.vector[0..]);
-    }
+    const flat = corpus.flat_vectors orelse return OpenClUnavailable.NoGpuDevice;
     return OpenClScorer.init(allocator, flat, corpus.items.items.len);
+}
+
+fn initCudaScorer(allocator: std.mem.Allocator, corpus: *const PreparedCorpus) !CudaScorer {
+    if (corpus.items.items.len == 0) return CudaUnavailable.NoCudaDevice;
+    const flat = corpus.flat_vectors orelse return CudaUnavailable.NoCudaDevice;
+    return CudaScorer.init(allocator, flat, corpus.items.items.len);
 }
 
 fn dotProduct(lhs: *const [feature_dim]u16, rhs: *const [feature_dim]u16) u32 {
@@ -1736,6 +2119,43 @@ fn dotProduct(lhs: *const [feature_dim]u16, rhs: *const [feature_dim]u16) u32 {
         total +%= @as(u32, left) * @as(u32, rhs[idx]);
     }
     return total;
+}
+
+fn dotProductFlat(lhs: *const [feature_dim]u16, rhs: []const u16) u32 {
+    var total: u32 = 0;
+    for (lhs, 0..) |left, idx| {
+        total +%= @as(u32, left) * @as(u32, rhs[idx]);
+    }
+    return total;
+}
+
+fn openCudaLibrary() !DynamicLibrary {
+    if (builtin.os.tag == .windows) {
+        return DynamicLibrary.open("nvcuda.dll");
+    }
+    return DynamicLibrary.open("libcuda.so.1") catch DynamicLibrary.open("libcuda.so");
+}
+
+fn loadCudaApi(lib: *DynamicLibrary) !CudaApi {
+    return .{
+        .init = lib.lookup(CuInitFn, "cuInit") orelse return CudaUnavailable.NoCudaLoader,
+        .device_get_count = lib.lookup(CuDeviceGetCountFn, "cuDeviceGetCount") orelse return CudaUnavailable.NoCudaLoader,
+        .device_get = lib.lookup(CuDeviceGetFn, "cuDeviceGet") orelse return CudaUnavailable.NoCudaLoader,
+        .device_get_name = lib.lookup(CuDeviceGetNameFn, "cuDeviceGetName") orelse return CudaUnavailable.NoCudaLoader,
+        .ctx_create = lib.lookup(CuCtxCreateFn, "cuCtxCreate_v2") orelse lib.lookup(CuCtxCreateFn, "cuCtxCreate") orelse return CudaUnavailable.NoCudaLoader,
+        .ctx_destroy = lib.lookup(CuCtxDestroyFn, "cuCtxDestroy_v2") orelse lib.lookup(CuCtxDestroyFn, "cuCtxDestroy") orelse return CudaUnavailable.NoCudaLoader,
+        .module_load_data_ex = lib.lookup(CuModuleLoadDataExFn, "cuModuleLoadDataEx") orelse return CudaUnavailable.NoCudaLoader,
+        .module_get_function = lib.lookup(CuModuleGetFunctionFn, "cuModuleGetFunction") orelse return CudaUnavailable.NoCudaLoader,
+        .module_unload = lib.lookup(CuModuleUnloadFn, "cuModuleUnload") orelse return CudaUnavailable.NoCudaLoader,
+        .mem_alloc = lib.lookup(CuMemAllocFn, "cuMemAlloc_v2") orelse lib.lookup(CuMemAllocFn, "cuMemAlloc") orelse return CudaUnavailable.NoCudaLoader,
+        .mem_free = lib.lookup(CuMemFreeFn, "cuMemFree_v2") orelse lib.lookup(CuMemFreeFn, "cuMemFree") orelse return CudaUnavailable.NoCudaLoader,
+        .memcpy_htod = lib.lookup(CuMemcpyHtoDFn, "cuMemcpyHtoD_v2") orelse lib.lookup(CuMemcpyHtoDFn, "cuMemcpyHtoD") orelse return CudaUnavailable.NoCudaLoader,
+        .memcpy_dtoh = lib.lookup(CuMemcpyDtoHFn, "cuMemcpyDtoH_v2") orelse lib.lookup(CuMemcpyDtoHFn, "cuMemcpyDtoH") orelse return CudaUnavailable.NoCudaLoader,
+        .launch_kernel = lib.lookup(CuLaunchKernelFn, "cuLaunchKernel") orelse return CudaUnavailable.NoCudaLoader,
+        .ctx_synchronize = lib.lookup(CuCtxSynchronizeFn, "cuCtxSynchronize") orelse return CudaUnavailable.NoCudaLoader,
+        .get_error_name = lib.lookup(CuGetErrorNameFn, "cuGetErrorName"),
+        .get_error_string = lib.lookup(CuGetErrorStringFn, "cuGetErrorString"),
+    };
 }
 
 fn openOpenClLibrary() !DynamicLibrary {
@@ -1827,6 +2247,21 @@ fn checkCl(errcode: cl_int) !void {
     return OpenClUnavailable.OpenClFailure;
 }
 
+fn checkCuda(api: CudaApi, result: cu_result) !void {
+    if (result == 0) return;
+    if (api.get_error_name) |func| {
+        var name_ptr: ?[*:0]const u8 = null;
+        if (func(result, &name_ptr) == 0 and name_ptr != null) {
+            std.log.err("CUDA failure {d}: {s}", .{ result, std.mem.sliceTo(name_ptr.?, 0) });
+        } else {
+            std.log.err("CUDA failure {d}", .{result});
+        }
+    } else {
+        std.log.err("CUDA failure {d}", .{result});
+    }
+    return CudaUnavailable.CudaFailure;
+}
+
 const kernel_source: [:0]const u8 =
     \\__kernel void score_examples(
     \\    __global const ushort* prompt,
@@ -1841,6 +2276,61 @@ const kernel_source: [:0]const u8 =
     \\        sum += (uint)prompt[i] * (uint)examples[base + i];
     \\    }
     \\    out[gid] = sum;
+    \\}
+;
+
+const cuda_kernel_ptx: [:0]const u8 =
+    \\.version 6.0
+    \\.target sm_30
+    \\.address_size 64
+    \\
+    \\.visible .entry score_examples_cuda(
+    \\    .param .u64 prompt_ptr,
+    \\    .param .u64 examples_ptr,
+    \\    .param .u64 out_ptr,
+    \\    .param .u32 example_count
+    \\)
+    \\{
+    \\    .reg .pred %p<3>;
+    \\    .reg .b16 %h<3>;
+    \\    .reg .b32 %r<10>;
+    \\    .reg .b64 %rd<10>;
+    \\
+    \\    ld.param.u64 %rd1, [prompt_ptr];
+    \\    ld.param.u64 %rd2, [examples_ptr];
+    \\    ld.param.u64 %rd3, [out_ptr];
+    \\    ld.param.u32 %r1, [example_count];
+    \\
+    \\    mov.u32 %r2, %ctaid.x;
+    \\    mov.u32 %r3, %ntid.x;
+    \\    mov.u32 %r4, %tid.x;
+    \\    mad.lo.s32 %r5, %r2, %r3, %r4;
+    \\    setp.ge.u32 %p1, %r5, %r1;
+    \\    @%p1 bra DONE;
+    \\
+    \\    mul.wide.u32 %rd4, %r5, 256;
+    \\    add.s64 %rd5, %rd2, %rd4;
+    \\    mov.u32 %r6, 0;
+    \\    mov.u32 %r7, 0;
+    \\LOOP:
+    \\    setp.ge.u32 %p2, %r6, 128;
+    \\    @%p2 bra STORE;
+    \\    mul.wide.u32 %rd6, %r6, 2;
+    \\    add.s64 %rd7, %rd1, %rd6;
+    \\    add.s64 %rd8, %rd5, %rd6;
+    \\    ld.global.u16 %h1, [%rd7];
+    \\    ld.global.u16 %h2, [%rd8];
+    \\    cvt.u32.u16 %r8, %h1;
+    \\    cvt.u32.u16 %r9, %h2;
+    \\    mad.lo.u32 %r7, %r8, %r9, %r7;
+    \\    add.u32 %r6, %r6, 1;
+    \\    bra LOOP;
+    \\STORE:
+    \\    mul.wide.u32 %rd9, %r5, 4;
+    \\    add.s64 %rd9, %rd3, %rd9;
+    \\    st.global.u32 [%rd9], %r7;
+    \\DONE:
+    \\    ret;
     \\}
 ;
 

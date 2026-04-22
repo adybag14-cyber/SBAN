@@ -1,0 +1,1 @@
+SBAN v22.5 keeps the packaged numeric suite on score_threads=1 because the experimental multithreaded numeric scorer matched accuracy but did not show a reliable win on the shipped 250k and 1M profiles. The raw retrieval accelerator bench did show a meaningful CUDA gain on the tiled grounded corpus, so CUDA is the preferred large-corpus GPU path where available.

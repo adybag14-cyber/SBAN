@@ -1,0 +1,139 @@
+[1] prompt=what is SBAN v22.5
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v22.5
+response=SBAN v22.5 is the technical follow-up to v22. It keeps the grounded dialogue behavior and numeric guardrail stable while adding a real CUDA backend for NVIDIA RTX GPUs, a conservative multithreaded retrieval path, a raw accel-bench command, and an experimental multithreaded numeric scoring path that remains optional because the current release suite still favors the proven single-thread numeric profile.
+
+[2] prompt=what changed in v22.5
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what changed in v22.5
+response=V22.5 is a backend and tooling release rather than a dialogue-behavior rewrite. It adds real NVIDIA CUDA retrieval acceleration, a raw accelerator benchmark command, multithreaded retrieval support with conservative worker selection, an experimental multithreaded numeric scorer, and keeps the shipped numeric suite on the single-thread fallback when the new path does not beat it.
+
+[3] prompt=how is v22.5 different from v22
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how is v22.5 different from v22
+response=V22 focused on usability hardening. V22.5 keeps that user-facing behavior but upgrades the runtime plumbing underneath it: CUDA support for NVIDIA RTX-class GPUs, measured accelerator benchmarking, optional multithreaded retrieval, and an experimental numeric parallel scorer that is available for tuning without replacing the stable release profile by default.
+
+[4] prompt=what is bridge memory
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is bridge memory
+response=A bridge memory is the SBAN structure that carries context from one horizon to another when short local evidence alone is not enough. It acts like an adaptive context bridge between recent activity and longer-range state rather than a frozen attention lookup.
+
+[5] prompt=compare SBAN to transformers in detail
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=compare SBAN to transformers in detail
+response=Transformers rely on fixed trained weights and dense attention during inference. SBAN instead updates online state while it runs, keeps sparse memory structures alive across time, and uses adaptive bridge paths to preserve longer context without depending on a giant frozen checkpoint. The tradeoff is that SBAN must prove stability and grounding in the live runtime, while transformers front-load more of their capability into pretraining.
+
+[6] prompt=do you support gpus
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=do you support gpus
+response=Yes. The current runtime supports CPU execution by default, a real CUDA backend for NVIDIA RTX GPUs, and an OpenCL fallback path for compatible GPU systems.
+
+[7] prompt=do you support nvidia rtx gpus
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=do you support nvidia rtx gpus
+response=Yes. V22.5 adds a CUDA backend for NVIDIA RTX-class GPUs, so compatible NVIDIA systems can use direct CUDA retrieval acceleration instead of relying only on OpenCL.
+
+[8] prompt=how does cuda acceleration work
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how does cuda acceleration work
+response=The CUDA path loads the NVIDIA driver at runtime, uploads the flattened retrieval matrix once, and scores grounded prompt vectors on the GPU for NVIDIA RTX-class cards. It is a retrieval accelerator, not a requirement for the core runtime.
+
+[9] prompt=when should i use cpu_mt
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=when should i use cpu_mt
+response=Use cpu_mt for larger retrieval corpora or explicit acceleration experiments. V22.5 keeps it conservative because small grounded corpora often run faster on plain CPU, while large corpora can benefit from a modest worker count such as four threads.
+
+[10] prompt=is multithreaded numeric scoring the default
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is multithreaded numeric scoring the default
+response=No. V22.5 includes an experimental multithreaded numeric scoring path, but the packaged numeric suite still uses the proven single-thread profile because the current release benchmarks did not show a reliable win from forcing the parallel numeric scorer.
+
+[11] prompt=what is accel bench
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is accel bench
+response=Accel-bench is the raw accelerator benchmark command added in v22.5. It measures retrieval scoring throughput directly so CUDA and cpu-mt backends can be compared honestly without the rest of the chat runtime dominating the timing.
+
+[12] prompt=how do i launch it on linux
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do i launch it on linux
+response=Launch the Linux demo by opening a terminal in the bundle directory and running ./SBAN_v22_Start.sh.
+
+[13] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+[14] prompt=can you recall my name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your name yet. Tell me with 'my name is ...' or 'hi I am ...' and I will remember it for this session.
+
+[15] prompt=i live in london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+[16] prompt=what city do i live in
+mode=session-recall-miss
+backend=cpu
+response=I do not know where you live yet. Tell me with 'I live in ...' and I will remember it for this session.
+
+[17] prompt=our lab is sbx
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+[18] prompt=what is our lab
+mode=session-recall-miss
+backend=cpu
+response=I do not know your lab yet. Tell me with 'our lab is ...' or 'my lab is ...' and I will remember it for this session.
+
+[19] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+[20] prompt=what is my role
+mode=session-recall-miss
+backend=cpu
+response=I do not know your role yet. Tell me with 'my role is ...' or 'I work as ...' and I will remember it for this session.
+
+[21] prompt=what is 3.5 + 1.2
+mode=symbolic-math
+backend=cpu
+response=3.5 + 1.2 = 4.7.
+
+[22] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+[23] prompt=tell me a joke
+mode=uncertain
+backend=cpu
+response=I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.
+
+[24] prompt=what should v23 improve
+mode=uncertain
+backend=cpu
+response=I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.
+
+[25] prompt=thank you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=thank you
+response=You are welcome. I am ready for the next SBAN v22 check.
+
+summary turns=25 anchored=13 retrieved=0 symbolic=10 nonempty=25

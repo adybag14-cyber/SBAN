@@ -216,6 +216,8 @@ pub const NetworkConfig = struct {
     burst_max_age: u32 = 32768,
     burst_min_streak: u8 = 2,
     reset_local_experts_on_boundary: bool = true,
+    score_threads: u16 = 1,
+    parallel_score_min_predictive_nodes: u16 = 128,
 };
 
 pub fn configForVariant(bits: u8, variant: NetworkVariant) NetworkConfig {
@@ -525,6 +527,10 @@ pub fn applyOverride(config: *NetworkConfig, key: []const u8, value: []const u8)
         config.burst_max_age = try std.fmt.parseInt(u32, value, 10);
     } else if (std.mem.eql(u8, key, "burst_min_streak")) {
         config.burst_min_streak = try std.fmt.parseInt(u8, value, 10);
+    } else if (std.mem.eql(u8, key, "score_threads")) {
+        config.score_threads = try std.fmt.parseInt(u16, value, 10);
+    } else if (std.mem.eql(u8, key, "parallel_score_min_predictive_nodes")) {
+        config.parallel_score_min_predictive_nodes = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "enable_region_compaction")) {
         config.enable_region_compaction = try parseBool(value);
     } else if (std.mem.eql(u8, key, "enable_long_term")) {
@@ -578,5 +584,7 @@ test "bit labels cover default bit widths" {
         var cfg_local = configForVariant(bits, .default);
         try applyOverride(&cfg_local, "history_lags", "9");
         try std.testing.expectEqual(@as(u8, 9), cfg_local.history_lags);
+        try applyOverride(&cfg_local, "score_threads", "4");
+        try std.testing.expectEqual(@as(u16, 4), cfg_local.score_threads);
     }
 }

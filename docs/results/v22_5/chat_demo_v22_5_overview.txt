@@ -1,0 +1,5 @@
+prompt=what is SBAN v22.5
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v22.5
+response=SBAN v22.5 is the technical follow-up to v22. It keeps the grounded dialogue behavior and numeric guardrail stable while adding a real CUDA backend for NVIDIA RTX GPUs, a conservative multithreaded retrieval path, a raw accel-bench command, and an experimental multithreaded numeric scoring path that remains optional because the current release suite still favors the proven single-thread numeric profile.

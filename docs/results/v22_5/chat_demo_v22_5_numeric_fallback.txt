@@ -1,0 +1,5 @@
+prompt=is multithreaded numeric scoring the default
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is multithreaded numeric scoring the default
+response=No. V22.5 includes an experimental multithreaded numeric scoring path, but the packaged numeric suite still uses the proven single-thread profile because the current release benchmarks did not show a reliable win from forcing the parallel numeric scorer.

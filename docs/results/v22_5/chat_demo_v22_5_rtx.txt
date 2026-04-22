@@ -1,0 +1,5 @@
+prompt=do you support nvidia rtx gpus
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=do you support nvidia rtx gpus
+response=Yes. V22.5 adds a CUDA backend for NVIDIA RTX-class GPUs, so compatible NVIDIA systems can use direct CUDA retrieval acceleration instead of relying only on OpenCL.

@@ -1,8 +1,8 @@
 # SBAN Release Profiles
 
-## Current baseline for v22 work
+## Current baseline for v22.5 work
 
-Use the packaged v21 numeric release as the baseline when testing or extending v22.
+Use the packaged v22 numeric release as the baseline when testing or extending v22.5.
 
 ### v21 packaged metrics
 
@@ -12,42 +12,35 @@ Use the packaged v21 numeric release as the baseline when testing or extending v
 - 250k: `99.4076%`
 - 1M: `99.4344%`
 
-## v22 target
+## v22.5 target
 
-The v22 research goal is **stability plus usability hardening**:
+The v22.5 research goal is **backend realism without numeric regression**:
 
-- keep each original packaged numeric benchmark at roughly the v21 level
-- broaden grounded paraphrase tolerance without regressing into loose canned-answer retrieval
-- make session memory more natural for facts such as city, lab, and role
-- remove the retained-turn cap from continuing sessions
-- keep divide-by-zero explicit instead of collapsing into generic uncertainty
-- extend the hardening suite to 10M and near-100M runs
-- preserve CPU fallback and validate the optional OpenCL GPU path
+- keep each original packaged numeric benchmark at roughly the v22 level
+- keep the v22 grounded dialogue behavior intact
+- add a real CUDA path for NVIDIA RTX GPUs
+- add a raw accelerator benchmark that measures retrieval throughput directly
+- preserve the old single-thread numeric path as the release default unless the new numeric scorer shows a dependable win
+- keep CPU fallback automatic and honest
 
-## v22 release commands
+## v22.5 release commands
 
 Run the measured suite:
 
 ```bash
-python scripts/run_v22_release.py
-```
-
-Resume from existing benchmark JSON files after an interrupted long hardening run:
-
-```bash
-python scripts/run_v22_release.py --skip-build --resume
+python scripts/run_v22_5_release.py
 ```
 
 Generate the packaged report, summary, PDF, demo bundle, and repo zip:
 
 ```bash
-python scripts/make_v22_deliverables.py
+python scripts/make_v22_5_deliverables.py
 ```
 
 Package the newcomer demo directly:
 
 ```bash
-python scripts/package_v22_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
+python scripts/package_v22_5_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
 ```
 
 ## v22 shipped numeric profile
@@ -93,18 +86,19 @@ The near-100M run is intentionally just under a literal 100,000,000 predictions 
 
 The 100M-class run is a long-horizon hardening profile rather than a strict copy of the short-suite common profile. It disables the order-4, order-5, and continuation expert bonuses so the long run does not waste memory and time maintaining expert tables that are not part of that hardened measurement.
 
-## v22 dialogue and product profile
+## v22.5 dialogue and product profile
 
 - default seed asset: `data/sban_dialogue_seed_v22.txt`
-- prompt eval asset: `data/sban_chat_eval_prompts_v22.txt`
-- session eval asset: `data/sban_session_eval_v22.txt`
+- prompt eval asset: `data/sban_chat_eval_prompts_v22_5.txt`
+- session eval asset: `data/sban_session_eval_v22_5.txt`
 - default product stance: grounded answers first, honest uncertainty otherwise
 - session persistence: encoded structured `SBAN_SESSION_V22` format with no retained-turn cap
-- acceleration: CPU by default for the newcomer chat loop, optional OpenCL GPU retrieval through `backend=gpu` and `accel-info`
+- acceleration: CPU by default for the newcomer chat loop, optional `cpu_mt`, direct CUDA on NVIDIA, and OpenCL fallback through `backend=gpu`
 
 ## Interpretation guardrails
 
 - The numeric benchmark story and the usability story are separate and should stay separate.
 - The original short numeric suite is the baseline guardrail; the 10M and near-100M runs are hardening extensions.
-- GPU support is real and validated, but on the current small grounded corpus CPU is the better default for startup responsiveness.
+- GPU support is real and validated, and CUDA is the preferred large-corpus accelerator on NVIDIA hardware.
+- The experimental numeric multithread path is not the packaged default unless the measured suite proves it is faster.
 - Preserve the v21 trustworthiness gains. Do not loosen retrieval thresholds in a way that turns uncertainty failures back into plausible-but-wrong blurbs.

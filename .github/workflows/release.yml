@@ -45,17 +45,17 @@ jobs:
 
       - name: Smoke demo
         run: |
-          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); session_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_session_eval_v22.txt', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'passed=18' in session_eval and 'expect_pass=false' not in session_eval, session_eval; uncertain = subprocess.check_output([str(exe), 'chat-demo', 'tell me a joke', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'not sure' in uncertain.lower(), uncertain; version_guard = subprocess.check_output([str(exe), 'chat-demo', 'what should v23 improve', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'not sure' in version_guard.lower(), version_guard; bridge = subprocess.check_output([str(exe), 'chat-demo', 'what is bridge memory', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'context bridge' in bridge.lower(), bridge"
+          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); session_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_session_eval_v22_5.txt', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'passed=18' in session_eval and 'expect_pass=false' not in session_eval, session_eval; uncertain = subprocess.check_output([str(exe), 'chat-demo', 'tell me a joke', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'not sure' in uncertain.lower(), uncertain; overview = subprocess.check_output([str(exe), 'chat-demo', 'what is SBAN v22.5', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'v22.5' in overview.lower(), overview; rtx = subprocess.check_output([str(exe), 'chat-demo', 'do you support nvidia rtx gpus', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v22.txt'], text=True); assert 'cuda' in rtx.lower(), rtx"
 
       - name: Package demo bundle
         run: |
-          python scripts/package_v22_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
+          python scripts/package_v22_5_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-demo
-          path: deliverables/v22/demo/SBAN_v22_${{ matrix.platform }}_demo.zip
+          path: deliverables/v22_5/demo/SBAN_v22_5_${{ matrix.platform }}_demo.zip
 
       - name: Ensure release exists
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,4 +74,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.ref_name }}" "deliverables/v22/demo/SBAN_v22_${{ matrix.platform }}_demo.zip" --clobber
+          gh release upload "${{ github.ref_name }}" "deliverables/v22_5/demo/SBAN_v22_5_${{ matrix.platform }}_demo.zip" --clobber

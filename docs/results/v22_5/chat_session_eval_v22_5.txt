@@ -1,0 +1,149 @@
+[1] prompt=what is SBAN v22.5
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v22.5
+response=SBAN v22.5 is the technical follow-up to v22. It keeps the grounded dialogue behavior and numeric guardrail stable while adding a real CUDA backend for NVIDIA RTX GPUs, a conservative multithreaded retrieval path, a raw accel-bench command, and an experimental multithreaded numeric scoring path that remains optional because the current release suite still favors the proven single-thread numeric profile.
+
+expect_contains=technical follow-up
+expect_pass=true
+
+[2] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+expect_contains=remember your name
+expect_pass=true
+
+[3] prompt=can you recall my name
+mode=session-recall
+backend=cpu
+response=Your name is Tom.
+
+expect_contains=Tom
+expect_pass=true
+
+[4] prompt=my favorite color is blue
+mode=session-fact-store
+backend=cpu
+response=Noted. Your favorite color is blue, and I will remember that for this session.
+
+expect_contains=favorite color is blue
+expect_pass=true
+
+[5] prompt=what is my favorite color
+mode=session-recall
+backend=cpu
+response=Your favorite color is blue.
+
+expect_contains=blue
+expect_pass=true
+
+[6] prompt=i live in london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_contains=live in London
+expect_pass=true
+
+[7] prompt=what city do i live in
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_contains=London
+expect_pass=true
+
+[8] prompt=our lab is sbx
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+expect_contains=lab is sbx
+expect_pass=true
+
+[9] prompt=what is our lab
+mode=session-recall
+backend=cpu
+response=Your lab is sbx.
+
+expect_contains=sbx
+expect_pass=true
+
+[10] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+expect_contains=role is researcher
+expect_pass=true
+
+[11] prompt=what is my role
+mode=session-recall
+backend=cpu
+response=Your role is researcher.
+
+expect_contains=researcher
+expect_pass=true
+
+[12] prompt=what is -3 + 5
+mode=symbolic-math
+backend=cpu
+response=-3 + 5 = 2.
+
+expect_contains== 2.
+expect_pass=true
+
+[13] prompt=what is 3.5 + 1.2
+mode=symbolic-math
+backend=cpu
+response=3.5 + 1.2 = 4.7.
+
+expect_contains== 4.7.
+expect_pass=true
+
+[14] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+expect_contains=undefined
+expect_pass=true
+
+[15] prompt=do you support nvidia rtx gpus
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=do you support nvidia rtx gpus
+response=Yes. V22.5 adds a CUDA backend for NVIDIA RTX-class GPUs, so compatible NVIDIA systems can use direct CUDA retrieval acceleration instead of relying only on OpenCL.
+
+expect_contains=CUDA
+expect_pass=true
+
+[16] prompt=is multithreaded numeric scoring the default
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is multithreaded numeric scoring the default
+response=No. V22.5 includes an experimental multithreaded numeric scoring path, but the packaged numeric suite still uses the proven single-thread profile because the current release benchmarks did not show a reliable win from forcing the parallel numeric scorer.
+
+expect_contains=not
+expect_pass=true
+
+[17] prompt=tell me a joke
+mode=uncertain
+backend=cpu
+response=I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.
+
+expect_contains=not sure
+expect_pass=true
+
+[18] prompt=thank you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=thank you
+response=You are welcome. I am ready for the next SBAN v22 check.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=18 anchored=4 retrieved=0 symbolic=13 nonempty=18 expectations=18 passed=18

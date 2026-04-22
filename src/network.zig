@@ -373,6 +373,109 @@ fn findTop2(scores: []const i32) ScoreTop {
     return .{ .token = top_token, .top_score = top_score, .second_score = second_score };
 }
 
+const score_parallel_io = std.Options.debug_io;
+
+const ParallelScoreTask = struct {
+    network: ?*const Network = null,
+    start_index: usize = 0,
+    end_index: usize = 0,
+};
+
+const ParallelScoreRuntime = struct {
+    allocator: std.mem.Allocator,
+    slot_count: usize,
+    max_regions: usize,
+    vocab_size: usize,
+    workers: []std.Thread,
+    start_semaphores: []std.Io.Semaphore,
+    tasks: []ParallelScoreTask,
+    partial_region_scores: []i32,
+    completed: std.Io.Semaphore = .{},
+    stop_requested: std.atomic.Value(bool) = std.atomic.Value(bool).init(false),
+
+    fn init(allocator: std.mem.Allocator, config: cfg.NetworkConfig) !?*ParallelScoreRuntime {
+        const cpu_count = std.Thread.getCpuCount() catch 1;
+        const requested = if (config.score_threads != 0) config.score_threads else @as(u16, @intCast(cpu_count));
+        const slot_count = @min(@max(@as(usize, 1), requested), @max(@as(usize, 1), cpu_count));
+        if (slot_count <= 1) return null;
+
+        const runtime = try allocator.create(ParallelScoreRuntime);
+        errdefer allocator.destroy(runtime);
+
+        runtime.* = .{
+            .allocator = allocator,
+            .slot_count = slot_count,
+            .max_regions = config.max_regions,
+            .vocab_size = config.vocab_size,
+            .workers = try allocator.alloc(std.Thread, slot_count - 1),
+            .start_semaphores = try allocator.alloc(std.Io.Semaphore, slot_count - 1),
+            .tasks = try allocator.alloc(ParallelScoreTask, slot_count),
+            .partial_region_scores = try allocator.alloc(i32, slot_count * @as(usize, config.max_regions) * @as(usize, config.vocab_size)),
+        };
+        errdefer allocator.free(runtime.partial_region_scores);
+        errdefer allocator.free(runtime.tasks);
+        errdefer allocator.free(runtime.start_semaphores);
+        errdefer allocator.free(runtime.workers);
+
+        for (runtime.start_semaphores) |*sem| sem.* = .{};
+        for (runtime.tasks) |*task| task.* = .{};
+        @memset(runtime.partial_region_scores, 0);
+
+        var spawned: usize = 0;
+        errdefer {
+            runtime.stop_requested.store(true, .release);
+            for (runtime.start_semaphores[0..spawned]) |*sem| sem.post(score_parallel_io);
+            for (runtime.workers[0..spawned]) |thread| thread.join();
+        }
+        for (0..runtime.workers.len) |worker_index| {
+            runtime.workers[worker_index] = try std.Thread.spawn(.{}, parallelScoreWorkerMain, .{ runtime, worker_index + 1 });
+            spawned += 1;
+        }
+        return runtime;
+    }
+
+    fn deinit(self: *ParallelScoreRuntime) void {
+        self.stop_requested.store(true, .release);
+        for (self.start_semaphores) |*sem| sem.post(score_parallel_io);
+        for (self.workers) |thread| thread.join();
+        self.allocator.free(self.partial_region_scores);
+        self.allocator.free(self.tasks);
+        self.allocator.free(self.start_semaphores);
+        self.allocator.free(self.workers);
+        self.allocator.destroy(self);
+    }
+
+    fn bufferLen(self: *const ParallelScoreRuntime) usize {
+        return self.max_regions * self.vocab_size;
+    }
+
+    fn workerCount(self: *const ParallelScoreRuntime) usize {
+        return self.slot_count - 1;
+    }
+
+    fn regionSlice(self: *ParallelScoreRuntime, slot_index: usize) []i32 {
+        const buffer_len = self.bufferLen();
+        const start = slot_index * buffer_len;
+        return self.partial_region_scores[start .. start + buffer_len];
+    }
+};
+
+fn parallelScoreWorkerMain(runtime: *ParallelScoreRuntime, slot_index: usize) void {
+    const start_sem = &runtime.start_semaphores[slot_index - 1];
+    while (true) {
+        start_sem.waitUncancelable(score_parallel_io);
+        if (runtime.stop_requested.load(.acquire)) break;
+        const task = runtime.tasks[slot_index];
+        const output = runtime.regionSlice(slot_index);
+        if (task.network) |network| {
+            network.scorePredictiveRange(output, task.start_index, task.end_index);
+        } else {
+            @memset(output, 0);
+        }
+        runtime.completed.post(score_parallel_io);
+    }
+}
+
 pub const Network = struct {
     allocator: std.mem.Allocator,
     config: cfg.NetworkConfig,
@@ -409,6 +512,7 @@ pub const Network = struct {
     burst_last_step: []u32,
     region_marks: []u32,
     region_output_scores: []i32,
+    parallel_score_runtime: ?*ParallelScoreRuntime = null,
     free_memory_ids: std.ArrayList(u32) = .empty,
     protected_memories: std.ArrayList(u32) = .empty,
     signature_map: std.AutoHashMap(u64, u32),
@@ -495,6 +599,8 @@ pub const Network = struct {
         @memset(self.score_marks.items, 0);
         @memset(self.output_scores.items, 0);
 
+        self.parallel_score_runtime = try ParallelScoreRuntime.init(allocator, config);
+
         for (0..config.history_lags) |_| {
             for (0..config.vocab_size) |_| {
                 const sensory_id = try self.addNeuron(.sensory, 0);
@@ -512,6 +618,7 @@ pub const Network = struct {
 
     pub fn deinit(self: *Network) void {
         for (self.neurons.items) |*neuron| neuron.deinit(self.allocator);
+        if (self.parallel_score_runtime) |runtime| runtime.deinit();
         self.neurons.deinit(self.allocator);
         self.lag_sensory_ids.deinit(self.allocator);
         self.output_ids.deinit(self.allocator);
@@ -805,6 +912,72 @@ pub const Network = struct {
     fn synapseContributionBonus(self: *const Network, synapse: Synapse) i32 {
         if (!self.config.use_reputation) return 0;
         return @divTrunc(@as(i32, synapse.reputation), 4);
+    }
+
+    fn canUseParallelScore(self: *const Network) bool {
+        if (self.parallel_score_runtime == null) return false;
+        return self.predictive_nodes.items.len >= self.config.parallel_score_min_predictive_nodes;
+    }
+
+    fn scorePredictiveRange(self: *const Network, region_output_scores: []i32, start_index: usize, end_index: usize) void {
+        @memset(region_output_scores, 0);
+        var predictive_index = start_index;
+        while (predictive_index < end_index) : (predictive_index += 1) {
+            const src_id = self.predictive_nodes.items[predictive_index];
+            const src_idx: usize = @intCast(src_id);
+            const neuron = &self.neurons.items[src_idx];
+            if (neuron.kind == .dead) continue;
+            const region = self.nodeRegion(src_id);
+            const base = @as(usize, region) * @as(usize, self.config.vocab_size);
+            for (neuron.outgoing.items) |synapse| {
+                const target_idx: usize = @intCast(synapse.target);
+                if (self.neurons.items[target_idx].kind != .output) continue;
+                const logical_index = target_idx - self.output_base;
+                var contribution = self.scaledValue(synapse.state) + self.synapseContributionBonus(synapse);
+                if (neuron.kind == .memory_long) {
+                    contribution = @divTrunc(contribution * @as(i32, self.longTermContributionScalePpm(neuron.*)), 1000);
+                }
+                if (neuron.role == .bridge) {
+                    if (self.bridgeSatisfied(neuron.*)) {
+                        contribution = @divTrunc(contribution * @as(i32, self.config.bridge_bonus_ppm), 1000);
+                    } else {
+                        contribution = @divTrunc(contribution * 9, 10);
+                    }
+                }
+                region_output_scores[base + logical_index] += contribution;
+            }
+        }
+    }
+
+    fn fillRegionOutputScores(self: *Network) void {
+        if (!self.canUseParallelScore()) {
+            self.scorePredictiveRange(self.region_output_scores, 0, self.predictive_nodes.items.len);
+            return;
+        }
+
+        const runtime = self.parallel_score_runtime.?;
+        const slot_count = runtime.slot_count;
+        const chunk_size = @divTrunc(self.predictive_nodes.items.len + slot_count - 1, slot_count);
+        for (0..slot_count) |slot_index| {
+            const start_index = slot_index * chunk_size;
+            const end_index = @min(self.predictive_nodes.items.len, start_index + chunk_size);
+            runtime.tasks[slot_index] = .{
+                .network = self,
+                .start_index = start_index,
+                .end_index = end_index,
+            };
+            if (slot_index == 0) continue;
+            runtime.start_semaphores[slot_index - 1].post(score_parallel_io);
+        }
+
+        self.scorePredictiveRange(runtime.regionSlice(0), runtime.tasks[0].start_index, runtime.tasks[0].end_index);
+        for (0..runtime.workerCount()) |_| runtime.completed.waitUncancelable(score_parallel_io);
+
+        @memcpy(self.region_output_scores, runtime.regionSlice(0));
+        for (1..slot_count) |slot_index| {
+            const partial = runtime.regionSlice(slot_index);
+            for (self.region_output_scores, partial) |*dst, value| dst.* += value;
+        }
     }
 
     fn effectiveThreshold(self: *const Network, neuron: Neuron) i32 {
@@ -1377,31 +1550,7 @@ pub const Network = struct {
 
     fn scoreOutputs(self: *Network, current_token: u8, actual_next: u8) Prediction {
         @memset(self.output_scores.items, 0);
-        @memset(self.region_output_scores, 0);
-        for (self.predictive_nodes.items) |src_id| {
-            const src_idx: usize = @intCast(src_id);
-            const neuron = &self.neurons.items[src_idx];
-            if (neuron.kind == .dead) continue;
-            const region = self.nodeRegion(src_id);
-            const base = @as(usize, region) * @as(usize, self.config.vocab_size);
-            for (neuron.outgoing.items) |synapse| {
-                const target_idx: usize = @intCast(synapse.target);
-                if (self.neurons.items[target_idx].kind != .output) continue;
-                const logical_index = target_idx - self.output_base;
-                var contribution = self.scaledValue(synapse.state) + self.synapseContributionBonus(synapse);
-                if (neuron.kind == .memory_long) {
-                    contribution = @divTrunc(contribution * @as(i32, self.longTermContributionScalePpm(neuron.*)), 1000);
-                }
-                if (neuron.role == .bridge) {
-                    if (self.bridgeSatisfied(neuron.*)) {
-                        contribution = @divTrunc(contribution * @as(i32, self.config.bridge_bonus_ppm), 1000);
-                    } else {
-                        contribution = @divTrunc(contribution * 9, 10);
-                    }
-                }
-                self.region_output_scores[base + logical_index] += contribution;
-            }
-        }
+        self.fillRegionOutputScores();
 
         for (self.active_regions.items) |region| {
             const base = @as(usize, region) * @as(usize, self.config.vocab_size);
@@ -2418,4 +2567,37 @@ test "memory slots recycle after prune" {
     _ = try net.step(11, 12);
     _ = try net.step(13, 14);
     try std.testing.expect(net.free_memory_ids.items.len >= before_free);
+}
+
+test "parallel output scoring matches single-thread scoring" {
+    const allocator = std.testing.allocator;
+    var base_config = cfg.configForVariant(4, .default);
+    base_config.history_lags = 8;
+    base_config.max_short_memories = 4096;
+    base_config.max_long_memories = 256;
+    base_config.score_threads = 1;
+
+    var parallel_config = base_config;
+    parallel_config.score_threads = 4;
+    parallel_config.parallel_score_min_predictive_nodes = 1;
+
+    var serial_net = try Network.init(allocator, base_config);
+    defer serial_net.deinit();
+    var parallel_net = try Network.init(allocator, parallel_config);
+    defer parallel_net.deinit();
+
+    const corpus = "SBAN parallel score check. " ** 96;
+    for (0..corpus.len - 1) |idx| {
+        const serial_prediction = try serial_net.step(corpus[idx], corpus[idx + 1]);
+        const parallel_prediction = try parallel_net.step(corpus[idx], corpus[idx + 1]);
+        try std.testing.expectEqualDeep(serial_prediction, parallel_prediction);
+    }
+
+    try std.testing.expectEqual(serial_net.births, parallel_net.births);
+    try std.testing.expectEqual(serial_net.bridge_births, parallel_net.bridge_births);
+    try std.testing.expectEqual(serial_net.promotions, parallel_net.promotions);
+    try std.testing.expectEqual(serial_net.recycled_slots, parallel_net.recycled_slots);
+    try std.testing.expectEqual(serial_net.countAliveShortMemories(), parallel_net.countAliveShortMemories());
+    try std.testing.expectEqual(serial_net.countAliveLongMemories(), parallel_net.countAliveLongMemories());
+    try std.testing.expectEqual(serial_net.countAliveSynapses(), parallel_net.countAliveSynapses());
 }

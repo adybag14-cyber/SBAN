@@ -1,0 +1,54 @@
+# SBAN v22.5 scripted session evaluation
+User: what is SBAN v22.5
+Expect: technical follow-up
+
+User: hi i am tom and i need help
+Expect: remember your name
+
+User: can you recall my name
+Expect: Tom
+
+User: my favorite color is blue
+Expect: favorite color is blue
+
+User: what is my favorite color
+Expect: blue
+
+User: i live in london
+Expect: live in London
+
+User: what city do i live in
+Expect: London
+
+User: our lab is sbx
+Expect: lab is sbx
+
+User: what is our lab
+Expect: sbx
+
+User: my role is researcher
+Expect: role is researcher
+
+User: what is my role
+Expect: researcher
+
+User: what is -3 + 5
+Expect: = 2.
+
+User: what is 3.5 + 1.2
+Expect: = 4.7.
+
+User: what is 3 / 0
+Expect: undefined
+
+User: do you support nvidia rtx gpus
+Expect: CUDA
+
+User: is multithreaded numeric scoring the default
+Expect: not
+
+User: tell me a joke
+Expect: not sure
+
+User: thank you
+Expect: welcome

@@ -1,0 +1,58 @@
+hello
+are you ready
+what is SBAN v21
+what changed in v21
+what improved from v20
+what is the v21 goal
+explain sparse bridge-adaptive network architecture
+what makes it non-transformer
+compare SBAN to transformers in detail
+does it learn while running
+does it go stale
+is it a transformer
+what should v21 improve
+what should new users try first
+what is the product demo
+how do I start the Windows demo
+how do I start the Linux demo
+how do sessions work
+how do I continue a session without a fresh chat
+what is session memory
+how do you avoid transcript corruption
+how do you handle uncertainty
+how do you handle unknown questions
+what commands matter
+what benchmarks shipped
+why keep the same numeric suite
+what is the main caveat
+what does free mode do now
+what does hybrid mode do
+what does anchored mode do
+what is chat session eval
+what session eval shipped
+what is the release message
+how should I describe v21
+what files should I open first
+where is the executive summary
+where is the paper
+where is the repo zip
+what does the ci build
+what does the release workflow upload
+what platforms ship
+does the runtime need GPUs
+how does gpu acceleration work
+can I experiment with overrides
+what prompt file ships
+can you do simple math
+what can you do
+what can i ask first
+help
+does free mode stay grounded
+what is the bottom line
+what is your favorite color
+tell me a joke
+what should v22 improve
+what is 2 + 2
+what is -3 + 5
+what is 3.5 + 1.2
+thank you

@@ -1,0 +1,155 @@
+User: hello
+Assistant: Hello. I am the SBAN v21 runtime, ready for grounded dialogue, continuing sessions, and practical SBAN questions.
+
+User: are you ready
+Assistant: Yes. The v21 runtime is ready for chat, benchmark, packaging, and release verification work.
+
+User: what is SBAN v21
+Assistant: SBAN v21 is the reliability-focused release. It keeps the existing numeric engine-health suite stable while upgrading free chat, session memory, uncertainty handling, transcript safety, and first CPU or GPU retrieval acceleration.
+
+User: what changed in v21
+Assistant: V21 replaces the loose seeded-demo chat path with stricter grounded retrieval, general session facts, safer persistence, stronger arithmetic, clearer uncertainty behavior, and an optional OpenCL retrieval backend for GPU use.
+
+User: what improved from v20
+Assistant: V21 hardens the product behavior. Unsupported prompts now fall back to honest uncertainty, retrieval matching is stricter, memory can store general user facts, math handles negatives and decimals, and session files no longer trust raw transcript text.
+
+User: what is the v21 goal
+Assistant: The v21 goal is to feel like a calm reliable collaborator: grounded when it knows, explicit when it does not, able to continue a session naturally, and robust enough for real user exploration instead of only a scripted happy path.
+
+User: explain sparse bridge-adaptive network architecture
+Assistant: Sparse Bridge-Adaptive Network Architecture uses sparse online memories plus bridge memories that carry context across horizons. Instead of dense transformer attention over frozen weights, SBAN routes activity through adaptive memory structures that keep updating while the runtime is operating.
+
+User: what makes it non-transformer
+Assistant: SBAN v21 is not a transformer. It predicts through online sparse memory propagation, adaptive routing, and bridge-mediated context transfer rather than frozen attention stacks over fixed released weights.
+
+User: compare SBAN to transformers in detail
+Assistant: Transformers rely on fixed trained weights and dense attention during inference. SBAN instead updates online state while it runs, keeps sparse memory structures alive across time, and uses adaptive bridge paths to preserve longer context without depending on a giant frozen checkpoint. The tradeoff is that SBAN must prove stability and grounding in the live runtime, while transformers front-load more of their capability into pretraining.
+
+User: does it learn while running
+Assistant: Yes. SBAN continues adapting its internal memory state while it runs, so it does not behave like a static released transformer checkpoint.
+
+User: does it go stale
+Assistant: The architecture is designed to keep adapting online, so it is not locked to a stale fixed-weight release in the same way a frozen transformer model is.
+
+User: is it a transformer
+Assistant: No. SBAN v21 is a non-transformer runtime built around sparse adaptive memory and bridge-based context transfer.
+
+User: what should v21 improve
+Assistant: V21 should improve honest uncertainty, stricter retrieval grounding, broader session memory beyond names, safer transcript persistence, arithmetic edge cases, and optional GPU acceleration without giving up the existing engine-health benchmarks.
+
+User: what should new users try first
+Assistant: New users should start the packaged continuing chat demo, ask what SBAN v21 is, set a session fact such as a name or preference, test a follow-up recall question, and then ask for the architecture or transformer comparison.
+
+User: what is the product demo
+Assistant: The v21 product demo is a one-click packaged chat runtime for Windows and Linux that reuses one session file, keeps context across turns, and ships with the same grounded dialogue assets used by the release checks.
+
+User: how do I start the Windows demo
+Assistant: Open the Windows bundle and run SBAN_v21_Start.bat. It launches a continuing chat session with the bundled v21 assets.
+
+User: how do I start the Linux demo
+Assistant: Open a terminal in the Linux bundle and run ./SBAN_v21_Start.sh. It starts the same continuing v21 chat flow with the packaged assets.
+
+User: how do sessions work
+Assistant: V21 can persist a structured session state through session_path. It stores turns and remembered facts in an encoded format so the next prompt can continue with context safely.
+
+User: how do I continue a session without a fresh chat
+Assistant: Use chat-demo with session_path, or start the packaged v21 demo scripts which keep one session file alive for the whole conversation.
+
+User: what is session memory
+Assistant: Session memory in v21 is not just names. The runtime can store and recall simple user facts such as names, favorite colors, preferences, and recent turns for the current session.
+
+User: how do you avoid transcript corruption
+Assistant: V21 no longer writes raw User and Assistant lines directly into the session file. It sanitizes turn text and stores encoded fields in a structured session format so newline injection does not corrupt the transcript state.
+
+User: how do you handle uncertainty
+Assistant: V21 is biased toward grounded answers only. If the runtime does not have a strong retrieval match or a session fact to support the response, it should say that it is not sure instead of improvising a plausible release blurb.
+
+User: how do you handle unknown questions
+Assistant: Unknown questions should receive an honest uncertainty response unless the answer is supported by a grounded SBAN example, a remembered session fact, or a short symbolic calculation.
+
+User: what commands matter
+Assistant: The main runtime commands are chat-demo, chat-eval, chat-session-eval, accel-info, eval-enwik, eval-ablations, eval-variant, and inspect.
+
+User: what benchmarks shipped
+Assistant: The v21 release still ships the same numeric engine-health checks: prefix, drift, probe, 250k, and 1M, while the chat side adds broader reliability and session-behavior checks.
+
+User: why keep the same numeric suite
+Assistant: The numeric suite remains the engine-health baseline. V21 is about improving usability and trustworthiness without quietly regressing the measured core runtime.
+
+User: what is the main caveat
+Assistant: The numeric profile still needs to be described honestly according to the packaged release methodology. The chat side is more dependable in v21, but benchmark claims should still stay precise and well-scoped.
+
+User: what does free mode do now
+Assistant: Free mode in v21 still stays grounded. It can answer from stronger retrieval, session facts, or symbolic math, and otherwise it should decline cleanly instead of drifting into canned release text.
+
+User: what does hybrid mode do
+Assistant: Hybrid mode prefers a strong anchored match first, then grounded retrieval, then symbolic helpers such as memory recall or arithmetic. If none of those support an answer, it returns uncertainty.
+
+User: what does anchored mode do
+Assistant: Anchored mode returns the exact matched answer from the bundled dialogue examples when the prompt maps strongly to a stored example.
+
+User: what is chat session eval
+Assistant: Chat-session-eval runs a scripted multi-turn conversation with expectation checks so the release can verify recall, arithmetic, uncertainty, and continuing-session behavior.
+
+User: what session eval shipped
+Assistant: The v21 scripted session evaluation covers name recall, general fact recall, negative and decimal arithmetic, help behavior, and unsupported-question uncertainty.
+
+User: what is the release message
+Assistant: The release message is that v21 turns SBAN from a clever seeded demo into a steadier product runtime that is grounded, memory-aware, safer, and easier to trust.
+
+User: how should I describe v21
+Assistant: Describe v21 as a compact online non-transformer runtime that keeps learning while running, now with stronger grounding, general session memory, safer persistence, better symbolic handling, and first CPU or GPU retrieval acceleration.
+
+User: what files should I open first
+Assistant: Open the executive summary first, then the paper PDF, then the README, and then the versioned v21 results directory.
+
+User: where is the executive summary
+Assistant: The v21 executive summary is generated at SBAN_v21_EXECUTIVE_SUMMARY.md and copied into deliverables/v21.
+
+User: where is the paper
+Assistant: The v21 paper PDF is generated in docs/papers/SBAN_v21_follow_up_research_paper.pdf and copied into deliverables/v21.
+
+User: where is the repo zip
+Assistant: The versioned repo archive is generated at deliverables/v21/SBAN_v21_repo.zip.
+
+User: what does the ci build
+Assistant: The CI workflow builds and tests SBAN v21 on Windows and Ubuntu and runs smoke checks against the bundled v21 chat assets.
+
+User: what does the release workflow upload
+Assistant: The release workflow packages newcomer demo bundles for Windows and Linux and uploads them to the tagged GitHub release.
+
+User: what platforms ship
+Assistant: The packaged v21 demo targets Windows x86_64 and Linux x86_64, with chat retrieval able to run on CPU or use an OpenCL-capable GPU when available.
+
+User: does the runtime need GPUs
+Assistant: No. SBAN v21 still runs on CPU by default. GPU support is an optional retrieval accelerator, not a requirement for the product demo.
+
+User: how does gpu acceleration work
+Assistant: The first GPU path in v21 accelerates retrieval scoring through an optional OpenCL backend. The runtime can fall back to CPU automatically when no compatible GPU path is available.
+
+User: can I experiment with overrides
+Assistant: Yes. The eval-variant, chat-demo, chat-eval, chat-session-eval, and accel-info commands still accept key=value overrides so you can inspect or tune the runtime.
+
+User: what prompt file ships
+Assistant: The v21 chat evaluation prompt file is data/sban_chat_eval_prompts_v21.txt and the session script is data/sban_session_eval_v21.txt.
+
+User: can you do simple math
+Assistant: Yes. V21 includes short arithmetic handling for prompts such as what is 2 + 2, what is -3 + 5, or what is 3.5 + 1.2.
+
+User: what can you do
+Assistant: I can explain SBAN v21, compare it to transformers, point you to the release artifacts, remember simple session facts, handle short arithmetic, report uncertainty honestly, and describe the CPU or GPU runtime path.
+
+User: what can i ask first
+Assistant: Start with what is SBAN v21, explain sparse bridge-adaptive network architecture, compare SBAN to transformers in detail, or tell me a session fact and ask me to recall it.
+
+User: help
+Assistant: I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, and short arithmetic.
+
+User: does free mode stay grounded
+Assistant: Yes. V21 is designed so free mode only answers when it has grounded support from retrieval, session facts, or symbolic logic, and otherwise says it is not sure.
+
+User: what is the bottom line
+Assistant: The bottom line is that v21 is meant to feel less like a stitched-together demo and more like a stable grounded SBAN collaborator that keeps the same measured engine-health baseline.
+
+User: thank you
+Assistant: You are welcome. I am ready for the next SBAN v21 check.

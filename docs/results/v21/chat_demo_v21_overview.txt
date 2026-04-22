@@ -1,0 +1,5 @@
+prompt=what is SBAN v21
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v21
+response=SBAN v21 is the reliability-focused release. It keeps the existing numeric engine-health suite stable while upgrading free chat, session memory, uncertainty handling, transcript safety, and first CPU or GPU retrieval acceleration.

@@ -1,0 +1,3 @@
+backend=gpu
+platform=NVIDIA CUDA
+device=NVIDIA GeForce RTX 2080 Super with Max-Q Design

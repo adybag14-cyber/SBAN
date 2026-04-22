@@ -1,0 +1,27 @@
+# SBAN v21 scripted session evaluation
+User: hi i am tom and i need help
+Expect: remember your name
+
+User: can you recall my name
+Expect: Tom
+
+User: my favorite color is blue
+Expect: favorite color is blue
+
+User: what is my favorite color
+Expect: blue
+
+User: what is -3 + 5
+Expect: = 2.
+
+User: what is 3.5 + 1.2
+Expect: = 4.7.
+
+User: explain sparse bridge-adaptive network architecture
+Expect: sparse
+
+User: tell me a joke
+Expect: not sure
+
+User: thank you
+Expect: welcome

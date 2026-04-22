@@ -1,0 +1,4 @@
+prompt=what is 3.5 + 1.2
+mode=symbolic-math
+backend=cpu
+response=3.5 + 1.2 = 4.7.

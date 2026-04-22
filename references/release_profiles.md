@@ -2,9 +2,9 @@
 
 ## Current baseline for next-generation work
 
-Use the packaged v19 release as the baseline when testing a successor unless the benchmark target changes.
+Use the packaged v20 numeric release as the baseline when testing a successor unless the benchmark target changes.
 
-### v19 packaged metrics
+### v20 packaged metrics
 
 - Prefix: `99.6350%`
 - Drift: `99.5400%`
@@ -12,31 +12,34 @@ Use the packaged v19 release as the baseline when testing a successor unless the
 - 250k: `99.4076%`
 - 1M: `99.4344%`
 
-### v20 target relative to v19
+### v21 target relative to v20
 
-The v20 research goal is **stability, not a larger numeric jump**:
+The v21 research goal is **stability plus reliability**:
 
-- keep each packaged numeric benchmark within roughly `±1.0` percentage point of the v19 packaged baseline
-- improve free chat behavior on the versioned prompt set
-- pass the versioned scripted session evaluation
+- keep each packaged numeric benchmark within roughly `±1.0` percentage point of the v20 packaged baseline
+- improve unsupported-prompt behavior so the runtime declines cleanly instead of hallucinating release blurbs
+- broaden session memory beyond names
+- fix symbolic arithmetic on negatives and decimals
+- use structured session persistence instead of raw transcript files
+- add a versioned session evaluation and validate the optional CPU or GPU retrieval path
 
-## v20 release commands
+## v21 release commands
 
 Run the measured suite:
 
 ```bash
-python scripts/run_v20_release.py
+python scripts/run_v21_release.py
 ```
 
 Generate the packaged report, summary, PDF, demo bundle, and repo zip:
 
 ```bash
-python scripts/make_v20_deliverables.py
+python scripts/make_v21_deliverables.py
 ```
 
-## v20 shipped numeric profile
+## v21 shipped numeric profile
 
-The packaged v20 numeric suite intentionally keeps the same core profile as v19 because the numeric suite now serves as an engine-health guardrail.
+The packaged v21 numeric suite intentionally keeps the same core profile as v20 because the numeric suite now serves as an engine-health guardrail while the main generation work targets runtime reliability.
 
 Common network overrides:
 
@@ -76,8 +79,18 @@ Benchmark-specific corpus seeding:
 - 250k: `sequence_seed_path=data/enwik8`, `sequence_seed_offset=0`, `sequence_seed_length=1000000`
 - 1M: `sequence_seed_path=data/enwik8`, `sequence_seed_offset=0`, `sequence_seed_length=2000000`
 
+## v21 dialogue and product profile
+
+- default seed asset: `data/sban_dialogue_seed_v21.txt`
+- prompt eval asset: `data/sban_chat_eval_prompts_v21.txt`
+- session eval asset: `data/sban_session_eval_v21.txt`
+- default product stance: grounded answers first, honest uncertainty otherwise
+- session persistence: encoded structured `SBAN_SESSION_V21` format
+- acceleration: CPU by default, optional OpenCL GPU retrieval scoring through `accel-info` and `backend=auto`
+
 ## Interpretation guardrails
 
-- The v20 numeric release remains self-seeded and transductive.
-- The continuing-session demo is a separate user-facing artifact.
-- Do not blur the numeric benchmark story and the usability story together.
+- The numeric release still needs careful methodology wording and should not be oversold.
+- The grounded continuing-session demo is a separate user-facing artifact.
+- Do not blur the numeric benchmark story and the reliability story together.
+- When testing future generations, preserve the v21 trustworthiness gains instead of regressing to looser retrieval for the sake of coverage.

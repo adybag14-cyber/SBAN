@@ -1,0 +1,5 @@
+prompt=how do I continue a session without a fresh chat
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do I continue a session without a fresh chat
+response=Use chat-demo with session_path, or start the packaged v21 demo scripts which keep one session file alive for the whole conversation.

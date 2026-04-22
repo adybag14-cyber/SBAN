@@ -1,0 +1,340 @@
+[1] prompt=hello
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=hello
+response=Hello. I am the SBAN v21 runtime, ready for grounded dialogue, continuing sessions, and practical SBAN questions.
+
+[2] prompt=are you ready
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=are you ready
+response=Yes. The v21 runtime is ready for chat, benchmark, packaging, and release verification work.
+
+[3] prompt=what is SBAN v21
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v21
+response=SBAN v21 is the reliability-focused release. It keeps the existing numeric engine-health suite stable while upgrading free chat, session memory, uncertainty handling, transcript safety, and first CPU or GPU retrieval acceleration.
+
+[4] prompt=what changed in v21
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what changed in v21
+response=V21 replaces the loose seeded-demo chat path with stricter grounded retrieval, general session facts, safer persistence, stronger arithmetic, clearer uncertainty behavior, and an optional OpenCL retrieval backend for GPU use.
+
+[5] prompt=what improved from v20
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what improved from v20
+response=V21 hardens the product behavior. Unsupported prompts now fall back to honest uncertainty, retrieval matching is stricter, memory can store general user facts, math handles negatives and decimals, and session files no longer trust raw transcript text.
+
+[6] prompt=what is the v21 goal
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is the v21 goal
+response=The v21 goal is to feel like a calm reliable collaborator: grounded when it knows, explicit when it does not, able to continue a session naturally, and robust enough for real user exploration instead of only a scripted happy path.
+
+[7] prompt=explain sparse bridge-adaptive network architecture
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=explain sparse bridge-adaptive network architecture
+response=Sparse Bridge-Adaptive Network Architecture uses sparse online memories plus bridge memories that carry context across horizons. Instead of dense transformer attention over frozen weights, SBAN routes activity through adaptive memory structures that keep updating while the runtime is operating.
+
+[8] prompt=what makes it non-transformer
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what makes it non-transformer
+response=SBAN v21 is not a transformer. It predicts through online sparse memory propagation, adaptive routing, and bridge-mediated context transfer rather than frozen attention stacks over fixed released weights.
+
+[9] prompt=compare SBAN to transformers in detail
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=compare SBAN to transformers in detail
+response=Transformers rely on fixed trained weights and dense attention during inference. SBAN instead updates online state while it runs, keeps sparse memory structures alive across time, and uses adaptive bridge paths to preserve longer context without depending on a giant frozen checkpoint. The tradeoff is that SBAN must prove stability and grounding in the live runtime, while transformers front-load more of their capability into pretraining.
+
+[10] prompt=does it learn while running
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=does it learn while running
+response=Yes. SBAN continues adapting its internal memory state while it runs, so it does not behave like a static released transformer checkpoint.
+
+[11] prompt=does it go stale
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=does it go stale
+response=The architecture is designed to keep adapting online, so it is not locked to a stale fixed-weight release in the same way a frozen transformer model is.
+
+[12] prompt=is it a transformer
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is it a transformer
+response=No. SBAN v21 is a non-transformer runtime built around sparse adaptive memory and bridge-based context transfer.
+
+[13] prompt=what should v21 improve
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what should v21 improve
+response=V21 should improve honest uncertainty, stricter retrieval grounding, broader session memory beyond names, safer transcript persistence, arithmetic edge cases, and optional GPU acceleration without giving up the existing engine-health benchmarks.
+
+[14] prompt=what should new users try first
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what should new users try first
+response=New users should start the packaged continuing chat demo, ask what SBAN v21 is, set a session fact such as a name or preference, test a follow-up recall question, and then ask for the architecture or transformer comparison.
+
+[15] prompt=what is the product demo
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is the product demo
+response=The v21 product demo is a one-click packaged chat runtime for Windows and Linux that reuses one session file, keeps context across turns, and ships with the same grounded dialogue assets used by the release checks.
+
+[16] prompt=how do I start the Windows demo
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do I start the Windows demo
+response=Open the Windows bundle and run SBAN_v21_Start.bat. It launches a continuing chat session with the bundled v21 assets.
+
+[17] prompt=how do I start the Linux demo
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do I start the Linux demo
+response=Open a terminal in the Linux bundle and run ./SBAN_v21_Start.sh. It starts the same continuing v21 chat flow with the packaged assets.
+
+[18] prompt=how do sessions work
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do sessions work
+response=V21 can persist a structured session state through session_path. It stores turns and remembered facts in an encoded format so the next prompt can continue with context safely.
+
+[19] prompt=how do I continue a session without a fresh chat
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do I continue a session without a fresh chat
+response=Use chat-demo with session_path, or start the packaged v21 demo scripts which keep one session file alive for the whole conversation.
+
+[20] prompt=what is session memory
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is session memory
+response=Session memory in v21 is not just names. The runtime can store and recall simple user facts such as names, favorite colors, preferences, and recent turns for the current session.
+
+[21] prompt=how do you avoid transcript corruption
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do you avoid transcript corruption
+response=V21 no longer writes raw User and Assistant lines directly into the session file. It sanitizes turn text and stores encoded fields in a structured session format so newline injection does not corrupt the transcript state.
+
+[22] prompt=how do you handle uncertainty
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do you handle uncertainty
+response=V21 is biased toward grounded answers only. If the runtime does not have a strong retrieval match or a session fact to support the response, it should say that it is not sure instead of improvising a plausible release blurb.
+
+[23] prompt=how do you handle unknown questions
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do you handle unknown questions
+response=Unknown questions should receive an honest uncertainty response unless the answer is supported by a grounded SBAN example, a remembered session fact, or a short symbolic calculation.
+
+[24] prompt=what commands matter
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what commands matter
+response=The main runtime commands are chat-demo, chat-eval, chat-session-eval, accel-info, eval-enwik, eval-ablations, eval-variant, and inspect.
+
+[25] prompt=what benchmarks shipped
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what benchmarks shipped
+response=The v21 release still ships the same numeric engine-health checks: prefix, drift, probe, 250k, and 1M, while the chat side adds broader reliability and session-behavior checks.
+
+[26] prompt=why keep the same numeric suite
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=why keep the same numeric suite
+response=The numeric suite remains the engine-health baseline. V21 is about improving usability and trustworthiness without quietly regressing the measured core runtime.
+
+[27] prompt=what is the main caveat
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is the main caveat
+response=The numeric profile still needs to be described honestly according to the packaged release methodology. The chat side is more dependable in v21, but benchmark claims should still stay precise and well-scoped.
+
+[28] prompt=what does free mode do now
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what does free mode do now
+response=Free mode in v21 still stays grounded. It can answer from stronger retrieval, session facts, or symbolic math, and otherwise it should decline cleanly instead of drifting into canned release text.
+
+[29] prompt=what does hybrid mode do
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what does hybrid mode do
+response=Hybrid mode prefers a strong anchored match first, then grounded retrieval, then symbolic helpers such as memory recall or arithmetic. If none of those support an answer, it returns uncertainty.
+
+[30] prompt=what does anchored mode do
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what does anchored mode do
+response=Anchored mode returns the exact matched answer from the bundled dialogue examples when the prompt maps strongly to a stored example.
+
+[31] prompt=what is chat session eval
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is chat session eval
+response=Chat-session-eval runs a scripted multi-turn conversation with expectation checks so the release can verify recall, arithmetic, uncertainty, and continuing-session behavior.
+
+[32] prompt=what session eval shipped
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what session eval shipped
+response=The v21 scripted session evaluation covers name recall, general fact recall, negative and decimal arithmetic, help behavior, and unsupported-question uncertainty.
+
+[33] prompt=what is the release message
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is the release message
+response=The release message is that v21 turns SBAN from a clever seeded demo into a steadier product runtime that is grounded, memory-aware, safer, and easier to trust.
+
+[34] prompt=how should I describe v21
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how should I describe v21
+response=Describe v21 as a compact online non-transformer runtime that keeps learning while running, now with stronger grounding, general session memory, safer persistence, better symbolic handling, and first CPU or GPU retrieval acceleration.
+
+[35] prompt=what files should I open first
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what files should I open first
+response=Open the executive summary first, then the paper PDF, then the README, and then the versioned v21 results directory.
+
+[36] prompt=where is the executive summary
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=where is the executive summary
+response=The v21 executive summary is generated at SBAN_v21_EXECUTIVE_SUMMARY.md and copied into deliverables/v21.
+
+[37] prompt=where is the paper
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=where is the paper
+response=The v21 paper PDF is generated in docs/papers/SBAN_v21_follow_up_research_paper.pdf and copied into deliverables/v21.
+
+[38] prompt=where is the repo zip
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=where is the repo zip
+response=The versioned repo archive is generated at deliverables/v21/SBAN_v21_repo.zip.
+
+[39] prompt=what does the ci build
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what does the ci build
+response=The CI workflow builds and tests SBAN v21 on Windows and Ubuntu and runs smoke checks against the bundled v21 chat assets.
+
+[40] prompt=what does the release workflow upload
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what does the release workflow upload
+response=The release workflow packages newcomer demo bundles for Windows and Linux and uploads them to the tagged GitHub release.
+
+[41] prompt=what platforms ship
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what platforms ship
+response=The packaged v21 demo targets Windows x86_64 and Linux x86_64, with chat retrieval able to run on CPU or use an OpenCL-capable GPU when available.
+
+[42] prompt=does the runtime need GPUs
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=does the runtime need GPUs
+response=No. SBAN v21 still runs on CPU by default. GPU support is an optional retrieval accelerator, not a requirement for the product demo.
+
+[43] prompt=how does gpu acceleration work
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how does gpu acceleration work
+response=The first GPU path in v21 accelerates retrieval scoring through an optional OpenCL backend. The runtime can fall back to CPU automatically when no compatible GPU path is available.
+
+[44] prompt=can I experiment with overrides
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=can I experiment with overrides
+response=Yes. The eval-variant, chat-demo, chat-eval, chat-session-eval, and accel-info commands still accept key=value overrides so you can inspect or tune the runtime.
+
+[45] prompt=what prompt file ships
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what prompt file ships
+response=The v21 chat evaluation prompt file is data/sban_chat_eval_prompts_v21.txt and the session script is data/sban_session_eval_v21.txt.
+
+[46] prompt=can you do simple math
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=can you do simple math
+response=Yes. V21 includes short arithmetic handling for prompts such as what is 2 + 2, what is -3 + 5, or what is 3.5 + 1.2.
+
+[47] prompt=what can you do
+mode=symbolic-help
+backend=cpu
+response=I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+[48] prompt=what can i ask first
+mode=symbolic-help
+backend=cpu
+response=I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+[49] prompt=help
+mode=symbolic-help
+backend=cpu
+response=I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+[50] prompt=does free mode stay grounded
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=does free mode stay grounded
+response=Yes. V21 is designed so free mode only answers when it has grounded support from retrieval, session facts, or symbolic logic, and otherwise says it is not sure.
+
+[51] prompt=what is the bottom line
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is the bottom line
+response=The bottom line is that v21 is meant to feel less like a stitched-together demo and more like a stable grounded SBAN collaborator that keeps the same measured engine-health baseline.
+
+[52] prompt=what is your favorite color
+mode=uncertain
+backend=cpu
+response=I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.
+
+[53] prompt=tell me a joke
+mode=uncertain
+backend=cpu
+response=I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.
+
+[54] prompt=what should v22 improve
+mode=uncertain
+backend=cpu
+response=I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.
+
+[55] prompt=what is 2 + 2
+mode=symbolic-math
+backend=cpu
+response=2 + 2 = 4.
+
+[56] prompt=what is -3 + 5
+mode=symbolic-math
+backend=cpu
+response=-3 + 5 = 2.
+
+[57] prompt=what is 3.5 + 1.2
+mode=symbolic-math
+backend=cpu
+response=3.5 + 1.2 = 4.7.
+
+[58] prompt=thank you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=thank you
+response=You are welcome. I am ready for the next SBAN v21 check.
+
+summary turns=58 anchored=49 retrieved=0 symbolic=6 nonempty=58

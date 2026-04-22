@@ -1,0 +1,75 @@
+[1] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+expect_contains=remember your name
+expect_pass=true
+
+[2] prompt=can you recall my name
+mode=session-recall
+backend=cpu
+response=Your name is Tom.
+
+expect_contains=Tom
+expect_pass=true
+
+[3] prompt=my favorite color is blue
+mode=session-fact-store
+backend=cpu
+response=Noted. Your favorite color is blue, and I will remember that for this session.
+
+expect_contains=favorite color is blue
+expect_pass=true
+
+[4] prompt=what is my favorite color
+mode=session-recall
+backend=cpu
+response=Your favorite color is blue.
+
+expect_contains=blue
+expect_pass=true
+
+[5] prompt=what is -3 + 5
+mode=symbolic-math
+backend=cpu
+response=-3 + 5 = 2.
+
+expect_contains== 2.
+expect_pass=true
+
+[6] prompt=what is 3.5 + 1.2
+mode=symbolic-math
+backend=cpu
+response=3.5 + 1.2 = 4.7.
+
+expect_contains== 4.7.
+expect_pass=true
+
+[7] prompt=explain sparse bridge-adaptive network architecture
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=explain sparse bridge-adaptive network architecture
+response=Sparse Bridge-Adaptive Network Architecture uses sparse online memories plus bridge memories that carry context across horizons. Instead of dense transformer attention over frozen weights, SBAN routes activity through adaptive memory structures that keep updating while the runtime is operating.
+
+expect_contains=sparse
+expect_pass=true
+
+[8] prompt=tell me a joke
+mode=uncertain
+backend=cpu
+response=I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.
+
+expect_contains=not sure
+expect_pass=true
+
+[9] prompt=thank you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=thank you
+response=You are welcome. I am ready for the next SBAN v21 check.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=9 anchored=2 retrieved=0 symbolic=6 nonempty=9 expectations=9 passed=9

@@ -3,7 +3,7 @@ name: Release Demo Bundles
 on:
   push:
     tags:
-      - "v20*"
+      - "v21*"
   workflow_dispatch:
 
 env:
@@ -45,17 +45,17 @@ jobs:
 
       - name: Smoke demo
         run: |
-          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); session = pathlib.Path('release_session_v20.txt'); session.unlink(missing_ok=True); subprocess.run([str(exe), 'chat-demo', 'hi im tom', '160', 'mode=free', 'seed_path=data/sban_dialogue_seed_v20.txt', f'session_path={session}'], check=True); subprocess.run([str(exe), 'chat-demo', 'can you recall my name', '160', 'mode=free', 'seed_path=data/sban_dialogue_seed_v20.txt', f'session_path={session}'], check=True); subprocess.run([str(exe), 'chat-demo', 'what is 2 + 2', '160', 'mode=free', 'seed_path=data/sban_dialogue_seed_v20.txt'], check=True); session.unlink(missing_ok=True)"
+          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); session_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_session_eval_v21.txt', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v21.txt'], text=True); assert 'passed=9' in session_eval and 'expect_pass=false' not in session_eval, session_eval; uncertain = subprocess.check_output([str(exe), 'chat-demo', 'tell me a joke', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v21.txt'], text=True); assert 'not sure' in uncertain.lower(), uncertain; version_guard = subprocess.check_output([str(exe), 'chat-demo', 'what should v22 improve', '160', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v21.txt'], text=True); assert 'not sure' in version_guard.lower(), version_guard"
 
       - name: Package demo bundle
         run: |
-          python scripts/package_v20_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
+          python scripts/package_v21_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-demo
-          path: deliverables/v20/demo/SBAN_v20_${{ matrix.platform }}_demo.zip
+          path: deliverables/v21/demo/SBAN_v21_${{ matrix.platform }}_demo.zip
 
       - name: Ensure release exists
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,4 +74,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.ref_name }}" "deliverables/v20/demo/SBAN_v20_${{ matrix.platform }}_demo.zip" --clobber
+          gh release upload "${{ github.ref_name }}" "deliverables/v21/demo/SBAN_v21_${{ matrix.platform }}_demo.zip" --clobber

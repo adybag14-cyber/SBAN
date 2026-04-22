@@ -1,0 +1,4 @@
+prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.

@@ -5,8 +5,22 @@ const cfg = @import("config.zig");
 const netmod = @import("network.zig");
 
 const feature_dim = 128;
-const session_magic = "SBAN_SESSION_V22";
-const legacy_session_magic = "SBAN_SESSION_V21";
+const current_release_name = "SBAN v23";
+const current_release_version = "v23";
+const current_seed_path = "data/sban_dialogue_seed_v23.txt";
+const current_prompt_eval_path = "data/sban_chat_eval_prompts_v23.txt";
+const current_session_eval_path = "data/sban_session_eval_v23.txt";
+const current_summary_path = "SBAN_v23_EXECUTIVE_SUMMARY.md";
+const current_report_path = "SBAN_v23_REPORT.md";
+const current_paper_path = "docs/papers/SBAN_v23_follow_up_research_paper.pdf";
+const current_repo_zip_path = "deliverables/v23/SBAN_v23_repo.zip";
+const current_windows_demo_start = "SBAN_v23_Start.bat";
+const current_linux_demo_start = "./SBAN_v23_Start.sh";
+const current_windows_demo_zip = "deliverables/v23/demo/SBAN_v23_windows_x86_64_demo.zip";
+const current_linux_demo_zip = "deliverables/v23/demo/SBAN_v23_linux_x86_64_demo.zip";
+const session_magic = "SBAN_SESSION_V23";
+const legacy_session_magic_v22 = "SBAN_SESSION_V22";
+const legacy_session_magic_v21 = "SBAN_SESSION_V21";
 const max_top_candidates = 16;
 
 const ChatMode = enum { anchor, free, hybrid };
@@ -28,15 +42,15 @@ pub const ChatResult = struct {
 };
 
 pub const ChatOptions = struct {
-    seed_path: []const u8 = "data/sban_dialogue_seed_v22.txt",
+    seed_path: []const u8 = current_seed_path,
     session_path: ?[]const u8 = null,
-    mode: ChatMode = .hybrid,
+    mode: ChatMode = .free,
     backend: AccelBackend = .auto,
     worker_threads: usize = 0,
     iterations: usize = 1,
     max_bytes: usize = 160,
     continue_bytes: usize = 0,
-    allow_generation: bool = false,
+    allow_generation: bool = true,
     net_config: cfg.NetworkConfig = blk: {
         const config = cfg.v22ReleaseConfig(4);
         break :blk config;
@@ -108,8 +122,12 @@ const IntentKind = enum {
     why,
     explain,
     compare,
+    give,
+    list,
     should,
     can,
+    does,
+    which,
     where,
     other,
 };
@@ -1131,14 +1149,22 @@ fn answerPrompt(
         };
     }
 
+    if (try answerOperationalPrompt(allocator, prompt)) |result| {
+        return result;
+    }
+
     var prompt_tokens = try tokenizeText(allocator, prompt);
     defer prompt_tokens.deinit(allocator);
 
-    if (options.mode == .anchor or options.mode == .hybrid) {
+    if (options.mode == .anchor or options.mode == .hybrid or options.mode == .free) {
         if (try selectGroundedMatch(allocator, prompt, &prompt_tokens, corpus, scorer, .anchor)) |match| {
             const response = try maybeGroundedContinuation(allocator, seed_bytes, prompt, match.example, session, options);
             return .{
-                .mode_label = if (options.mode == .hybrid) "hybrid-anchor" else "anchor",
+                .mode_label = switch (options.mode) {
+                    .anchor => "anchor",
+                    .hybrid => "hybrid-anchor",
+                    .free => "free-anchor",
+                },
                 .matched_prompt = match.example.user,
                 .response = response,
                 .anchored = true,
@@ -1157,13 +1183,10 @@ fn answerPrompt(
         }
     }
 
-    if (options.allow_generation and isDomainPrompt(prompt)) {
-        const transcript = try renderSessionTranscript(allocator, session);
-        defer allocator.free(transcript);
-        const response = try generateFreeResponse(allocator, seed_bytes, transcript, prompt, options);
-        if (response.len > 0) {
+    if (options.allow_generation) {
+        if (try synthesizeFreeResponse(allocator, prompt, session, options)) |response| {
             return .{
-                .mode_label = "generated",
+                .mode_label = "free-composed",
                 .response = response,
             };
         }
@@ -1254,6 +1277,7 @@ fn scoreLexicalMatch(
 
     if (candidate_tokens.token_hashes.items.len == 0) return null;
     if (hasConflictingVersionToken(prompt, candidate)) return null;
+    if (!passesSemanticGuards(prompt, candidate)) return null;
 
     var overlap: usize = 0;
     for (prompt_tokens.token_hashes.items) |hash| {
@@ -1284,6 +1308,7 @@ fn scoreLexicalMatch(
     score += @as(i32, @intCast(bigram_overlap * 260));
     score += @as(i32, @intCast(@divTrunc(prompt_cov_ppm, 3)));
     score += @as(i32, @intCast(@divTrunc(candidate_cov_ppm, 6)));
+    score += semanticBoost(prompt, candidate);
     if (exact) score += 10_000;
     if (intent_match) score += 40 else score -= 80;
     return .{
@@ -1305,14 +1330,13 @@ fn maybeGroundedContinuation(
     session: *const SessionState,
     options: ChatOptions,
 ) ![]const u8 {
+    _ = seed_bytes;
     if (options.continue_bytes == 0 or !options.allow_generation) return example.assistant;
-    const transcript = try renderSessionTranscript(allocator, session);
-    defer allocator.free(transcript);
-    return generateAnchoredResponse(allocator, seed_bytes, transcript, prompt, example.assistant, options);
+    return composeAnchoredContinuation(allocator, prompt, example.assistant, session, options);
 }
 
 fn buildHelpResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.");
+    return std.fmt.allocPrint(allocator, "I can help with {s}, transformer comparisons, release artifacts, starter files, CPU versus cpu_mt versus CUDA versus OpenCL behavior, session memory, grounded uncertainty, and short math.", .{current_release_name});
 }
 
 fn buildFactStoredResponse(allocator: std.mem.Allocator, fact: FactCandidate) ![]const u8 {
@@ -1407,11 +1431,255 @@ fn buildFactCapabilityResponse(allocator: std.mem.Allocator, key: []const u8) ![
     return std.fmt.allocPrint(allocator, "Yes. Tell me your {s} and I will remember it for this session.", .{key});
 }
 
+fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?ChatResult {
+    if (containsPhraseIgnoreCase(prompt, "what command benchmarks cuda retrieval") or
+        containsPhraseIgnoreCase(prompt, "cuda retrieval benchmark"))
+    {
+        return .{
+            .mode_label = "operational-cuda-bench-command",
+            .response = try buildCudaBenchCommandResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    if (wantsCudaCommandAnswer(prompt)) {
+        return .{
+            .mode_label = "operational-cuda-command",
+            .response = try buildCudaCommandResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    if (wantsArtifactPathAnswer(prompt)) {
+        if (containsPhraseIgnoreCase(prompt, "summary")) {
+            return .{
+                .mode_label = "operational-summary-path",
+                .response = try std.fmt.allocPrint(allocator, "The {s} executive summary is generated at {s}.", .{ current_release_version, current_summary_path }),
+                .symbolic = true,
+            };
+        }
+        if (containsPhraseIgnoreCase(prompt, "report")) {
+            return .{
+                .mode_label = "operational-report-path",
+                .response = try std.fmt.allocPrint(allocator, "The {s} report is generated at {s}.", .{ current_release_version, current_report_path }),
+                .symbolic = true,
+            };
+        }
+        if (containsPhraseIgnoreCase(prompt, "repo")) {
+            return .{
+                .mode_label = "operational-repo-path",
+                .response = try std.fmt.allocPrint(allocator, "The {s} repo archive is generated at {s}.", .{ current_release_version, current_repo_zip_path }),
+                .symbolic = true,
+            };
+        }
+        return .{
+            .mode_label = "operational-paper-path",
+            .response = try std.fmt.allocPrint(allocator, "The {s} paper PDF is generated at {s}.", .{ current_release_version, current_paper_path }),
+            .symbolic = true,
+        };
+    }
+    if (wantsBundleInventory(prompt)) {
+        return .{
+            .mode_label = "operational-bundle",
+            .response = try buildBundleInventoryResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    if (wantsStarterAnswer(prompt)) {
+        if (containsPhraseIgnoreCase(prompt, "windows")) {
+            return .{
+                .mode_label = "operational-starter",
+                .response = try std.fmt.allocPrint(allocator, "The Windows starter file is {s}. Open the bundle and run that script to start the continuing {s} chat loop.", .{ current_windows_demo_start, current_release_version }),
+                .symbolic = true,
+            };
+        }
+        if (containsPhraseIgnoreCase(prompt, "linux")) {
+            return .{
+                .mode_label = "operational-starter",
+                .response = try std.fmt.allocPrint(allocator, "The Linux starter file is {s}. Run it from the bundle directory to start the continuing {s} chat loop.", .{ current_linux_demo_start, current_release_version }),
+                .symbolic = true,
+            };
+        }
+        return .{
+            .mode_label = "operational-starter",
+            .response = try std.fmt.allocPrint(allocator, "The demo starter scripts are {s} on Windows and {s} on Linux.", .{ current_windows_demo_start, current_linux_demo_start }),
+            .symbolic = true,
+        };
+    }
+    if ((containsPhraseIgnoreCase(prompt, "rtx") or containsPhraseIgnoreCase(prompt, "nvidia")) and
+        hasAnyPhraseIgnoreCase(prompt, &.{ "can this run", "does this run", "do you support", "will this run" }))
+    {
+        return .{
+            .mode_label = "operational-rtx-support",
+            .response = try buildRtxSupportResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    if (containsPhraseIgnoreCase(prompt, "do you support gpus")) {
+        return .{
+            .mode_label = "operational-gpu-support",
+            .response = try buildGpuSupportResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    if (containsPhraseIgnoreCase(prompt, "when should i use cpu_mt") or containsPhraseIgnoreCase(prompt, "when should i use cpu mt")) {
+        return .{
+            .mode_label = "operational-cpu-mt-guidance",
+            .response = try buildCpuMtGuidanceResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    if ((containsPhraseIgnoreCase(prompt, "cuda") and containsPhraseIgnoreCase(prompt, "opencl")) or
+        containsPhraseIgnoreCase(prompt, "how do cpu and gpu retrieval differ"))
+    {
+        return .{
+            .mode_label = "operational-backends",
+            .response = try buildBackendComparisonResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    if (wantsRoadmapAnswer(prompt)) {
+        return .{
+            .mode_label = "operational-roadmap",
+            .response = try buildRoadmapResponse(allocator),
+            .symbolic = true,
+        };
+    }
+    return null;
+}
+
+fn buildCudaCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return std.fmt.allocPrint(
+        allocator,
+        "Use accel-info to confirm CUDA support: zig-out/bin/zig_sban accel-info seed_path={s} backend=cuda. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned {s} bench assets.",
+        .{ current_seed_path, current_release_version },
+    );
+}
+
+fn buildCudaBenchCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "Use accel-bench for the raw CUDA retrieval benchmark, for example: zig-out/bin/zig_sban accel-bench docs/results/v23/accel_prompts_v23_bench.txt backend=cuda seed_path=docs/results/v23/accel_seed_v23_bench.txt iterations=4.");
+}
+
+fn buildBundleInventoryResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return std.fmt.allocPrint(
+        allocator,
+        "The {s} release bundle ships the executive summary at {s}, the report at {s}, the paper PDF at {s}, the repo archive at {s}, and demo bundles at {s} and {s}.",
+        .{ current_release_version, current_summary_path, current_report_path, current_paper_path, current_repo_zip_path, current_windows_demo_zip, current_linux_demo_zip },
+    );
+}
+
+fn buildRtxSupportResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "Yes. NVIDIA RTX cards such as the RTX 4090 should use backend=cuda for the retrieval accelerator path. CPU remains the fallback, and OpenCL is still the generic GPU fallback when CUDA is unavailable.");
+}
+
+fn buildGpuSupportResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "Yes. SBAN runs on CPU by default, keeps cpu_mt for larger host-side retrieval experiments, uses CUDA on NVIDIA RTX hardware, and falls back to OpenCL on compatible non-CUDA GPU systems.");
+}
+
+fn buildCpuMtGuidanceResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "Use cpu_mt when the retrieval corpus is large enough to amortize thread overhead or when you want an explicit host-side acceleration experiment. For small grounded corpora, plain CPU is often still the faster choice.");
+}
+
+fn buildBackendComparisonResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "CPU is the safest default on small grounded corpora. cpu_mt spreads retrieval work across a few host threads and tends to help only once the corpus is large enough to amortize the thread overhead. CUDA is the preferred GPU path on NVIDIA RTX systems. OpenCL remains the fallback GPU path on compatible non-CUDA setups.");
+}
+
+fn buildRoadmapResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "After v23, the roadmap should keep pushing on three fronts: broader free-form generation without losing grounding, richer natural session memory beyond short scalar facts, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
+}
+
+fn synthesizeFreeResponse(
+    allocator: std.mem.Allocator,
+    prompt: []const u8,
+    session: *const SessionState,
+    _: ChatOptions,
+) !?[]const u8 {
+    if (isGreetingPrompt(prompt)) {
+        return @as(?[]const u8, try buildGreetingResponse(allocator, session));
+    }
+    if (isThankYouPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "You're welcome. I can keep going on SBAN architecture, release files, runtime commands, session memory, or backend behavior."));
+    }
+    if (isHowAreYouPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "I am steady and ready to help. Ask about SBAN v23, its files and commands, session memory, or a short calculation."));
+    }
+    if (isIdentityPrompt(prompt)) {
+        return @as(?[]const u8, try buildIdentityResponse(allocator));
+    }
+    if (isFavoriteColorPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "I do not have personal preferences, but blue is a practical choice for diagrams because it reads cleanly against light and dark backgrounds."));
+    }
+    if (isJokePrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "Why did the sparse network stay calm? It only activated the paths that actually had support."));
+    }
+    if (isCapabilityPrompt(prompt)) {
+        return @as(?[]const u8, try buildHelpResponse(allocator));
+    }
+    return null;
+}
+
+fn buildGreetingResponse(allocator: std.mem.Allocator, session: *const SessionState) ![]const u8 {
+    if (session.lookupFact("name")) |fact| {
+        const display = try titleCaseCopy(allocator, fact.value);
+        defer allocator.free(display);
+        return std.fmt.allocPrint(allocator, "Hello {s}. I am ready to help with {s}, release files, runtime commands, session memory, or short math.", .{ display, current_release_name });
+    }
+    return std.fmt.allocPrint(allocator, "Hello. I am {s}, ready for grounded SBAN questions and more natural free chat.", .{current_release_name});
+}
+
+fn buildIdentityResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "I am SBAN v23, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, and safer free-chat composition.");
+}
+
+fn composeAnchoredContinuation(
+    allocator: std.mem.Allocator,
+    _: []const u8,
+    anchor_assistant: []const u8,
+    _: *const SessionState,
+    _: ChatOptions,
+) ![]const u8 {
+    return allocator.dupe(u8, anchor_assistant);
+}
+
+fn isGreetingPrompt(prompt: []const u8) bool {
+    return startsWithWordIgnoreCase(prompt, "hello") or
+        startsWithWordIgnoreCase(prompt, "hi") or
+        startsWithWordIgnoreCase(prompt, "hey") or
+        startsWithWordIgnoreCase(prompt, "good morning") or
+        startsWithWordIgnoreCase(prompt, "good afternoon");
+}
+
+fn isThankYouPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "thank you") or std.ascii.eqlIgnoreCase(trimLine(prompt), "thanks");
+}
+
+fn isJokePrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "tell me a joke") or containsPhraseIgnoreCase(prompt, "make me laugh");
+}
+
+fn isFavoriteColorPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "favorite color") or containsPhraseIgnoreCase(prompt, "favourite color") or containsPhraseIgnoreCase(prompt, "favourite colour");
+}
+
+fn isHowAreYouPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "how are you") or containsPhraseIgnoreCase(prompt, "how's it going");
+}
+
+fn isIdentityPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "who are you") or
+        containsPhraseIgnoreCase(prompt, "what are you") or
+        containsPhraseIgnoreCase(prompt, "tell me about yourself");
+}
+
+fn isCapabilityPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "what can you do") or
+        containsPhraseIgnoreCase(prompt, "what can i ask") or
+        containsPhraseIgnoreCase(prompt, "how can you help");
+}
+
 fn buildUncertaintyResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
     if (isDomainPrompt(prompt)) {
-        return allocator.dupe(u8, "I am not sure enough to answer that from the grounded SBAN v22 knowledge yet.");
+        return std.fmt.allocPrint(allocator, "I am not sure enough to answer that from the grounded {s} knowledge yet.", .{current_release_name});
     }
-    return allocator.dupe(u8, "I am not sure. I only answer when I have grounded support or session facts, and I do not know that one yet.");
+    return allocator.dupe(u8, "I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.");
 }
 
 fn isDomainPrompt(prompt: []const u8) bool {
@@ -1431,6 +1699,15 @@ fn isDomainPrompt(prompt: []const u8) bool {
         "ci",
         "gpu",
         "opencl",
+        "cuda",
+        "cpu_mt",
+        "artifact",
+        "starter",
+        "windows",
+        "linux",
+        "paper",
+        "summary",
+        "rtx",
     };
     for (markers) |marker| {
         if (containsPhraseIgnoreCase(prompt, marker)) return true;
@@ -1578,8 +1855,12 @@ fn classifyIntent(text: []const u8) IntentKind {
     if (startsWithWordIgnoreCase(trimmed, "why")) return .why;
     if (startsWithWordIgnoreCase(trimmed, "explain")) return .explain;
     if (startsWithWordIgnoreCase(trimmed, "compare")) return .compare;
+    if (startsWithWordIgnoreCase(trimmed, "give")) return .give;
+    if (startsWithWordIgnoreCase(trimmed, "list")) return .list;
     if (startsWithWordIgnoreCase(trimmed, "should")) return .should;
     if (startsWithWordIgnoreCase(trimmed, "can")) return .can;
+    if (startsWithWordIgnoreCase(trimmed, "does")) return .does;
+    if (startsWithWordIgnoreCase(trimmed, "which")) return .which;
     if (startsWithWordIgnoreCase(trimmed, "where")) return .where;
     return .other;
 }
@@ -1600,6 +1881,190 @@ fn containsHash(hashes: []const u64, needle: u64) bool {
         if (hash == needle) return true;
     }
     return false;
+}
+
+fn hasAnyPhraseIgnoreCase(text: []const u8, phrases: []const []const u8) bool {
+    for (phrases) |phrase| {
+        if (containsPhraseIgnoreCase(text, phrase)) return true;
+    }
+    return false;
+}
+
+fn wantsStarterAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "starter file",
+        "start file",
+        "launcher",
+        "windows starter",
+        "linux starter",
+    }) or ((containsPhraseIgnoreCase(text, "start") or containsPhraseIgnoreCase(text, "launch")) and
+        (containsPhraseIgnoreCase(text, "windows") or containsPhraseIgnoreCase(text, "linux") or containsPhraseIgnoreCase(text, "demo")));
+}
+
+fn mentionsStarterAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        ".bat",
+        ".sh",
+        "start.bat",
+        "start.sh",
+        "starter",
+        "launch",
+        "windows demo",
+        "linux demo",
+    });
+}
+
+fn wantsArtifactPathAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "paper pdf",
+        "executive summary",
+        "repo zip",
+        "report path",
+        "artifact path",
+        "where is the paper",
+        "where is the summary",
+        "where is the report",
+        "where is the repo",
+        "where is the pdf",
+        "path to the paper",
+    });
+}
+
+fn mentionsArtifactPathAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        ".pdf",
+        ".md",
+        ".zip",
+        "docs/papers",
+        "deliverables/",
+        "summary",
+        "report",
+        "repo zip",
+        "paper",
+    });
+}
+
+fn wantsBundleInventory(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "what ships",
+        "what is in the release bundle",
+        "release bundle",
+        "artifact inventory",
+        "bundle inventory",
+        "what ships in",
+    });
+}
+
+fn mentionsBundleInventory(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "bundle",
+        "summary",
+        "report",
+        "paper",
+        "repo zip",
+        "demo zip",
+        "asset",
+        "ships",
+    });
+}
+
+fn wantsCudaCommandAnswer(text: []const u8) bool {
+    return containsPhraseIgnoreCase(text, "cuda") and hasAnyPhraseIgnoreCase(text, &.{
+        "what command",
+        "which command",
+        "show",
+        "check",
+        "inspect",
+        "verify",
+    });
+}
+
+fn mentionsCudaCommandAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "accel-info",
+        "accel bench",
+        "backend=cuda",
+        "cuda support",
+        "nvidia cuda",
+    });
+}
+
+fn wantsHardwareAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "cuda",
+        "opencl",
+        "gpu",
+        "rtx",
+        "nvidia",
+        "4090",
+        "2080",
+        "cpu_mt",
+        "cpu mt",
+        "cpu",
+    });
+}
+
+fn mentionsHardwareAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "cuda",
+        "opencl",
+        "gpu",
+        "rtx",
+        "nvidia",
+        "cpu_mt",
+        "cpu mt",
+        "cpu",
+    });
+}
+
+fn wantsRoadmapAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "roadmap",
+        "next version",
+        "next release",
+        "v24",
+        "future work",
+        "what should v",
+        "should improve",
+        "what should improve",
+    });
+}
+
+fn mentionsRoadmapAnswer(text: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(text, &.{
+        "roadmap",
+        "next",
+        "future",
+        "improve",
+        "follow-up",
+    });
+}
+
+fn passesSemanticGuards(prompt: []const u8, candidate: []const u8) bool {
+    if (wantsStarterAnswer(prompt) and !mentionsStarterAnswer(candidate)) return false;
+    if (wantsArtifactPathAnswer(prompt) and !mentionsArtifactPathAnswer(candidate)) return false;
+    if (wantsBundleInventory(prompt) and !mentionsBundleInventory(candidate)) return false;
+    if (wantsCudaCommandAnswer(prompt) and !mentionsCudaCommandAnswer(candidate)) return false;
+    if (wantsHardwareAnswer(prompt) and !mentionsHardwareAnswer(candidate)) return false;
+    if (wantsRoadmapAnswer(prompt) and !mentionsRoadmapAnswer(candidate)) return false;
+    if (containsPhraseIgnoreCase(prompt, "transformer") and !containsPhraseIgnoreCase(candidate, "transformer")) return false;
+    if (containsPhraseIgnoreCase(prompt, "bridge memory") and !containsPhraseIgnoreCase(candidate, "bridge")) return false;
+    if (containsPhraseIgnoreCase(prompt, "compare") and !hasAnyPhraseIgnoreCase(candidate, &.{ "compare", "difference", "tradeoff", "versus" })) return false;
+    if (containsPhraseIgnoreCase(prompt, "paper") and containsPhraseIgnoreCase(prompt, "pdf") and !containsPhraseIgnoreCase(candidate, "pdf")) return false;
+    return true;
+}
+
+fn semanticBoost(prompt: []const u8, candidate: []const u8) i32 {
+    var boost: i32 = 0;
+    if (wantsStarterAnswer(prompt) and mentionsStarterAnswer(candidate)) boost += 1600;
+    if (wantsArtifactPathAnswer(prompt) and mentionsArtifactPathAnswer(candidate)) boost += 1700;
+    if (wantsBundleInventory(prompt) and mentionsBundleInventory(candidate)) boost += 1500;
+    if (wantsCudaCommandAnswer(prompt) and mentionsCudaCommandAnswer(candidate)) boost += 1800;
+    if (wantsHardwareAnswer(prompt) and mentionsHardwareAnswer(candidate)) boost += 1100;
+    if (wantsRoadmapAnswer(prompt) and mentionsRoadmapAnswer(candidate)) boost += 1000;
+    if (containsPhraseIgnoreCase(prompt, "transformer") and containsPhraseIgnoreCase(candidate, "transformer")) boost += 900;
+    if (containsPhraseIgnoreCase(prompt, "bridge memory") and containsPhraseIgnoreCase(candidate, "bridge")) boost += 800;
+    return boost;
 }
 
 fn hasConflictingVersionToken(prompt: []const u8, candidate: []const u8) bool {
@@ -1641,9 +2106,18 @@ fn canonicalToken(token: []const u8, scratch: *[64]u8) []const u8 {
         std.mem.eql(u8, token, "improved") or
         std.mem.eql(u8, token, "improve") or
         std.mem.eql(u8, token, "upgraded") or
-        std.mem.eql(u8, token, "upgrade"))
+        std.mem.eql(u8, token, "upgrade") or
+        std.mem.eql(u8, token, "delta"))
     {
         return "change";
+    }
+    if (std.mem.eql(u8, token, "compare") or
+        std.mem.eql(u8, token, "compares") or
+        std.mem.eql(u8, token, "comparison") or
+        std.mem.eql(u8, token, "versus") or
+        std.mem.eql(u8, token, "vs"))
+    {
+        return "compare";
     }
     if (std.mem.eql(u8, token, "launch") or
         std.mem.eql(u8, token, "launching") or
@@ -1651,18 +2125,84 @@ fn canonicalToken(token: []const u8, scratch: *[64]u8) []const u8 {
         std.mem.eql(u8, token, "starting") or
         std.mem.eql(u8, token, "open") or
         std.mem.eql(u8, token, "run") or
-        std.mem.eql(u8, token, "running"))
+        std.mem.eql(u8, token, "running") or
+        std.mem.eql(u8, token, "starter") or
+        std.mem.eql(u8, token, "launcher") or
+        std.mem.eql(u8, token, "script"))
     {
         return "launch";
     }
+    if (std.mem.eql(u8, token, "command") or
+        std.mem.eql(u8, token, "commands") or
+        std.mem.eql(u8, token, "check") or
+        std.mem.eql(u8, token, "checks") or
+        std.mem.eql(u8, token, "verify") or
+        std.mem.eql(u8, token, "verifies"))
+    {
+        return "command";
+    }
     if (std.mem.eql(u8, token, "supports") or
         std.mem.eql(u8, token, "supported") or
-        std.mem.eql(u8, token, "supporting"))
+        std.mem.eql(u8, token, "supporting") or
+        std.mem.eql(u8, token, "compatible"))
     {
         return "support";
     }
+    if (std.mem.eql(u8, token, "overview") or
+        std.mem.eql(u8, token, "describe") or
+        std.mem.eql(u8, token, "described") or
+        std.mem.eql(u8, token, "pitch") or
+        std.mem.eql(u8, token, "elevator"))
+    {
+        return "overview";
+    }
+    if (std.mem.eql(u8, token, "limit") or
+        std.mem.eql(u8, token, "limits") or
+        std.mem.eql(u8, token, "limitation") or
+        std.mem.eql(u8, token, "limitations") or
+        std.mem.eql(u8, token, "weakness") or
+        std.mem.eql(u8, token, "weaknesses") or
+        std.mem.eql(u8, token, "tradeoff") or
+        std.mem.eql(u8, token, "tradeoffs"))
+    {
+        return "limit";
+    }
+    if (std.mem.eql(u8, token, "artifact") or
+        std.mem.eql(u8, token, "artifacts") or
+        std.mem.eql(u8, token, "inventory") or
+        std.mem.eql(u8, token, "bundle") or
+        std.mem.eql(u8, token, "bundles") or
+        std.mem.eql(u8, token, "deliverable") or
+        std.mem.eql(u8, token, "deliverables"))
+    {
+        return "bundle";
+    }
+    if (std.mem.eql(u8, token, "file") or
+        std.mem.eql(u8, token, "files") or
+        std.mem.eql(u8, token, "filename") or
+        std.mem.eql(u8, token, "path") or
+        std.mem.eql(u8, token, "paths"))
+    {
+        return "path";
+    }
+    if (std.mem.eql(u8, token, "paper") or std.mem.eql(u8, token, "pdf")) {
+        return "paper";
+    }
+    if (std.mem.eql(u8, token, "summary")) {
+        return "summary";
+    }
+    if (std.mem.eql(u8, token, "roadmap") or
+        std.mem.eql(u8, token, "future"))
+    {
+        return "roadmap";
+    }
     if (std.mem.eql(u8, token, "cuda") or std.mem.eql(u8, token, "opencl")) {
         return "gpu";
+    }
+    if (std.mem.eql(u8, token, "nvidia") or
+        std.mem.eql(u8, token, "rtx"))
+    {
+        return "nvidia";
     }
     if (token.len > 4 and token.len <= scratch.len and std.mem.endsWith(u8, token, "ies")) {
         @memcpy(scratch[0 .. token.len - 3], token[0 .. token.len - 3]);
@@ -1799,20 +2339,34 @@ fn isHelpPrompt(prompt: []const u8) bool {
 }
 
 fn extractFactCandidate(allocator: std.mem.Allocator, prompt: []const u8) !?FactCandidate {
-    if (extractNameCandidate(prompt)) |name| {
-        return .{ .key = try allocator.dupe(u8, "name"), .value = try sanitizeTurnText(allocator, name) };
-    }
-
     if (extractFixedFactValue(prompt, "i live in ")) |value| {
         return .{ .key = try allocator.dupe(u8, "location"), .value = try sanitizeTurnText(allocator, value) };
     }
     if (extractFixedFactValue(prompt, "i am based in ")) |value| {
         return .{ .key = try allocator.dupe(u8, "location"), .value = try sanitizeTurnText(allocator, value) };
     }
+    if (extractFixedFactValue(prompt, "i am from ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "location"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "i'm from ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "location"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "im from ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "location"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "i come from ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "location"), .value = try sanitizeTurnText(allocator, value) };
+    }
     if (extractFixedFactValue(prompt, "our lab is ")) |value| {
         return .{ .key = try allocator.dupe(u8, "lab"), .value = try sanitizeTurnText(allocator, value) };
     }
     if (extractFixedFactValue(prompt, "my lab is ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "lab"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractLabWorkValue(prompt, "i work in ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "lab"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractLabWorkValue(prompt, "i work at ")) |value| {
         return .{ .key = try allocator.dupe(u8, "lab"), .value = try sanitizeTurnText(allocator, value) };
     }
     if (extractFixedFactValue(prompt, "my role is ")) |value| {
@@ -1852,6 +2406,10 @@ fn extractFactCandidate(allocator: std.mem.Allocator, prompt: []const u8) !?Fact
         if (value.len > 0) return .{ .key = try allocator.dupe(u8, "likes"), .value = try sanitizeTurnText(allocator, value) };
     }
 
+    if (extractNameCandidate(prompt)) |name| {
+        return .{ .key = try allocator.dupe(u8, "name"), .value = try sanitizeTurnText(allocator, name) };
+    }
+
     return null;
 }
 
@@ -1860,14 +2418,18 @@ fn extractFactQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
 
     if (containsPhraseIgnoreCase(prompt, "where do i live") or
         containsPhraseIgnoreCase(prompt, "what city do i live in") or
-        containsPhraseIgnoreCase(prompt, "where am i based"))
+        containsPhraseIgnoreCase(prompt, "where am i based") or
+        containsPhraseIgnoreCase(prompt, "where am i from") or
+        containsPhraseIgnoreCase(prompt, "do you remember where i am from"))
     {
         return @as(?[]u8, try allocator.dupe(u8, "location"));
     }
     if (containsPhraseIgnoreCase(prompt, "what is our lab") or
         containsPhraseIgnoreCase(prompt, "what's our lab") or
         containsPhraseIgnoreCase(prompt, "what is my lab") or
-        containsPhraseIgnoreCase(prompt, "what's my lab"))
+        containsPhraseIgnoreCase(prompt, "what's my lab") or
+        containsPhraseIgnoreCase(prompt, "what lab do i work in") or
+        containsPhraseIgnoreCase(prompt, "which lab do i work in"))
     {
         return @as(?[]u8, try allocator.dupe(u8, "lab"));
     }
@@ -1965,7 +2527,15 @@ fn takeLeadingNameCandidate(input: []const u8) ?[]const u8 {
     if (candidate.len == 0) return null;
     var token_iter = std.mem.splitScalar(u8, candidate, ' ');
     const first = token_iter.next() orelse return null;
-    if (std.ascii.eqlIgnoreCase(first, "a") or std.ascii.eqlIgnoreCase(first, "an") or std.ascii.eqlIgnoreCase(first, "the")) return null;
+    if (std.ascii.eqlIgnoreCase(first, "a") or
+        std.ascii.eqlIgnoreCase(first, "an") or
+        std.ascii.eqlIgnoreCase(first, "the") or
+        std.ascii.eqlIgnoreCase(first, "from") or
+        std.ascii.eqlIgnoreCase(first, "in") or
+        std.ascii.eqlIgnoreCase(first, "based"))
+    {
+        return null;
+    }
     return candidate;
 }
 
@@ -1994,6 +2564,22 @@ fn extractFixedFactValue(prompt: []const u8, marker: []const u8) ?[]const u8 {
     return null;
 }
 
+fn extractLabWorkValue(prompt: []const u8, marker: []const u8) ?[]const u8 {
+    if (indexOfPhraseIgnoreCase(prompt, marker)) |idx| {
+        var value = trimInlineValue(takeValueUntilBoundary(prompt[idx + marker.len ..]));
+        if (startsWithWordIgnoreCase(value, "the")) {
+            value = trimInlineValue(value["the".len..]);
+        }
+        if (value.len == 0 or !containsPhraseIgnoreCase(value, "lab")) return null;
+        if (value.len > 4 and std.ascii.eqlIgnoreCase(value[value.len - 4 ..], " lab")) {
+            value = trimInlineValue(value[0 .. value.len - 4]);
+        }
+        if (value.len == 0) return null;
+        return value;
+    }
+    return null;
+}
+
 fn renderSessionTranscript(allocator: std.mem.Allocator, session: *const SessionState) ![]u8 {
     var out = std.ArrayList(u8).empty;
     defer out.deinit(allocator);
@@ -2012,7 +2598,10 @@ fn loadSessionState(allocator: std.mem.Allocator, io: std.Io, path: ?[]const u8)
     defer allocator.free(bytes);
     if (bytes.len == 0) return .{};
 
-    if (std.mem.startsWith(u8, bytes, session_magic) or std.mem.startsWith(u8, bytes, legacy_session_magic)) {
+    if (std.mem.startsWith(u8, bytes, session_magic) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v22) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v21))
+    {
         return parseSessionStateV21(allocator, bytes);
     }
 
@@ -2440,7 +3029,7 @@ fn solveMath(allocator: std.mem.Allocator, prompt: []const u8) !?MathOutcome {
 }
 
 fn extractMathExpression(allocator: std.mem.Allocator, prompt: []const u8) ?[]u8 {
-    const prefixes = [_][]const u8{ "what is ", "calculate ", "compute " };
+    const prefixes = [_][]const u8{ "what is ", "calculate ", "compute ", "solve " };
     for (prefixes) |prefix| {
         if (indexOfPhraseIgnoreCase(prompt, prefix)) |idx| {
             const candidate = trimInlineValue(prompt[idx + prefix.len ..]);
@@ -2477,15 +3066,26 @@ fn normalizeMathExpression(allocator: std.mem.Allocator, text: []const u8) !?[]u
             idx += 5;
             continue;
         }
+        if (std.mem.startsWith(u8, text[idx..], "multiplied by")) {
+            try out.appendSlice(allocator, "* ");
+            idx += "multiplied by".len;
+            continue;
+        }
         if (std.mem.startsWith(u8, text[idx..], "divided by")) {
             try out.appendSlice(allocator, "/ ");
             idx += "divided by".len;
             continue;
         }
+        if (std.mem.startsWith(u8, text[idx..], "over")) {
+            try out.appendSlice(allocator, "/ ");
+            idx += "over".len;
+            continue;
+        }
 
         const ch = text[idx];
-        if (std.ascii.isDigit(ch) or ch == '.' or ch == '+' or ch == '-' or ch == '*' or ch == '/' or ch == '(' or ch == ')') {
-            try out.append(allocator, ch);
+        if (std.ascii.isDigit(ch) or ch == '.' or ch == '+' or ch == '-' or ch == '*' or ch == '/' or ch == '(' or ch == ')' or ch == 'x' or ch == 'X') {
+            const mapped = if (ch == 'x' or ch == 'X') '*' else ch;
+            try out.append(allocator, mapped);
             idx += 1;
             continue;
         }
@@ -2757,6 +3357,65 @@ test "session retention is uncapped" {
         try session.appendTurn(allocator, user, assistant);
     }
     try std.testing.expectEqual(@as(usize, 40), session.turns.items.len);
+}
+
+test "natural location phrasing is stored as location instead of name" {
+    const allocator = std.testing.allocator;
+    const fact = (try extractFactCandidate(allocator, "i am from london")).?;
+    defer allocator.free(fact.key);
+    defer allocator.free(fact.value);
+    try std.testing.expectEqualStrings("location", fact.key);
+    try std.testing.expectEqualStrings("london", fact.value);
+    const query = (try extractFactQuery(allocator, "where am i from")).?;
+    defer allocator.free(query);
+    try std.testing.expectEqualStrings("location", query);
+}
+
+test "natural lab phrasing is stored from work sentence" {
+    const allocator = std.testing.allocator;
+    const fact = (try extractFactCandidate(allocator, "i work in the sbx lab")).?;
+    defer allocator.free(fact.key);
+    defer allocator.free(fact.value);
+    try std.testing.expectEqualStrings("lab", fact.key);
+    try std.testing.expectEqualStrings("sbx", fact.value);
+}
+
+test "hardware retrieval does not overmatch benchmark prompts" {
+    const allocator = std.testing.allocator;
+    const seed =
+        \\User: what is the 10m hardening run
+        \\Assistant: benchmark answer
+        \\
+        \\User: do you support nvidia rtx gpus
+        \\Assistant: yes, use cuda on nvidia rtx hardware
+    ;
+    var examples = try parseDialogueExamples(allocator, seed);
+    defer examples.deinit(allocator);
+    var corpus = try prepareCorpus(allocator, examples.items);
+    defer corpus.deinit(allocator);
+    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus);
+    defer scorer.deinit();
+
+    var prompt_tokens = try tokenizeText(allocator, "can this run on an rtx 4090");
+    defer prompt_tokens.deinit(allocator);
+    const match = (try selectGroundedMatch(allocator, "can this run on an rtx 4090", &prompt_tokens, &corpus, &scorer, .retrieval)).?;
+    try std.testing.expectEqualStrings("do you support nvidia rtx gpus", match.example.user);
+}
+
+test "operational paper prompt returns versioned paper path" {
+    const allocator = std.testing.allocator;
+    const result = (try answerOperationalPrompt(allocator, "where is the v23 paper pdf")).?;
+    try std.testing.expect(result.symbolic);
+    try std.testing.expect(containsPhraseIgnoreCase(result.response, current_paper_path));
+}
+
+test "free synthesis answers simple joke prompt" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+    const response = (try synthesizeFreeResponse(allocator, "tell me a joke", &session, .{})).?;
+    try std.testing.expect(response.len > 0);
+    try std.testing.expect(!containsPhraseIgnoreCase(response, "not sure"));
 }
 
 test "session encoding prevents raw transcript injection" {

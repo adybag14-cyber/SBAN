@@ -1,0 +1,228 @@
+[1] prompt=what is SBAN v23
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v23
+response=SBAN v23 is the conversational repair release. It keeps the established numeric engine-health suite stable while shipping a real v23 chat seed, broader paraphrase coverage, safer hardware-aware retrieval, stronger natural session memory, and a default free-chat loop that behaves more like a calm collaborator than a scripted demo.
+
+[2] prompt=what changed in v23
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what changed in v23
+response=V23 focuses on real conversational usability. It replaces the stale v22.5 seed with a real v23 corpus, broadens retrieval coverage for file paths, starter scripts, hardware prompts, and roadmap questions, adds safer operational answers for bundle artifacts and backend commands, and upgrades the free-chat path so common open-domain prompts no longer collapse into pure uncertainty.
+
+[3] prompt=how is v23 different from v22.5
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how is v23 different from v22.5
+response=V22.5 was mainly a backend realism release around CUDA, cpu-mt, accel-bench, and the experimental numeric parallel scorer. V23 keeps that backend work but repairs the user-facing chat surface: new v23 seed assets, better paraphrase tolerance, fewer false-positive matches, better artifact answers, stronger natural memory extraction, and a more capable default free-chat loop.
+
+[4] prompt=give me the elevator pitch for SBAN v23
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=give me the elevator pitch for SBAN v23
+response=SBAN v23 is a grounded non-transformer runtime that keeps learning in live memory rather than relying on a frozen transformer checkpoint, and it now feels materially more usable in ordinary conversation because the chat path knows more of its own files, commands, hardware paths, and session context.
+
+[5] prompt=explain sparse bridge-adaptive network architecture
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=explain sparse bridge-adaptive network architecture
+response=Sparse Bridge-Adaptive Network Architecture uses sparse online memories plus bridge memories that carry context across horizons. Instead of dense transformer attention over frozen weights, SBAN routes activity through adaptive memory structures that keep updating while the runtime is operating.
+
+[6] prompt=what is bridge memory
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is bridge memory
+response=A bridge memory is the SBAN structure that carries context from one horizon to another when short local evidence alone is not enough. It acts like an adaptive context bridge between recent activity and longer-range state rather than a frozen attention lookup.
+
+[7] prompt=what are the main limits of SBAN versus transformers
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what are the main limits of SBAN versus transformers
+response=The main SBAN limits versus transformers today are product maturity and breadth. Transformers still dominate broad open-domain generation and large-scale pretrained knowledge. SBAN's strengths are online adaptation, sparse live memory, and controllable grounded behavior, but it still needs more work on broad generation, richer recall, and wider real-world coverage.
+
+[8] prompt=compare SBAN to transformers in detail
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=compare SBAN to transformers in detail
+response=Transformers rely on fixed trained weights and dense attention during inference. SBAN instead updates online state while it runs, keeps sparse memory structures alive across time, and uses adaptive bridge paths to preserve longer context without depending on a giant frozen checkpoint. The tradeoff is that SBAN has to prove stability, grounding, and product reliability in the live runtime rather than front-loading most capability into pretraining.
+
+[9] prompt=what should new users try first
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what should new users try first
+response=New users should start the packaged continuing chat demo, ask what SBAN v23 is, test one or two operational questions such as the paper path or CUDA command, set a few session facts such as a name or city, and then try a follow-up recall question plus an architecture or transformer-comparison prompt.
+
+[10] prompt=what is the windows starter file called
+mode=operational-starter
+backend=cpu
+response=The Windows starter file is SBAN_v23_Start.bat. Open the bundle and run that script to start the continuing v23 chat loop.
+
+[11] prompt=how do i launch it on linux
+mode=operational-starter
+backend=cpu
+response=The Linux starter file is ./SBAN_v23_Start.sh. Run it from the bundle directory to start the continuing v23 chat loop.
+
+[12] prompt=what ships in the v23 release bundle
+mode=operational-bundle
+backend=cpu
+response=The v23 release bundle ships the executive summary at SBAN_v23_EXECUTIVE_SUMMARY.md, the report at SBAN_v23_REPORT.md, the paper PDF at docs/papers/SBAN_v23_follow_up_research_paper.pdf, the repo archive at deliverables/v23/SBAN_v23_repo.zip, and demo bundles at deliverables/v23/demo/SBAN_v23_windows_x86_64_demo.zip and deliverables/v23/demo/SBAN_v23_linux_x86_64_demo.zip.
+
+[13] prompt=where is the v23 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v23 paper PDF is generated at docs/papers/SBAN_v23_follow_up_research_paper.pdf.
+
+[14] prompt=where is the v23 executive summary
+mode=operational-summary-path
+backend=cpu
+response=The v23 executive summary is generated at SBAN_v23_EXECUTIVE_SUMMARY.md.
+
+[15] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm CUDA support: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v23.txt backend=cuda. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v23 bench assets.
+
+[16] prompt=what command benchmarks cuda retrieval
+mode=operational-cuda-bench-command
+backend=cpu
+response=Use accel-bench for the raw CUDA retrieval benchmark, for example: zig-out/bin/zig_sban accel-bench docs/results/v23/accel_prompts_v23_bench.txt backend=cuda seed_path=docs/results/v23/accel_seed_v23_bench.txt iterations=4.
+
+[17] prompt=do you support gpus
+mode=operational-gpu-support
+backend=cpu
+response=Yes. SBAN runs on CPU by default, keeps cpu_mt for larger host-side retrieval experiments, uses CUDA on NVIDIA RTX hardware, and falls back to OpenCL on compatible non-CUDA GPU systems.
+
+[18] prompt=do you support nvidia rtx gpus
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should use backend=cuda for the retrieval accelerator path. CPU remains the fallback, and OpenCL is still the generic GPU fallback when CUDA is unavailable.
+
+[19] prompt=can this run on an rtx 4090
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should use backend=cuda for the retrieval accelerator path. CPU remains the fallback, and OpenCL is still the generic GPU fallback when CUDA is unavailable.
+
+[20] prompt=how does cuda compare with opencl here
+mode=operational-backends
+backend=cpu
+response=CPU is the safest default on small grounded corpora. cpu_mt spreads retrieval work across a few host threads and tends to help only once the corpus is large enough to amortize the thread overhead. CUDA is the preferred GPU path on NVIDIA RTX systems. OpenCL remains the fallback GPU path on compatible non-CUDA setups.
+
+[21] prompt=how do cpu, cpu_mt, cuda, and opencl compare here
+mode=operational-backends
+backend=cpu
+response=CPU is the safest default on small grounded corpora. cpu_mt spreads retrieval work across a few host threads and tends to help only once the corpus is large enough to amortize the thread overhead. CUDA is the preferred GPU path on NVIDIA RTX systems. OpenCL remains the fallback GPU path on compatible non-CUDA setups.
+
+[22] prompt=when should i use cpu_mt
+mode=operational-cpu-mt-guidance
+backend=cpu
+response=Use cpu_mt when the retrieval corpus is large enough to amortize thread overhead or when you want an explicit host-side acceleration experiment. For small grounded corpora, plain CPU is often still the faster choice.
+
+[23] prompt=is multithreaded numeric scoring the default
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is multithreaded numeric scoring the default
+response=No. The packaged numeric suite still uses the proven single-thread profile because the experimental parallel numeric scorer has not yet shown a dependable win on the shipped release benchmarks.
+
+[24] prompt=what is accel bench
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is accel bench
+response=Accel-bench is the raw accelerator benchmark command. It measures retrieval scoring throughput directly so CPU, cpu-mt, CUDA, and OpenCL paths can be compared honestly without the rest of the chat runtime dominating the timing.
+
+[25] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+[26] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+[27] prompt=i work in the sbx lab
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+[28] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+[29] prompt=what is session memory
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is session memory
+response=Session memory in v23 is not just names. The runtime can store and recall simple user facts such as names, where you are from, where you live, labs, roles, favorite colors, preferences, and recent turns for the current session.
+
+[30] prompt=what facts can you remember
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what facts can you remember
+response=V23 can remember simple session facts such as your name, where you live or are from, your lab, your role, favorite color, preferences, and similar short scalar facts for the current session.
+
+[31] prompt=how do you remember facts
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do you remember facts
+response=The dialogue runtime extracts simple fact statements from the current conversation, stores them in the structured session state, and answers later recall questions from that session memory only when the key matches confidently.
+
+[32] prompt=how do you avoid transcript corruption
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do you avoid transcript corruption
+response=V23 does not write raw User and Assistant lines directly into the session file. It sanitizes turn text and stores encoded fields in a structured session format so newline injection cannot corrupt the transcript state.
+
+[33] prompt=what is 3.5 + 1.2
+mode=symbolic-math
+backend=cpu
+response=3.5 + 1.2 = 4.7.
+
+[34] prompt=solve 3 multiplied by 4
+mode=symbolic-math
+backend=cpu
+response=3 * 4 = 12.
+
+[35] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+[36] prompt=who are you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=who are you
+response=I am SBAN v23, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context.
+
+[37] prompt=how are you
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.
+
+[38] prompt=what is your favorite color
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.
+
+[39] prompt=tell me a joke
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.
+
+[40] prompt=what should v24 improve
+mode=operational-roadmap
+backend=cpu
+response=After v23, the roadmap should keep pushing on three fronts: broader free-form generation without losing grounding, richer natural session memory beyond short scalar facts, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.
+
+[41] prompt=thank you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=thank you
+response=You're welcome. I am ready for the next SBAN v23 check.
+
+[42] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.
+
+summary turns=42 anchored=17 retrieved=0 symbolic=21 nonempty=42

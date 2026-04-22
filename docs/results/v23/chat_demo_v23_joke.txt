@@ -1,0 +1,4 @@
+prompt=tell me a joke
+mode=free-composed
+backend=cpu
+response=Why did the sparse network stay calm? It only activated the paths that actually had support.

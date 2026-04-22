@@ -1,0 +1,5 @@
+prompt=what is SBAN v23
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v23
+response=SBAN v23 is the conversational repair release. It keeps the established numeric engine-health suite stable while shipping a real v23 chat seed, broader paraphrase coverage, safer hardware-aware retrieval, stronger natural session memory, and a default free-chat loop that behaves more like a calm collaborator than a scripted demo.

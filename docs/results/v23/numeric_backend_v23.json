@@ -1,0 +1,22 @@
+{
+  "release_st_250k": {
+    "accuracy": 99.4076,
+    "elapsed_seconds": 16.155933399917558,
+    "total_predictions": 250000
+  },
+  "release_st_1m": {
+    "accuracy": 99.4344,
+    "elapsed_seconds": 43.441457199980505,
+    "total_predictions": 1000000
+  },
+  "parallel_mt4_250k": {
+    "accuracy": 99.4076,
+    "elapsed_seconds": 15.989523199968971,
+    "total_predictions": 250000
+  },
+  "parallel_mt4_1m": {
+    "accuracy": 99.4344,
+    "elapsed_seconds": 43.92646699992474,
+    "total_predictions": 1000000
+  }
+}

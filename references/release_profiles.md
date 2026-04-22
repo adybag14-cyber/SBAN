@@ -1,46 +1,47 @@
 # SBAN Release Profiles
 
-## Current baseline for v22.5 work
+## Current baseline for v23 work
 
-Use the packaged v22 numeric release as the baseline when testing or extending v22.5.
+Use the packaged v22.5 numeric release as the baseline when testing or extending v23.
 
-### v21 packaged metrics
+### v22.5 packaged metrics
 
 - Prefix: `99.6350%`
 - Drift: `99.5400%`
 - Probe: `99.9000%`
 - 250k: `99.4076%`
 - 1M: `99.4344%`
+- 10M: `77.9175%`
 
-## v22.5 target
+## v23 target
 
-The v22.5 research goal is **backend realism without numeric regression**:
+The v23 research goal is **conversational repair without numeric regression**:
 
-- keep each original packaged numeric benchmark at roughly the v22 level
-- keep the v22 grounded dialogue behavior intact
-- add a real CUDA path for NVIDIA RTX GPUs
-- add a raw accelerator benchmark that measures retrieval throughput directly
+- keep each original packaged numeric benchmark at roughly the v22.5 level
+- keep the v22.5 CUDA and accel-bench backend work intact
+- ship a real versioned v23 chat seed instead of reusing the v22 or v22.5 asset
+- broaden operational and paraphrase coverage for starter files, artifact paths, bundle inventory, hardware prompts, and roadmap questions
+- improve free chat while preserving grounded uncertainty and avoiding obvious false-positive matches
 - preserve the old single-thread numeric path as the release default unless the new numeric scorer shows a dependable win
-- keep CPU fallback automatic and honest
 
-## v22.5 release commands
+## v23 release commands
 
 Run the measured suite:
 
 ```bash
-python scripts/run_v22_5_release.py
+python scripts/run_v23_release.py
 ```
 
 Generate the packaged report, summary, PDF, demo bundle, and repo zip:
 
 ```bash
-python scripts/make_v22_5_deliverables.py
+python scripts/make_v23_deliverables.py
 ```
 
 Package the newcomer demo directly:
 
 ```bash
-python scripts/package_v22_5_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
+python scripts/package_v23_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
 ```
 
 ## v22 shipped numeric profile
@@ -86,13 +87,14 @@ The near-100M run is intentionally just under a literal 100,000,000 predictions 
 
 The 100M-class run is a long-horizon hardening profile rather than a strict copy of the short-suite common profile. It disables the order-4, order-5, and continuation expert bonuses so the long run does not waste memory and time maintaining expert tables that are not part of that hardened measurement.
 
-## v22.5 dialogue and product profile
+## v23 dialogue and product profile
 
-- default seed asset: `data/sban_dialogue_seed_v22.txt`
-- prompt eval asset: `data/sban_chat_eval_prompts_v22_5.txt`
-- session eval asset: `data/sban_session_eval_v22_5.txt`
-- default product stance: grounded answers first, honest uncertainty otherwise
-- session persistence: encoded structured `SBAN_SESSION_V22` format with no retained-turn cap
+- default seed asset: `data/sban_dialogue_seed_v23.txt`
+- prompt eval asset: `data/sban_chat_eval_prompts_v23.txt`
+- session eval asset: `data/sban_session_eval_v23.txt`
+- default product stance: grounded answers first, operational answers when the runtime knows its own files or commands, honest uncertainty otherwise
+- session persistence: encoded structured `SBAN_SESSION_V23` format with no retained-turn cap
+- default chat mode: free mode with safe conversational composition enabled
 - acceleration: CPU by default for the newcomer chat loop, optional `cpu_mt`, direct CUDA on NVIDIA, and OpenCL fallback through `backend=gpu`
 
 ## Interpretation guardrails
@@ -102,3 +104,4 @@ The 100M-class run is a long-horizon hardening profile rather than a strict copy
 - GPU support is real and validated, and CUDA is the preferred large-corpus accelerator on NVIDIA hardware.
 - The experimental numeric multithread path is not the packaged default unless the measured suite proves it is faster.
 - Preserve the v21 trustworthiness gains. Do not loosen retrieval thresholds in a way that turns uncertainty failures back into plausible-but-wrong blurbs.
+- Prefer direct operational answers for artifact paths, starter files, and backend commands when the runtime can know them exactly, instead of forcing those questions through fuzzy retrieval.

@@ -1,0 +1,172 @@
+[1] prompt=what is SBAN v23
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v23
+response=SBAN v23 is the conversational repair release. It keeps the established numeric engine-health suite stable while shipping a real v23 chat seed, broader paraphrase coverage, safer hardware-aware retrieval, stronger natural session memory, and a default free-chat loop that behaves more like a calm collaborator than a scripted demo.
+
+expect_contains=conversational repair release
+expect_pass=true
+
+[2] prompt=what is the windows starter file called
+mode=operational-starter
+backend=cpu
+response=The Windows starter file is SBAN_v23_Start.bat. Open the bundle and run that script to start the continuing v23 chat loop.
+
+expect_contains=SBAN_v23_Start.bat
+expect_pass=true
+
+[3] prompt=where is the v23 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v23 paper PDF is generated at docs/papers/SBAN_v23_follow_up_research_paper.pdf.
+
+expect_contains=docs/papers/SBAN_v23_follow_up_research_paper.pdf
+expect_pass=true
+
+[4] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm CUDA support: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v23.txt backend=cuda. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v23 bench assets.
+
+expect_contains=accel-info
+expect_pass=true
+
+[5] prompt=how do cpu, cpu_mt, cuda, and opencl compare here
+mode=operational-backends
+backend=cpu
+response=CPU is the safest default on small grounded corpora. cpu_mt spreads retrieval work across a few host threads and tends to help only once the corpus is large enough to amortize the thread overhead. CUDA is the preferred GPU path on NVIDIA RTX systems. OpenCL remains the fallback GPU path on compatible non-CUDA setups.
+
+expect_contains=preferred GPU path
+expect_pass=true
+
+[6] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+expect_contains=remember your name
+expect_pass=true
+
+[7] prompt=can you recall my name
+mode=session-recall
+backend=cpu
+response=Your name is Tom.
+
+expect_contains=Tom
+expect_pass=true
+
+[8] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_contains=live in London
+expect_pass=true
+
+[9] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_contains=London
+expect_pass=true
+
+[10] prompt=i work in the sbx lab
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+expect_contains=lab is sbx
+expect_pass=true
+
+[11] prompt=what lab do i work in
+mode=session-recall
+backend=cpu
+response=Your lab is sbx.
+
+expect_contains=sbx
+expect_pass=true
+
+[12] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+expect_contains=role is researcher
+expect_pass=true
+
+[13] prompt=what is my role
+mode=session-recall
+backend=cpu
+response=Your role is researcher.
+
+expect_contains=researcher
+expect_pass=true
+
+[14] prompt=what is 2 + 2
+mode=symbolic-math
+backend=cpu
+response=2 + 2 = 4.
+
+expect_contains== 4.
+expect_pass=true
+
+[15] prompt=solve 3 multiplied by 4
+mode=symbolic-math
+backend=cpu
+response=3 * 4 = 12.
+
+expect_contains== 12.
+expect_pass=true
+
+[16] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+expect_contains=undefined
+expect_pass=true
+
+[17] prompt=who are you
+mode=free-anchor
+backend=cpu
+matched_prompt=who are you
+response=I am SBAN v23, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context.
+
+expect_contains=SBAN v23
+expect_pass=true
+
+[18] prompt=what is your favorite color
+mode=free-composed
+backend=cpu
+response=I do not have personal preferences, but blue is a practical choice for diagrams because it reads cleanly against light and dark backgrounds.
+
+expect_contains=blue
+expect_pass=true
+
+[19] prompt=tell me a joke
+mode=free-composed
+backend=cpu
+response=Why did the sparse network stay calm? It only activated the paths that actually had support.
+
+expect_contains=sparse
+expect_pass=true
+
+[20] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.
+
+expect_contains=not sure
+expect_pass=true
+
+[21] prompt=thank you
+mode=free-anchor
+backend=cpu
+matched_prompt=thank you
+response=You're welcome. I am ready for the next SBAN v23 check.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=21 anchored=3 retrieved=0 symbolic=15 nonempty=21 expectations=21 passed=21

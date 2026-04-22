@@ -1,0 +1,4 @@
+configured_backend=cuda
+backend_used=cuda
+cuda_enabled=true
+device=NVIDIA GeForce RTX 2080 Super with Max-Q Design

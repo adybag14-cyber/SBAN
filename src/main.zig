@@ -5,7 +5,7 @@ const dialogue = sban.dialogue;
 
 fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
-        \\SBAN v23 - grounded dialogue, conversational repair, and backend validation
+        \\SBAN v23.5 - grounded dialogue plus full-stack CUDA backend experimentation
         \\Usage:
         \\  zig build run -- eval-enwik [dataset_path] [json_output_path] [prefix|drift] [segment_len] [checkpoint_interval] [rolling_window]
         \\  zig build run -- eval-ablations [dataset_path] [json_output_path] [prefix|drift] [bits] [segment_len] [checkpoint_interval] [rolling_window]
@@ -15,6 +15,7 @@ fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
         \\
         \\  zig build run -- inspect
+        \\  zig build run -- numeric-accel-info [key=value ...]
     );
 }
 
@@ -42,7 +43,7 @@ fn buildCustomLabel(allocator: std.mem.Allocator, base: []const u8, label_overri
 }
 
 fn printExperimentSummary(writer: *Io.Writer, data: *const sban.experiment.ExperimentData) !void {
-    try writer.print("SBAN v23 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
+    try writer.print("SBAN v23.5 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
     for (data.reports.items) |report| {
         const accuracy = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.total_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
         const top5 = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.top5_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
@@ -87,6 +88,34 @@ fn parseEvalBool(value: []const u8) !bool {
     if (std.mem.eql(u8, value, "1") or std.ascii.eqlIgnoreCase(value, "true") or std.ascii.eqlIgnoreCase(value, "yes") or std.ascii.eqlIgnoreCase(value, "on")) return true;
     if (std.mem.eql(u8, value, "0") or std.ascii.eqlIgnoreCase(value, "false") or std.ascii.eqlIgnoreCase(value, "no") or std.ascii.eqlIgnoreCase(value, "off")) return false;
     return error.InvalidOverride;
+}
+
+fn runNumericAccelInfo(arena: std.mem.Allocator, writer: *Io.Writer, args: []const []const u8) !void {
+    var net_config = sban.config.v22ReleaseConfig(4);
+    for (args[2..]) |arg| {
+        const eq_idx = std.mem.indexOfScalar(u8, arg, '=') orelse {
+            try writer.print("invalid_override={s}\n", .{arg});
+            return;
+        };
+        const key = arg[0..eq_idx];
+        const value = arg[eq_idx + 1 ..];
+        sban.config.applyOverride(&net_config, key, value) catch |err| {
+            try writer.print("invalid_override={s} err={s}\n", .{ arg, @errorName(err) });
+            return;
+        };
+    }
+
+    var net = try sban.network.Network.init(arena, net_config);
+    defer net.deinit();
+    const probe = "SBAN numeric backend probe. CUDA should engage only when the scoring workload is large enough. " ** 16;
+    for (0..probe.len - 1) |idx| _ = try net.step(probe[idx], probe[idx + 1]);
+
+    try writer.print("configured_backend={s}\n", .{net.configuredScoringBackendLabel()});
+    try writer.print("backend_used={s}\n", .{net.scoringBackendUsedLabel()});
+    try writer.print("cuda_enabled={s}\n", .{if (net.numericCudaEnabled()) "true" else "false"});
+    if (net.numericCudaDeviceLabel()) |device| {
+        try writer.print("device={s}\n", .{device});
+    }
 }
 
 pub fn main(init: std.process.Init) !void {
@@ -219,6 +248,8 @@ pub fn main(init: std.process.Init) !void {
         try dialogue.runAccelInfo(arena, io, writer, args);
     } else if (std.mem.eql(u8, command, "accel-bench")) {
         try dialogue.runAccelBench(arena, io, writer, args);
+    } else if (std.mem.eql(u8, command, "numeric-accel-info")) {
+        try runNumericAccelInfo(arena, writer, args);
     } else if (std.mem.eql(u8, command, "inspect")) {
         var net = try sban.network.Network.init(arena, sban.config.configForVariant(4, .default));
         defer net.deinit();

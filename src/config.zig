@@ -13,6 +13,22 @@ pub const CorpusMode = enum {
     drift,
 };
 
+pub const NumericScoreBackend = enum {
+    cpu,
+    cpu_mt,
+    cuda,
+    auto,
+
+    pub fn label(self: NumericScoreBackend) []const u8 {
+        return switch (self) {
+            .cpu => "cpu",
+            .cpu_mt => "cpu_mt",
+            .cuda => "cuda",
+            .auto => "auto",
+        };
+    }
+};
+
 pub const NetworkVariant = enum {
     default,
     no_bridge,
@@ -218,6 +234,8 @@ pub const NetworkConfig = struct {
     reset_local_experts_on_boundary: bool = true,
     score_threads: u16 = 1,
     parallel_score_min_predictive_nodes: u16 = 128,
+    numeric_backend: NumericScoreBackend = .cpu,
+    cuda_min_scoring_edges: u32 = 2048,
 };
 
 pub fn configForVariant(bits: u8, variant: NetworkVariant) NetworkConfig {
@@ -531,6 +549,20 @@ pub fn applyOverride(config: *NetworkConfig, key: []const u8, value: []const u8)
         config.score_threads = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "parallel_score_min_predictive_nodes")) {
         config.parallel_score_min_predictive_nodes = try std.fmt.parseInt(u16, value, 10);
+    } else if (std.mem.eql(u8, key, "numeric_backend")) {
+        if (std.mem.eql(u8, value, "cpu")) {
+            config.numeric_backend = .cpu;
+        } else if (std.mem.eql(u8, value, "cpu_mt")) {
+            config.numeric_backend = .cpu_mt;
+        } else if (std.mem.eql(u8, value, "cuda")) {
+            config.numeric_backend = .cuda;
+        } else if (std.mem.eql(u8, value, "auto")) {
+            config.numeric_backend = .auto;
+        } else {
+            return error.InvalidBooleanOverride;
+        }
+    } else if (std.mem.eql(u8, key, "cuda_min_scoring_edges")) {
+        config.cuda_min_scoring_edges = try std.fmt.parseInt(u32, value, 10);
     } else if (std.mem.eql(u8, key, "enable_region_compaction")) {
         config.enable_region_compaction = try parseBool(value);
     } else if (std.mem.eql(u8, key, "enable_long_term")) {
@@ -580,11 +612,15 @@ pub const CorpusConfig = struct {
 
 test "bit labels cover default bit widths" {
     for (default_bit_widths) |bits| {
-    try std.testing.expect(std.mem.startsWith(u8, sbanBitLabel(bits), "sban_v21_"));
+        try std.testing.expect(std.mem.startsWith(u8, sbanBitLabel(bits), "sban_v21_"));
         var cfg_local = configForVariant(bits, .default);
         try applyOverride(&cfg_local, "history_lags", "9");
         try std.testing.expectEqual(@as(u8, 9), cfg_local.history_lags);
         try applyOverride(&cfg_local, "score_threads", "4");
         try std.testing.expectEqual(@as(u16, 4), cfg_local.score_threads);
+        try applyOverride(&cfg_local, "numeric_backend", "cuda");
+        try std.testing.expectEqual(NumericScoreBackend.cuda, cfg_local.numeric_backend);
+        try applyOverride(&cfg_local, "cuda_min_scoring_edges", "8192");
+        try std.testing.expectEqual(@as(u32, 8192), cfg_local.cuda_min_scoring_edges);
     }
 }

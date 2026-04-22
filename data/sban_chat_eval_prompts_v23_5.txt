@@ -1,0 +1,49 @@
+what is SBAN v23.5
+what changed in v23.5
+how is v23.5 different from v22.5
+give me the elevator pitch for SBAN v23.5
+explain sparse bridge-adaptive network architecture
+what is bridge memory
+what are the main limits of SBAN versus transformers
+compare SBAN to transformers in detail
+what should new users try first
+what is the windows starter file called
+how do i launch it on linux
+what ships in the v23.5 release bundle
+where is the v23.5 paper pdf
+where is the v23.5 executive summary
+what command shows cuda support
+what command shows numeric cuda support
+what command benchmarks cuda retrieval
+do you support gpus
+do you support nvidia rtx gpus
+can this run on an rtx 4090
+how does cuda compare with opencl here
+how do cpu, cpu_mt, cuda, and opencl compare here
+does eval-variant support cuda now
+how do numeric cpu, cpu_mt, and cuda compare
+is numeric cuda the default
+what is numeric accel info
+when should i use cpu_mt
+is multithreaded numeric scoring the default
+what is accel bench
+hi i am tom and i need help
+i am from london
+i work in the sbx lab
+my role is researcher
+what is session memory
+what facts can you remember
+how do you remember facts
+how do you avoid transcript corruption
+what is 3.5 + 1.2
+solve 3 multiplied by 4
+what is 3 / 0
+who are you
+how are you
+what is your favorite color
+tell me a joke
+what should v24 improve
+thank you
+blorple zint protocol
+
+

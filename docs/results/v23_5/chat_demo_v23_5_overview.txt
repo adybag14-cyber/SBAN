@@ -1,0 +1,5 @@
+prompt=what is SBAN v23.5
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v23.5
+response=SBAN v23.5 is the technical backend follow-up to v23. It keeps the established numeric engine-health suite on the proven CPU fallback, preserves the grounded v23 chat surface, and extends CUDA into the numeric output-scoring path so eval-variant can compare CPU, cpu-mt, and RTX-backed scoring honestly.

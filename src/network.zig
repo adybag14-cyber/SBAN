@@ -1,5 +1,6 @@
 const std = @import("std");
 const cfg = @import("config.zig");
+const numeric_cuda = @import("numeric_cuda.zig");
 
 pub const Prediction = struct {
     token: u8,
@@ -476,6 +477,14 @@ fn parallelScoreWorkerMain(runtime: *ParallelScoreRuntime, slot_index: usize) vo
     }
 }
 
+fn initNumericCudaRuntime(allocator: std.mem.Allocator, config: cfg.NetworkConfig) !?*numeric_cuda.SparseScoreCudaRuntime {
+    if (config.numeric_backend != .cuda and config.numeric_backend != .auto) return null;
+    const runtime = try allocator.create(numeric_cuda.SparseScoreCudaRuntime);
+    errdefer allocator.destroy(runtime);
+    runtime.* = try numeric_cuda.SparseScoreCudaRuntime.init(allocator, @as(usize, config.max_regions) * @as(usize, config.vocab_size));
+    return runtime;
+}
+
 pub const Network = struct {
     allocator: std.mem.Allocator,
     config: cfg.NetworkConfig,
@@ -513,6 +522,9 @@ pub const Network = struct {
     region_marks: []u32,
     region_output_scores: []i32,
     parallel_score_runtime: ?*ParallelScoreRuntime = null,
+    numeric_cuda_runtime: ?*numeric_cuda.SparseScoreCudaRuntime = null,
+    numeric_cuda_indices: std.ArrayList(u32) = .empty,
+    numeric_cuda_values: std.ArrayList(i32) = .empty,
     free_memory_ids: std.ArrayList(u32) = .empty,
     protected_memories: std.ArrayList(u32) = .empty,
     signature_map: std.AutoHashMap(u64, u32),
@@ -535,6 +547,7 @@ pub const Network = struct {
     elastic_grows: usize = 0,
     elastic_shrinks: usize = 0,
     max_active_regions_seen: u16 = 0,
+    last_score_backend_used: cfg.NumericScoreBackend = .cpu,
     interval_steps: u32 = 0,
     interval_surprises: u32 = 0,
     interval_births: u32 = 0,
@@ -600,6 +613,7 @@ pub const Network = struct {
         @memset(self.output_scores.items, 0);
 
         self.parallel_score_runtime = try ParallelScoreRuntime.init(allocator, config);
+        self.numeric_cuda_runtime = initNumericCudaRuntime(allocator, config) catch null;
 
         for (0..config.history_lags) |_| {
             for (0..config.vocab_size) |_| {
@@ -618,6 +632,10 @@ pub const Network = struct {
 
     pub fn deinit(self: *Network) void {
         for (self.neurons.items) |*neuron| neuron.deinit(self.allocator);
+        if (self.numeric_cuda_runtime) |runtime| {
+            runtime.deinit();
+            self.allocator.destroy(runtime);
+        }
         if (self.parallel_score_runtime) |runtime| runtime.deinit();
         self.neurons.deinit(self.allocator);
         self.lag_sensory_ids.deinit(self.allocator);
@@ -650,6 +668,8 @@ pub const Network = struct {
         self.allocator.free(self.burst_next);
         self.allocator.free(self.burst_streak);
         self.allocator.free(self.burst_last_step);
+        self.numeric_cuda_indices.deinit(self.allocator);
+        self.numeric_cuda_values.deinit(self.allocator);
         self.free_memory_ids.deinit(self.allocator);
         self.protected_memories.deinit(self.allocator);
         self.signature_map.deinit();
@@ -919,42 +939,50 @@ pub const Network = struct {
         return self.predictive_nodes.items.len >= self.config.parallel_score_min_predictive_nodes;
     }
 
-    fn scorePredictiveRange(self: *const Network, region_output_scores: []i32, start_index: usize, end_index: usize) void {
-        @memset(region_output_scores, 0);
-        var predictive_index = start_index;
-        while (predictive_index < end_index) : (predictive_index += 1) {
-            const src_id = self.predictive_nodes.items[predictive_index];
-            const src_idx: usize = @intCast(src_id);
-            const neuron = &self.neurons.items[src_idx];
-            if (neuron.kind == .dead) continue;
-            const region = self.nodeRegion(src_id);
-            const base = @as(usize, region) * @as(usize, self.config.vocab_size);
-            for (neuron.outgoing.items) |synapse| {
-                const target_idx: usize = @intCast(synapse.target);
-                if (self.neurons.items[target_idx].kind != .output) continue;
-                const logical_index = target_idx - self.output_base;
-                var contribution = self.scaledValue(synapse.state) + self.synapseContributionBonus(synapse);
-                if (neuron.kind == .memory_long) {
-                    contribution = @divTrunc(contribution * @as(i32, self.longTermContributionScalePpm(neuron.*)), 1000);
-                }
-                if (neuron.role == .bridge) {
-                    if (self.bridgeSatisfied(neuron.*)) {
-                        contribution = @divTrunc(contribution * @as(i32, self.config.bridge_bonus_ppm), 1000);
-                    } else {
-                        contribution = @divTrunc(contribution * 9, 10);
-                    }
-                }
-                region_output_scores[base + logical_index] += contribution;
+    fn scoreContributionForSynapse(self: *const Network, neuron: Neuron, synapse: Synapse) i32 {
+        var contribution = self.scaledValue(synapse.state) + self.synapseContributionBonus(synapse);
+        if (neuron.kind == .memory_long) {
+            contribution = @divTrunc(contribution * @as(i32, self.longTermContributionScalePpm(neuron)), 1000);
+        }
+        if (neuron.role == .bridge) {
+            if (self.bridgeSatisfied(neuron)) {
+                contribution = @divTrunc(contribution * @as(i32, self.config.bridge_bonus_ppm), 1000);
+            } else {
+                contribution = @divTrunc(contribution * 9, 10);
             }
         }
+        return contribution;
     }
 
-    fn fillRegionOutputScores(self: *Network) void {
-        if (!self.canUseParallelScore()) {
-            self.scorePredictiveRange(self.region_output_scores, 0, self.predictive_nodes.items.len);
-            return;
+    fn countPredictiveOutputEdges(self: *const Network) usize {
+        var total: usize = 0;
+        for (self.predictive_nodes.items) |src_id| {
+            const src_idx: usize = @intCast(src_id);
+            const neuron = self.neurons.items[src_idx];
+            if (neuron.kind == .dead) continue;
+            for (neuron.outgoing.items) |synapse| {
+                const target_idx: usize = @intCast(synapse.target);
+                if (self.neurons.items[target_idx].kind == .output) total += 1;
+            }
         }
+        return total;
+    }
 
+    fn shouldAttemptCudaScore(self: *const Network, edge_count: usize) bool {
+        if (self.numeric_cuda_runtime == null) return false;
+        return switch (self.config.numeric_backend) {
+            .cuda => true,
+            .auto => edge_count >= self.config.cuda_min_scoring_edges,
+            else => false,
+        };
+    }
+
+    fn fillRegionOutputScoresSerial(self: *Network) void {
+        self.scorePredictiveRange(self.region_output_scores, 0, self.predictive_nodes.items.len);
+        self.last_score_backend_used = .cpu;
+    }
+
+    fn fillRegionOutputScoresParallel(self: *Network) void {
         const runtime = self.parallel_score_runtime.?;
         const slot_count = runtime.slot_count;
         const chunk_size = @divTrunc(self.predictive_nodes.items.len + slot_count - 1, slot_count);
@@ -977,6 +1005,92 @@ pub const Network = struct {
         for (1..slot_count) |slot_index| {
             const partial = runtime.regionSlice(slot_index);
             for (self.region_output_scores, partial) |*dst, value| dst.* += value;
+        }
+        self.last_score_backend_used = .cpu_mt;
+    }
+
+    fn fillRegionOutputScoresCuda(self: *Network, edge_count: usize) bool {
+        if (!self.shouldAttemptCudaScore(edge_count)) return false;
+
+        const required_capacity = edge_count;
+        self.numeric_cuda_indices.ensureTotalCapacity(self.allocator, required_capacity) catch return false;
+        self.numeric_cuda_values.ensureTotalCapacity(self.allocator, required_capacity) catch return false;
+        self.numeric_cuda_indices.clearRetainingCapacity();
+        self.numeric_cuda_values.clearRetainingCapacity();
+
+        for (self.predictive_nodes.items) |src_id| {
+            const src_idx: usize = @intCast(src_id);
+            const neuron = self.neurons.items[src_idx];
+            if (neuron.kind == .dead) continue;
+            const region = self.nodeRegion(src_id);
+            const base = @as(usize, region) * @as(usize, self.config.vocab_size);
+            for (neuron.outgoing.items) |synapse| {
+                const target_idx: usize = @intCast(synapse.target);
+                if (self.neurons.items[target_idx].kind != .output) continue;
+                const logical_index = target_idx - self.output_base;
+                const contribution = self.scoreContributionForSynapse(neuron, synapse);
+                if (contribution == 0) continue;
+                self.numeric_cuda_indices.appendAssumeCapacity(@intCast(base + logical_index));
+                self.numeric_cuda_values.appendAssumeCapacity(contribution);
+            }
+        }
+
+        if (self.numeric_cuda_runtime) |runtime| {
+            runtime.score(self.numeric_cuda_indices.items, self.numeric_cuda_values.items, self.region_output_scores) catch return false;
+            self.last_score_backend_used = .cuda;
+            return true;
+        }
+        return false;
+    }
+
+    fn scorePredictiveRange(self: *const Network, region_output_scores: []i32, start_index: usize, end_index: usize) void {
+        @memset(region_output_scores, 0);
+        var predictive_index = start_index;
+        while (predictive_index < end_index) : (predictive_index += 1) {
+            const src_id = self.predictive_nodes.items[predictive_index];
+            const src_idx: usize = @intCast(src_id);
+            const neuron = &self.neurons.items[src_idx];
+            if (neuron.kind == .dead) continue;
+            const region = self.nodeRegion(src_id);
+            const base = @as(usize, region) * @as(usize, self.config.vocab_size);
+            for (neuron.outgoing.items) |synapse| {
+                const target_idx: usize = @intCast(synapse.target);
+                if (self.neurons.items[target_idx].kind != .output) continue;
+                const logical_index = target_idx - self.output_base;
+                const contribution = self.scoreContributionForSynapse(neuron.*, synapse);
+                region_output_scores[base + logical_index] += contribution;
+            }
+        }
+    }
+
+    fn fillRegionOutputScores(self: *Network) void {
+        const edge_count = self.countPredictiveOutputEdges();
+        switch (self.config.numeric_backend) {
+            .cpu => self.fillRegionOutputScoresSerial(),
+            .cpu_mt => {
+                if (self.canUseParallelScore()) {
+                    self.fillRegionOutputScoresParallel();
+                } else {
+                    self.fillRegionOutputScoresSerial();
+                }
+            },
+            .cuda => {
+                if (!self.fillRegionOutputScoresCuda(edge_count)) {
+                    if (self.canUseParallelScore()) {
+                        self.fillRegionOutputScoresParallel();
+                    } else {
+                        self.fillRegionOutputScoresSerial();
+                    }
+                }
+            },
+            .auto => {
+                if (self.fillRegionOutputScoresCuda(edge_count)) return;
+                if (self.canUseParallelScore()) {
+                    self.fillRegionOutputScoresParallel();
+                } else {
+                    self.fillRegionOutputScoresSerial();
+                }
+            },
         }
     }
 
@@ -2405,6 +2519,23 @@ pub const Network = struct {
         }
     }
 
+    pub fn scoringBackendUsedLabel(self: *const Network) []const u8 {
+        return self.last_score_backend_used.label();
+    }
+
+    pub fn configuredScoringBackendLabel(self: *const Network) []const u8 {
+        return self.config.numeric_backend.label();
+    }
+
+    pub fn numericCudaEnabled(self: *const Network) bool {
+        return self.numeric_cuda_runtime != null;
+    }
+
+    pub fn numericCudaDeviceLabel(self: *const Network) ?[]const u8 {
+        if (self.numeric_cuda_runtime) |runtime| return runtime.device_name;
+        return null;
+    }
+
     pub fn countAliveShortMemories(self: *const Network) usize {
         return self.alive_short_memories;
     }
@@ -2575,9 +2706,11 @@ test "parallel output scoring matches single-thread scoring" {
     base_config.history_lags = 8;
     base_config.max_short_memories = 4096;
     base_config.max_long_memories = 256;
+    base_config.numeric_backend = .cpu;
     base_config.score_threads = 1;
 
     var parallel_config = base_config;
+    parallel_config.numeric_backend = .cpu_mt;
     parallel_config.score_threads = 4;
     parallel_config.parallel_score_min_predictive_nodes = 1;
 
@@ -2600,4 +2733,40 @@ test "parallel output scoring matches single-thread scoring" {
     try std.testing.expectEqual(serial_net.countAliveShortMemories(), parallel_net.countAliveShortMemories());
     try std.testing.expectEqual(serial_net.countAliveLongMemories(), parallel_net.countAliveLongMemories());
     try std.testing.expectEqual(serial_net.countAliveSynapses(), parallel_net.countAliveSynapses());
+}
+
+test "cuda output scoring matches single-thread scoring when available" {
+    const allocator = std.testing.allocator;
+    var base_config = cfg.configForVariant(4, .default);
+    base_config.history_lags = 8;
+    base_config.max_short_memories = 4096;
+    base_config.max_long_memories = 256;
+    base_config.numeric_backend = .cpu;
+
+    var cuda_config = base_config;
+    cuda_config.numeric_backend = .cuda;
+    cuda_config.cuda_min_scoring_edges = 1;
+
+    var serial_net = try Network.init(allocator, base_config);
+    defer serial_net.deinit();
+    var cuda_net = try Network.init(allocator, cuda_config);
+    defer cuda_net.deinit();
+
+    if (!cuda_net.numericCudaEnabled()) return;
+
+    const corpus = "SBAN cuda score parity check. " ** 96;
+    for (0..corpus.len - 1) |idx| {
+        const serial_prediction = try serial_net.step(corpus[idx], corpus[idx + 1]);
+        const cuda_prediction = try cuda_net.step(corpus[idx], corpus[idx + 1]);
+        try std.testing.expectEqualDeep(serial_prediction, cuda_prediction);
+    }
+
+    try std.testing.expectEqualStrings("cuda", cuda_net.scoringBackendUsedLabel());
+    try std.testing.expectEqual(serial_net.births, cuda_net.births);
+    try std.testing.expectEqual(serial_net.bridge_births, cuda_net.bridge_births);
+    try std.testing.expectEqual(serial_net.promotions, cuda_net.promotions);
+    try std.testing.expectEqual(serial_net.recycled_slots, cuda_net.recycled_slots);
+    try std.testing.expectEqual(serial_net.countAliveShortMemories(), cuda_net.countAliveShortMemories());
+    try std.testing.expectEqual(serial_net.countAliveLongMemories(), cuda_net.countAliveLongMemories());
+    try std.testing.expectEqual(serial_net.countAliveSynapses(), cuda_net.countAliveSynapses());
 }

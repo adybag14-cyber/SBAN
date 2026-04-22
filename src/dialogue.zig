@@ -5,20 +5,21 @@ const cfg = @import("config.zig");
 const netmod = @import("network.zig");
 
 const feature_dim = 128;
-const current_release_name = "SBAN v23";
-const current_release_version = "v23";
-const current_seed_path = "data/sban_dialogue_seed_v23.txt";
-const current_prompt_eval_path = "data/sban_chat_eval_prompts_v23.txt";
-const current_session_eval_path = "data/sban_session_eval_v23.txt";
-const current_summary_path = "SBAN_v23_EXECUTIVE_SUMMARY.md";
-const current_report_path = "SBAN_v23_REPORT.md";
-const current_paper_path = "docs/papers/SBAN_v23_follow_up_research_paper.pdf";
-const current_repo_zip_path = "deliverables/v23/SBAN_v23_repo.zip";
-const current_windows_demo_start = "SBAN_v23_Start.bat";
-const current_linux_demo_start = "./SBAN_v23_Start.sh";
-const current_windows_demo_zip = "deliverables/v23/demo/SBAN_v23_windows_x86_64_demo.zip";
-const current_linux_demo_zip = "deliverables/v23/demo/SBAN_v23_linux_x86_64_demo.zip";
-const session_magic = "SBAN_SESSION_V23";
+const current_release_name = "SBAN v23.5";
+const current_release_version = "v23.5";
+const current_seed_path = "data/sban_dialogue_seed_v23_5.txt";
+const current_prompt_eval_path = "data/sban_chat_eval_prompts_v23_5.txt";
+const current_session_eval_path = "data/sban_session_eval_v23_5.txt";
+const current_summary_path = "SBAN_v23_5_EXECUTIVE_SUMMARY.md";
+const current_report_path = "SBAN_v23_5_REPORT.md";
+const current_paper_path = "docs/papers/SBAN_v23_5_follow_up_research_paper.pdf";
+const current_repo_zip_path = "deliverables/v23_5/SBAN_v23_5_repo.zip";
+const current_windows_demo_start = "SBAN_v23_5_Start.bat";
+const current_linux_demo_start = "./SBAN_v23_5_Start.sh";
+const current_windows_demo_zip = "deliverables/v23_5/demo/SBAN_v23_5_windows_x86_64_demo.zip";
+const current_linux_demo_zip = "deliverables/v23_5/demo/SBAN_v23_5_linux_x86_64_demo.zip";
+const session_magic = "SBAN_SESSION_V23_5";
+const legacy_session_magic_v23 = "SBAN_SESSION_V23";
 const legacy_session_magic_v22 = "SBAN_SESSION_V22";
 const legacy_session_magic_v21 = "SBAN_SESSION_V21";
 const max_top_candidates = 16;
@@ -1549,13 +1550,13 @@ fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?C
 fn buildCudaCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
     return std.fmt.allocPrint(
         allocator,
-        "Use accel-info to confirm CUDA support: zig-out/bin/zig_sban accel-info seed_path={s} backend=cuda. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned {s} bench assets.",
+        "Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path={s} backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned {s} bench assets.",
         .{ current_seed_path, current_release_version },
     );
 }
 
 fn buildCudaBenchCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Use accel-bench for the raw CUDA retrieval benchmark, for example: zig-out/bin/zig_sban accel-bench docs/results/v23/accel_prompts_v23_bench.txt backend=cuda seed_path=docs/results/v23/accel_seed_v23_bench.txt iterations=4.");
+    return allocator.dupe(u8, "Use accel-bench for the raw CUDA retrieval benchmark, for example: zig-out/bin/zig_sban accel-bench docs/results/v23_5/accel_prompts_v23_5_bench.txt backend=cuda seed_path=docs/results/v23_5/accel_seed_v23_5_bench.txt iterations=4.");
 }
 
 fn buildBundleInventoryResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -1567,23 +1568,23 @@ fn buildBundleInventoryResponse(allocator: std.mem.Allocator) ![]const u8 {
 }
 
 fn buildRtxSupportResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Yes. NVIDIA RTX cards such as the RTX 4090 should use backend=cuda for the retrieval accelerator path. CPU remains the fallback, and OpenCL is still the generic GPU fallback when CUDA is unavailable.");
+    return allocator.dupe(u8, "Yes. NVIDIA RTX cards such as the RTX 4090 should use backend=cuda for the retrieval accelerator path, and v23.5 also exposes numeric_backend=cuda for eval-variant experimentation. CPU remains the fallback, and OpenCL is still the generic GPU fallback when CUDA is unavailable.");
 }
 
 fn buildGpuSupportResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Yes. SBAN runs on CPU by default, keeps cpu_mt for larger host-side retrieval experiments, uses CUDA on NVIDIA RTX hardware, and falls back to OpenCL on compatible non-CUDA GPU systems.");
+    return allocator.dupe(u8, "Yes. SBAN runs on CPU by default, keeps cpu_mt for larger host-side experiments, uses CUDA on NVIDIA RTX hardware for both retrieval acceleration and the new numeric output-scoring path, and falls back to OpenCL on compatible non-CUDA GPU systems for retrieval.");
 }
 
 fn buildCpuMtGuidanceResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Use cpu_mt when the retrieval corpus is large enough to amortize thread overhead or when you want an explicit host-side acceleration experiment. For small grounded corpora, plain CPU is often still the faster choice.");
+    return allocator.dupe(u8, "Use cpu_mt when the workload is large enough to amortize thread overhead or when you want an explicit host-side acceleration experiment. On the numeric side, v23.5 also allows numeric_backend=cpu_mt so eval-variant can reuse the multithreaded scorer when it actually beats the single-thread fallback. For small grounded corpora, plain CPU is often still the faster choice.");
 }
 
 fn buildBackendComparisonResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "CPU is the safest default on small grounded corpora. cpu_mt spreads retrieval work across a few host threads and tends to help only once the corpus is large enough to amortize the thread overhead. CUDA is the preferred GPU path on NVIDIA RTX systems. OpenCL remains the fallback GPU path on compatible non-CUDA setups.");
+    return allocator.dupe(u8, "CPU is the baseline fallback. cpu_mt is the conservative host-threaded option for larger retrieval or numeric scoring experiments. CUDA is the preferred GPU path on NVIDIA systems and, in v23.5, now reaches both the retrieval scorer and the numeric output-scoring path. OpenCL remains the generic GPU fallback for retrieval on compatible non-CUDA setups.");
 }
 
 fn buildRoadmapResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "After v23, the roadmap should keep pushing on three fronts: broader free-form generation without losing grounding, richer natural session memory beyond short scalar facts, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
+    return allocator.dupe(u8, "After v23.5, the roadmap should keep pushing on three fronts: broader free-form generation without losing grounding, richer natural session memory beyond short scalar facts, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
 }
 
 fn synthesizeFreeResponse(
@@ -1599,7 +1600,7 @@ fn synthesizeFreeResponse(
         return @as(?[]const u8, try allocator.dupe(u8, "You're welcome. I can keep going on SBAN architecture, release files, runtime commands, session memory, or backend behavior."));
     }
     if (isHowAreYouPrompt(prompt)) {
-        return @as(?[]const u8, try allocator.dupe(u8, "I am steady and ready to help. Ask about SBAN v23, its files and commands, session memory, or a short calculation."));
+    return @as(?[]const u8, try allocator.dupe(u8, "I am steady and ready to help. Ask about SBAN v23.5, its files and commands, session memory, or a short calculation."));
     }
     if (isIdentityPrompt(prompt)) {
         return @as(?[]const u8, try buildIdentityResponse(allocator));
@@ -1626,7 +1627,7 @@ fn buildGreetingResponse(allocator: std.mem.Allocator, session: *const SessionSt
 }
 
 fn buildIdentityResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "I am SBAN v23, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, and safer free-chat composition.");
+    return allocator.dupe(u8, "I am SBAN v23.5, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, safer free-chat composition, and the new numeric CUDA backend.");
 }
 
 fn composeAnchoredContinuation(
@@ -2599,6 +2600,7 @@ fn loadSessionState(allocator: std.mem.Allocator, io: std.Io, path: ?[]const u8)
     if (bytes.len == 0) return .{};
 
     if (std.mem.startsWith(u8, bytes, session_magic) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v23) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v22) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v21))
     {
@@ -3404,7 +3406,7 @@ test "hardware retrieval does not overmatch benchmark prompts" {
 
 test "operational paper prompt returns versioned paper path" {
     const allocator = std.testing.allocator;
-    const result = (try answerOperationalPrompt(allocator, "where is the v23 paper pdf")).?;
+    const result = (try answerOperationalPrompt(allocator, "where is the v23.5 paper pdf")).?;
     try std.testing.expect(result.symbolic);
     try std.testing.expect(containsPhraseIgnoreCase(result.response, current_paper_path));
 }

@@ -6,12 +6,15 @@ import json
 import os
 import shutil
 import subprocess
-import time
 from pathlib import Path
+
+from host_monitor import HeartbeatMonitor
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "docs" / "results" / "v26"
 BIN = ROOT / "zig-out" / "bin" / ("zig_sban.exe" if os.name == "nt" else "zig_sban")
+HEARTBEAT_LOG = RESULTS / "_run_v26_100m_ci_heartbeat.jsonl"
+MONITOR: HeartbeatMonitor | None = None
 
 RELEASE_BITS = "4"
 COMMON_PROFILE = [
@@ -66,25 +69,9 @@ def build_binary(zig_exe: str | None) -> None:
 
 
 def run_subprocess_with_heartbeat(cmd: list[str], label: str, heartbeat_seconds: int = 30) -> float:
-    started = time.perf_counter()
-    last_report = started
-    print(f"{label}: started", flush=True)
-    proc = subprocess.Popen(cmd, cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    while True:
-        code = proc.poll()
-        if code is not None:
-            if code != 0:
-                print(f"{label}: failed with exit code {code}", flush=True)
-                raise subprocess.CalledProcessError(code, cmd)
-            break
-        now = time.perf_counter()
-        if now - last_report >= heartbeat_seconds:
-            print(f"{label}: still running after {now - started:.1f}s", flush=True)
-            last_report = now
-        time.sleep(5)
-    elapsed = time.perf_counter() - started
-    print(f"{label}: completed in {elapsed:.1f}s", flush=True)
-    return elapsed
+    if MONITOR is None:
+        raise RuntimeError("heartbeat monitor not initialized")
+    return MONITOR.run_subprocess(cmd, label, heartbeat_seconds=heartbeat_seconds)
 
 
 def run_eval(output_name: str, extra_overrides: list[str]) -> dict[str, float | int | str]:
@@ -126,6 +113,7 @@ def run_eval(output_name: str, extra_overrides: list[str]) -> dict[str, float | 
 
 
 def main() -> None:
+    global MONITOR
     parser = argparse.ArgumentParser(description="Run the SBAN v26 near-100M hardening attempt on CI.")
     parser.add_argument("--zig-exe", help="Path to zig or zig.exe used for the build step.")
     parser.add_argument("--skip-build", action="store_true", help="Reuse the existing zig-out binary.")
@@ -134,8 +122,16 @@ def main() -> None:
     args = parser.parse_args()
 
     RESULTS.mkdir(parents=True, exist_ok=True)
+    MONITOR = HeartbeatMonitor(ROOT, HEARTBEAT_LOG)
     status_path = RESULTS / "longrun_v26_100m_ci_status.txt"
     summary_path = RESULTS / "longrun_v26_100m_ci_summary.json"
+    MONITOR.emit(
+        "startup",
+        "run_v26_100m_ci",
+        0.0,
+        None,
+        message=f"skip_build={args.skip_build} numeric_backend={args.numeric_backend} score_threads={args.score_threads}",
+    )
 
     if not args.skip_build:
         build_binary(args.zig_exe)

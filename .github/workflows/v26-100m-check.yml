@@ -51,7 +51,44 @@ jobs:
         run: |
           zig build test
           zig build -Doptimize=ReleaseFast
-          python -m py_compile scripts/run_v26_100m_ci.py
+          python -m py_compile scripts/host_monitor.py scripts/run_v26_100m_ci.py
+
+      - name: Capture runner baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/results/v26
+          {
+            echo "timestamp_utc=$(date -u --iso-8601=seconds)"
+            echo "runner_name=${RUNNER_NAME:-unknown}"
+            echo "runner_os=${RUNNER_OS:-unknown}"
+            echo "runner_arch=${RUNNER_ARCH:-unknown}"
+            echo "runner_label=${{ inputs.runner_label || 'ubuntu-latest' }}"
+            echo
+            echo "== uname =="
+            uname -a
+            echo
+            echo "== cpu =="
+            nproc
+            lscpu || true
+            echo
+            echo "== memory =="
+            free -h || true
+            echo
+            echo "== disk =="
+            df -h || true
+            echo
+            echo "== ulimit =="
+            ulimit -a || true
+            echo
+            for path in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -f "$path" ]]; then
+                echo "== $path =="
+                cat "$path"
+                echo
+              fi
+            done
+          } | tee docs/results/v26/_runner_baseline_100m.txt
 
       - name: Attempt near-100M hardening run
         shell: bash
@@ -62,12 +99,40 @@ jobs:
           echo "numeric_backend=${{ inputs.numeric_backend }}" >> docs/results/v26/longrun_v26_100m_ci_status.txt
           echo "score_threads=${{ inputs.score_threads }}" >> docs/results/v26/longrun_v26_100m_ci_status.txt
           echo "runner_label=${{ inputs.runner_label || 'ubuntu-latest' }}" >> docs/results/v26/longrun_v26_100m_ci_status.txt
-          if timeout "${{ inputs.timeout_minutes }}m" python scripts/run_v26_100m_ci.py --skip-build --numeric-backend "${{ inputs.numeric_backend }}" --score-threads "${{ inputs.score_threads }}"; then
+          if timeout "${{ inputs.timeout_minutes }}m" python scripts/run_v26_100m_ci.py --skip-build --numeric-backend "${{ inputs.numeric_backend }}" --score-threads "${{ inputs.score_threads }}" 2>&1 | tee docs/results/v26/_run_v26_100m_ci.log; then
             echo "completed=true" >> docs/results/v26/longrun_v26_100m_ci_status.txt
           else
             echo "completed=false" >> docs/results/v26/longrun_v26_100m_ci_status.txt
             echo "note=timed_out_or_failed_before_completion" >> docs/results/v26/longrun_v26_100m_ci_status.txt
           fi
+
+      - name: Capture runner postmortem
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p docs/results/v26
+          {
+            echo "timestamp_utc=$(date -u --iso-8601=seconds)"
+            echo "job_status=${{ job.status }}"
+            echo
+            echo "== memory =="
+            free -h || true
+            echo
+            echo "== disk =="
+            df -h || true
+            echo
+            echo "== top resident processes =="
+            ps -eo pid,ppid,pcpu,pmem,rss,vsz,etimes,cmd --sort=-rss | head -n 40 || true
+            echo
+            for path in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -f "$path" ]]; then
+                echo "== $path =="
+                cat "$path"
+                echo
+              fi
+            done
+          } | tee docs/results/v26/_runner_postmortem_100m.txt
 
       - name: Upload 100M attempt artifacts
         if: always()
@@ -75,6 +140,10 @@ jobs:
         with:
           name: v26-100m-attempt
           path: |
+            docs/results/v26/_run_v26_100m_ci.log
+            docs/results/v26/_run_v26_100m_ci_heartbeat.jsonl
+            docs/results/v26/_runner_baseline_100m.txt
+            docs/results/v26/_runner_postmortem_100m.txt
             docs/results/v26/longrun_v26_100m_ci_status.txt
             docs/results/v26/longrun_v26_100m_ci_summary.json
             docs/results/v26/longrun_v26_100m_ci_cpu.json

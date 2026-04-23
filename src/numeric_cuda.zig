@@ -6,6 +6,7 @@ pub const NumericCudaUnavailable = error{
     NoCudaDevice,
     InvalidKernel,
     CudaFailure,
+    InvalidArgument,
 };
 
 pub const cu_result = i32;
@@ -28,7 +29,7 @@ const CuMemAllocFn = *const fn(*cu_device_ptr, usize) callconv(.c) cu_result;
 const CuMemFreeFn = *const fn(cu_device_ptr) callconv(.c) cu_result;
 const CuMemcpyHtoDFn = *const fn(cu_device_ptr, *const anyopaque, usize) callconv(.c) cu_result;
 const CuMemcpyDtoHFn = *const fn(*anyopaque, cu_device_ptr, usize) callconv(.c) cu_result;
-const CuLaunchKernelFn = *const fn(cu_function, u32, u32, u32, u32, u32, u32, u32, ?*anyopaque, *const [4]?*anyopaque, ?*const anyopaque) callconv(.c) cu_result;
+const CuLaunchKernelFn = *const fn(cu_function, u32, u32, u32, u32, u32, u32, u32, ?*anyopaque, ?*anyopaque, ?*const anyopaque) callconv(.c) cu_result;
 const CuCtxSynchronizeFn = *const fn() callconv(.c) cu_result;
 const CuGetErrorNameFn = *const fn(cu_result, *?[*:0]const u8) callconv(.c) cu_result;
 const CuGetErrorStringFn = *const fn(cu_result, *?[*:0]const u8) callconv(.c) cu_result;
@@ -94,23 +95,35 @@ const PosixDynamicLibrary = struct {
     }
 };
 
-pub const SparseScoreCudaRuntime = struct {
+fn deviceOffset(base: cu_device_ptr, byte_offset: usize) cu_device_ptr {
+    return base + @as(cu_device_ptr, @intCast(byte_offset));
+}
+
+pub const NumericCudaRuntime = struct {
     allocator: std.mem.Allocator,
     lib: DynamicLibrary,
     api: CudaApi,
     context: cu_context,
     module: cu_module,
-    function: cu_function,
-    index_buffer: cu_device_ptr = 0,
-    value_buffer: cu_device_ptr = 0,
+    resident_function: cu_function,
+    output_index_buffer: cu_device_ptr,
+    output_value_buffer: cu_device_ptr,
+    output_count_buffer: cu_device_ptr,
+    active_id_buffer: cu_device_ptr = 0,
+    active_region_base_buffer: cu_device_ptr = 0,
+    active_long_scale_buffer: cu_device_ptr = 0,
+    active_bridge_scale_buffer: cu_device_ptr = 0,
     output_buffer: cu_device_ptr,
-    capacity: usize = 0,
+    active_capacity: usize = 0,
+    max_neurons: usize,
+    max_outgoing_per_node: usize,
     output_len: usize,
     zero_output: []i32,
+    zero_counts: []u32,
     device_name: []u8,
     platform_name: []u8,
 
-    pub fn init(allocator: std.mem.Allocator, output_len: usize) !SparseScoreCudaRuntime {
+    pub fn init(allocator: std.mem.Allocator, output_len: usize, max_neurons: usize, max_outgoing_per_node: usize) !NumericCudaRuntime {
         var lib = try openCudaLibrary();
         errdefer lib.close();
         const api = try loadCudaApi(&lib);
@@ -136,20 +149,43 @@ pub const SparseScoreCudaRuntime = struct {
         errdefer _ = api.ctx_destroy(context);
 
         var module: cu_module = null;
-        try checkCuda(api, api.module_load_data_ex(&module, @ptrCast(cuda_sparse_score_kernel_ptx.ptr), 0, null, null));
+        try checkCuda(api, api.module_load_data_ex(&module, @ptrCast(cuda_resident_score_kernel_ptx.ptr), 0, null, null));
         errdefer _ = api.module_unload(module);
         errdefer _ = api.ctx_destroy(context);
 
-        var function: cu_function = null;
-        try checkCuda(api, api.module_get_function(&function, module, "accumulate_sparse_scores_cuda"));
+        var resident_function: cu_function = null;
+        try checkCuda(api, api.module_get_function(&resident_function, module, "score_resident_output_edges_cuda"));
+
+        var output_index_buffer: cu_device_ptr = 0;
+        try checkCuda(api, api.mem_alloc(&output_index_buffer, max_neurons * max_outgoing_per_node * @sizeOf(u32)));
+        errdefer _ = api.mem_free(output_index_buffer);
+
+        var output_value_buffer: cu_device_ptr = 0;
+        try checkCuda(api, api.mem_alloc(&output_value_buffer, max_neurons * max_outgoing_per_node * @sizeOf(i32)));
+        errdefer _ = api.mem_free(output_value_buffer);
+        errdefer _ = api.mem_free(output_index_buffer);
+
+        var output_count_buffer: cu_device_ptr = 0;
+        try checkCuda(api, api.mem_alloc(&output_count_buffer, max_neurons * @sizeOf(u32)));
+        errdefer _ = api.mem_free(output_count_buffer);
+        errdefer _ = api.mem_free(output_value_buffer);
+        errdefer _ = api.mem_free(output_index_buffer);
 
         var output_buffer: cu_device_ptr = 0;
         try checkCuda(api, api.mem_alloc(&output_buffer, output_len * @sizeOf(i32)));
         errdefer _ = api.mem_free(output_buffer);
+        errdefer _ = api.mem_free(output_count_buffer);
+        errdefer _ = api.mem_free(output_value_buffer);
+        errdefer _ = api.mem_free(output_index_buffer);
 
         const zero_output = try allocator.alloc(i32, output_len);
         errdefer allocator.free(zero_output);
         @memset(zero_output, 0);
+
+        const zero_counts = try allocator.alloc(u32, max_neurons);
+        errdefer allocator.free(zero_counts);
+        @memset(zero_counts, 0);
+        try checkCuda(api, api.memcpy_htod(output_count_buffer, @ptrCast(zero_counts.ptr), zero_counts.len * @sizeOf(u32)));
 
         return .{
             .allocator = allocator,
@@ -157,71 +193,141 @@ pub const SparseScoreCudaRuntime = struct {
             .api = api,
             .context = context,
             .module = module,
-            .function = function,
+            .resident_function = resident_function,
+            .output_index_buffer = output_index_buffer,
+            .output_value_buffer = output_value_buffer,
+            .output_count_buffer = output_count_buffer,
             .output_buffer = output_buffer,
+            .max_neurons = max_neurons,
+            .max_outgoing_per_node = max_outgoing_per_node,
             .output_len = output_len,
             .zero_output = zero_output,
+            .zero_counts = zero_counts,
             .device_name = device_name,
             .platform_name = platform_name,
         };
     }
 
-    pub fn deinit(self: *SparseScoreCudaRuntime) void {
-        if (self.value_buffer != 0) _ = self.api.mem_free(self.value_buffer);
-        if (self.index_buffer != 0) _ = self.api.mem_free(self.index_buffer);
+    pub fn deinit(self: *NumericCudaRuntime) void {
+        if (self.active_bridge_scale_buffer != 0) _ = self.api.mem_free(self.active_bridge_scale_buffer);
+        if (self.active_long_scale_buffer != 0) _ = self.api.mem_free(self.active_long_scale_buffer);
+        if (self.active_region_base_buffer != 0) _ = self.api.mem_free(self.active_region_base_buffer);
+        if (self.active_id_buffer != 0) _ = self.api.mem_free(self.active_id_buffer);
         _ = self.api.mem_free(self.output_buffer);
+        _ = self.api.mem_free(self.output_count_buffer);
+        _ = self.api.mem_free(self.output_value_buffer);
+        _ = self.api.mem_free(self.output_index_buffer);
         _ = self.api.module_unload(self.module);
         _ = self.api.ctx_destroy(self.context);
         self.lib.close();
         self.allocator.free(self.zero_output);
+        self.allocator.free(self.zero_counts);
         self.allocator.free(self.device_name);
         self.allocator.free(self.platform_name);
     }
 
-    fn ensureCapacity(self: *SparseScoreCudaRuntime, contribution_count: usize) !void {
-        if (contribution_count <= self.capacity) return;
-        if (self.value_buffer != 0) _ = self.api.mem_free(self.value_buffer);
-        if (self.index_buffer != 0) _ = self.api.mem_free(self.index_buffer);
-        self.index_buffer = 0;
-        self.value_buffer = 0;
-        self.capacity = 0;
+    fn ensureActiveCapacity(self: *NumericCudaRuntime, active_count: usize) !void {
+        if (active_count <= self.active_capacity) return;
+        if (self.active_bridge_scale_buffer != 0) _ = self.api.mem_free(self.active_bridge_scale_buffer);
+        if (self.active_long_scale_buffer != 0) _ = self.api.mem_free(self.active_long_scale_buffer);
+        if (self.active_region_base_buffer != 0) _ = self.api.mem_free(self.active_region_base_buffer);
+        if (self.active_id_buffer != 0) _ = self.api.mem_free(self.active_id_buffer);
+        self.active_bridge_scale_buffer = 0;
+        self.active_long_scale_buffer = 0;
+        self.active_region_base_buffer = 0;
+        self.active_id_buffer = 0;
+        self.active_capacity = 0;
 
-        var next_capacity = if (self.capacity == 0) contribution_count else self.capacity;
-        if (next_capacity < contribution_count) next_capacity = contribution_count;
-        var index_buffer: cu_device_ptr = 0;
-        try checkCuda(self.api, self.api.mem_alloc(&index_buffer, next_capacity * @sizeOf(u32)));
-        errdefer _ = self.api.mem_free(index_buffer);
-        var value_buffer: cu_device_ptr = 0;
-        try checkCuda(self.api, self.api.mem_alloc(&value_buffer, next_capacity * @sizeOf(i32)));
-        self.index_buffer = index_buffer;
-        self.value_buffer = value_buffer;
-        self.capacity = next_capacity;
+        var active_id_buffer: cu_device_ptr = 0;
+        try checkCuda(self.api, self.api.mem_alloc(&active_id_buffer, active_count * @sizeOf(u32)));
+        errdefer _ = self.api.mem_free(active_id_buffer);
+        var active_region_base_buffer: cu_device_ptr = 0;
+        try checkCuda(self.api, self.api.mem_alloc(&active_region_base_buffer, active_count * @sizeOf(u32)));
+        errdefer _ = self.api.mem_free(active_region_base_buffer);
+        errdefer _ = self.api.mem_free(active_id_buffer);
+        var active_long_scale_buffer: cu_device_ptr = 0;
+        try checkCuda(self.api, self.api.mem_alloc(&active_long_scale_buffer, active_count * @sizeOf(u32)));
+        errdefer _ = self.api.mem_free(active_long_scale_buffer);
+        errdefer _ = self.api.mem_free(active_region_base_buffer);
+        errdefer _ = self.api.mem_free(active_id_buffer);
+        var active_bridge_scale_buffer: cu_device_ptr = 0;
+        try checkCuda(self.api, self.api.mem_alloc(&active_bridge_scale_buffer, active_count * @sizeOf(u32)));
+
+        self.active_id_buffer = active_id_buffer;
+        self.active_region_base_buffer = active_region_base_buffer;
+        self.active_long_scale_buffer = active_long_scale_buffer;
+        self.active_bridge_scale_buffer = active_bridge_scale_buffer;
+        self.active_capacity = active_count;
     }
 
-    pub fn score(self: *SparseScoreCudaRuntime, indices: []const u32, values: []const i32, output: []i32) !void {
-        if (indices.len != values.len or output.len != self.output_len) return error.InvalidArgument;
+    pub fn syncNeuronOutputEdges(self: *NumericCudaRuntime, neuron_id: u32, logical_indices: []const u32, base_values: []const i32) !void {
+        if (logical_indices.len != base_values.len) return NumericCudaUnavailable.InvalidArgument;
+        if (logical_indices.len > self.max_outgoing_per_node) return NumericCudaUnavailable.InvalidArgument;
+        if (neuron_id >= self.max_neurons) return NumericCudaUnavailable.InvalidArgument;
+
+        const row_offset = @as(usize, neuron_id) * self.max_outgoing_per_node;
+        const index_offset = deviceOffset(self.output_index_buffer, row_offset * @sizeOf(u32));
+        const value_offset = deviceOffset(self.output_value_buffer, row_offset * @sizeOf(i32));
+        const count_offset = deviceOffset(self.output_count_buffer, @as(usize, neuron_id) * @sizeOf(u32));
+
+        if (logical_indices.len != 0) {
+            try checkCuda(self.api, self.api.memcpy_htod(index_offset, @ptrCast(logical_indices.ptr), logical_indices.len * @sizeOf(u32)));
+            try checkCuda(self.api, self.api.memcpy_htod(value_offset, @ptrCast(base_values.ptr), base_values.len * @sizeOf(i32)));
+        }
+
+        var count_value: u32 = @intCast(logical_indices.len);
+        try checkCuda(self.api, self.api.memcpy_htod(count_offset, @ptrCast(&count_value), @sizeOf(u32)));
+    }
+
+    pub fn scoreResident(
+        self: *NumericCudaRuntime,
+        active_ids: []const u32,
+        active_region_bases: []const u32,
+        active_long_scales: []const u32,
+        active_bridge_scales: []const u32,
+        output: []i32,
+    ) !void {
+        if (output.len != self.output_len) return NumericCudaUnavailable.InvalidArgument;
+        if (active_ids.len != active_region_bases.len or active_ids.len != active_long_scales.len or active_ids.len != active_bridge_scales.len) {
+            return NumericCudaUnavailable.InvalidArgument;
+        }
+
         @memset(output, 0);
-        if (indices.len == 0) return;
+        if (active_ids.len == 0) return;
 
-        try self.ensureCapacity(indices.len);
+        try self.ensureActiveCapacity(active_ids.len);
         try checkCuda(self.api, self.api.memcpy_htod(self.output_buffer, @ptrCast(self.zero_output.ptr), self.zero_output.len * @sizeOf(i32)));
-        try checkCuda(self.api, self.api.memcpy_htod(self.index_buffer, @ptrCast(indices.ptr), indices.len * @sizeOf(u32)));
-        try checkCuda(self.api, self.api.memcpy_htod(self.value_buffer, @ptrCast(values.ptr), values.len * @sizeOf(i32)));
+        try checkCuda(self.api, self.api.memcpy_htod(self.active_id_buffer, @ptrCast(active_ids.ptr), active_ids.len * @sizeOf(u32)));
+        try checkCuda(self.api, self.api.memcpy_htod(self.active_region_base_buffer, @ptrCast(active_region_bases.ptr), active_region_bases.len * @sizeOf(u32)));
+        try checkCuda(self.api, self.api.memcpy_htod(self.active_long_scale_buffer, @ptrCast(active_long_scales.ptr), active_long_scales.len * @sizeOf(u32)));
+        try checkCuda(self.api, self.api.memcpy_htod(self.active_bridge_scale_buffer, @ptrCast(active_bridge_scales.ptr), active_bridge_scales.len * @sizeOf(u32)));
 
-        var index_arg = self.index_buffer;
-        var value_arg = self.value_buffer;
+        var output_index_arg = self.output_index_buffer;
+        var output_value_arg = self.output_value_buffer;
+        var output_count_arg = self.output_count_buffer;
+        var active_id_arg = self.active_id_buffer;
+        var active_region_base_arg = self.active_region_base_buffer;
+        var active_long_scale_arg = self.active_long_scale_buffer;
+        var active_bridge_scale_arg = self.active_bridge_scale_buffer;
         var output_arg = self.output_buffer;
-        var count_arg: u32 = @intCast(indices.len);
+        var active_count_arg: u32 = @intCast(active_ids.len);
+        var max_edges_arg: u32 = @intCast(self.max_outgoing_per_node);
         var kernel_params = [_]?*anyopaque{
-            @ptrCast(&index_arg),
-            @ptrCast(&value_arg),
+            @ptrCast(&output_index_arg),
+            @ptrCast(&output_value_arg),
+            @ptrCast(&output_count_arg),
+            @ptrCast(&active_id_arg),
+            @ptrCast(&active_region_base_arg),
+            @ptrCast(&active_long_scale_arg),
+            @ptrCast(&active_bridge_scale_arg),
             @ptrCast(&output_arg),
-            @ptrCast(&count_arg),
+            @ptrCast(&active_count_arg),
+            @ptrCast(&max_edges_arg),
         };
 
-        const block_x: u32 = 256;
-        const grid_x: u32 = @intCast(@divTrunc(indices.len + block_x - 1, block_x));
-        try checkCuda(self.api, self.api.launch_kernel(self.function, grid_x, 1, 1, block_x, 1, 1, 0, null, &kernel_params, null));
+        const block_x: u32 = if (self.max_outgoing_per_node < 128) @intCast(self.max_outgoing_per_node) else 128;
+        const grid_x: u32 = @intCast(active_ids.len);
+        try checkCuda(self.api, self.api.launch_kernel(self.resident_function, grid_x, 1, 1, if (block_x == 0) 1 else block_x, 1, 1, 0, null, @ptrCast(&kernel_params), null));
         try checkCuda(self.api, self.api.ctx_synchronize());
         try checkCuda(self.api, self.api.memcpy_dtoh(output.ptr, self.output_buffer, output.len * @sizeOf(i32)));
     }
@@ -271,42 +377,85 @@ fn checkCuda(api: CudaApi, result: cu_result) !void {
     return NumericCudaUnavailable.CudaFailure;
 }
 
-const cuda_sparse_score_kernel_ptx: [:0]const u8 =
+const cuda_resident_score_kernel_ptx: [:0]const u8 =
     \\.version 6.0
     \\.target sm_30
     \\.address_size 64
     \\
-    \\.visible .entry accumulate_sparse_scores_cuda(
-    \\    .param .u64 index_ptr,
-    \\    .param .u64 value_ptr,
+    \\.visible .entry score_resident_output_edges_cuda(
+    \\    .param .u64 output_index_ptr,
+    \\    .param .u64 output_value_ptr,
+    \\    .param .u64 output_count_ptr,
+    \\    .param .u64 active_id_ptr,
+    \\    .param .u64 active_region_base_ptr,
+    \\    .param .u64 active_long_scale_ptr,
+    \\    .param .u64 active_bridge_scale_ptr,
     \\    .param .u64 out_ptr,
-    \\    .param .u32 contribution_count
+    \\    .param .u32 active_count,
+    \\    .param .u32 max_edges
     \\)
     \\{
-    \\    .reg .pred %p<2>;
-    \\    .reg .b32 %r<7>;
-    \\    .reg .b64 %rd<8>;
+    \\    .reg .pred %p<3>;
+    \\    .reg .b32 %r<24>;
+    \\    .reg .b64 %rd<14>;
     \\
-    \\    ld.param.u64 %rd1, [index_ptr];
-    \\    ld.param.u64 %rd2, [value_ptr];
-    \\    ld.param.u64 %rd3, [out_ptr];
-    \\    ld.param.u32 %r1, [contribution_count];
+    \\    ld.param.u64 %rd1, [output_index_ptr];
+    \\    ld.param.u64 %rd2, [output_value_ptr];
+    \\    ld.param.u64 %rd3, [output_count_ptr];
+    \\    ld.param.u64 %rd4, [active_id_ptr];
+    \\    ld.param.u64 %rd5, [active_region_base_ptr];
+    \\    ld.param.u64 %rd6, [active_long_scale_ptr];
+    \\    ld.param.u64 %rd7, [active_bridge_scale_ptr];
+    \\    ld.param.u64 %rd8, [out_ptr];
+    \\    ld.param.u32 %r1, [active_count];
+    \\    ld.param.u32 %r2, [max_edges];
     \\
-    \\    mov.u32 %r2, %ctaid.x;
-    \\    mov.u32 %r3, %ntid.x;
+    \\    mov.u32 %r3, %ctaid.x;
     \\    mov.u32 %r4, %tid.x;
-    \\    mad.lo.s32 %r5, %r2, %r3, %r4;
-    \\    setp.ge.u32 %p1, %r5, %r1;
+    \\    mov.u32 %r5, %ntid.x;
+    \\    setp.ge.u32 %p1, %r3, %r1;
     \\    @%p1 bra DONE;
     \\
-    \\    mul.wide.u32 %rd4, %r5, 4;
-    \\    add.s64 %rd5, %rd1, %rd4;
-    \\    add.s64 %rd6, %rd2, %rd4;
-    \\    ld.global.u32 %r6, [%rd5];
-    \\    ld.global.s32 %r2, [%rd6];
-    \\    mul.wide.u32 %rd7, %r6, 4;
-    \\    add.s64 %rd7, %rd3, %rd7;
-    \\    atom.global.add.s32 %r3, [%rd7], %r2;
+    \\    mul.wide.u32 %rd9, %r3, 4;
+    \\    add.s64 %rd10, %rd4, %rd9;
+    \\    add.s64 %rd11, %rd5, %rd9;
+    \\    add.s64 %rd12, %rd6, %rd9;
+    \\    add.s64 %rd13, %rd7, %rd9;
+    \\    ld.global.u32 %r6, [%rd10];
+    \\    ld.global.u32 %r7, [%rd11];
+    \\    ld.global.u32 %r8, [%rd12];
+    \\    ld.global.u32 %r9, [%rd13];
+    \\
+    \\    mul.lo.u32 %r10, %r6, %r2;
+    \\    mul.wide.u32 %rd10, %r6, 4;
+    \\    add.s64 %rd10, %rd3, %rd10;
+    \\    ld.global.u32 %r11, [%rd10];
+    \\
+    \\LOOP:
+    \\    setp.ge.u32 %p2, %r4, %r11;
+    \\    @%p2 bra DONE;
+    \\    add.u32 %r12, %r10, %r4;
+    \\    mul.wide.u32 %rd10, %r12, 4;
+    \\    add.s64 %rd11, %rd1, %rd10;
+    \\    add.s64 %rd12, %rd2, %rd10;
+    \\    ld.global.u32 %r13, [%rd11];
+    \\    ld.global.s32 %r14, [%rd12];
+    \\    setp.ne.u32 %p2, %r8, 1000;
+    \\    @!%p2 bra SKIP_LONG;
+    \\    mul.lo.s32 %r14, %r14, %r8;
+    \\    div.s32 %r14, %r14, 1000;
+    \\SKIP_LONG:
+    \\    setp.ne.u32 %p2, %r9, 1000;
+    \\    @!%p2 bra SKIP_BRIDGE;
+    \\    mul.lo.s32 %r14, %r14, %r9;
+    \\    div.s32 %r14, %r14, 1000;
+    \\SKIP_BRIDGE:
+    \\    add.u32 %r15, %r7, %r13;
+    \\    mul.wide.u32 %rd10, %r15, 4;
+    \\    add.s64 %rd10, %rd8, %rd10;
+    \\    atom.global.add.s32 %r16, [%rd10], %r14;
+    \\    add.u32 %r4, %r4, %r5;
+    \\    bra LOOP;
     \\DONE:
     \\    ret;
     \\}

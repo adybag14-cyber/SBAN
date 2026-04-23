@@ -16,6 +16,7 @@ fn printUsage(writer: *Io.Writer) !void {
         \\
         \\  zig build run -- inspect
         \\  zig build run -- numeric-accel-info [key=value ...]
+        \\  zig build run -- profile-variant [dataset_path] [prefix|drift] [bits] [variant] [segment_len] [checkpoint_interval] [rolling_window] [key=value ...]
     );
 }
 
@@ -116,6 +117,102 @@ fn runNumericAccelInfo(arena: std.mem.Allocator, writer: *Io.Writer, args: []con
     if (net.numericCudaDeviceLabel()) |device| {
         try writer.print("device={s}\n", .{device});
     }
+}
+
+fn runProfileVariant(arena: std.mem.Allocator, io: std.Io, writer: *Io.Writer, args: []const []const u8) !void {
+    if (args.len < 6) {
+        try printUsage(writer);
+        return;
+    }
+
+    const bits = try std.fmt.parseInt(u8, args[4], 10);
+    const variant = parseVariant(args[5]) orelse {
+        try writer.print("unknown_variant={s}\n", .{args[5]});
+        return;
+    };
+    var corpus_cfg = sban.config.CorpusConfig{
+        .dataset_path = args[2],
+        .mode = if (std.mem.eql(u8, args[3], "drift")) .drift else .prefix,
+    };
+    const override_start = try parseCorpusArgs(args, &corpus_cfg, 6);
+
+    var net_config = sban.config.configForVariant(bits, variant);
+    var profile_steps: usize = 0;
+    for (args[override_start..]) |arg| {
+        const eq_idx = std.mem.indexOfScalar(u8, arg, '=') orelse {
+            try writer.print("invalid_override={s}\n", .{arg});
+            return;
+        };
+        const key = arg[0..eq_idx];
+        const value = arg[eq_idx + 1 ..];
+        if (std.mem.eql(u8, key, "profile_steps")) {
+            profile_steps = try std.fmt.parseInt(usize, value, 10);
+        } else if (std.mem.eql(u8, key, "reset_on_segment_boundary")) {
+            corpus_cfg.reset_on_segment_boundary = try parseEvalBool(value);
+        } else if (std.mem.eql(u8, key, "sequence_seed_path")) {
+            corpus_cfg.sequence_seed_path = value;
+        } else if (std.mem.eql(u8, key, "sequence_seed_offset")) {
+            corpus_cfg.sequence_seed_offset = try std.fmt.parseInt(usize, value, 10);
+        } else if (std.mem.eql(u8, key, "sequence_seed_length")) {
+            corpus_cfg.sequence_seed_length = try std.fmt.parseInt(usize, value, 10);
+        } else if (std.mem.eql(u8, key, "sequence_seed_on_reset")) {
+            corpus_cfg.sequence_seed_on_reset = try parseEvalBool(value);
+        } else if (std.mem.eql(u8, key, "sequence_seed_align_to_segment")) {
+            corpus_cfg.sequence_seed_align_to_segment = try parseEvalBool(value);
+        } else if (std.mem.eql(u8, key, "sequence_seed_from_segment_end")) {
+            corpus_cfg.sequence_seed_from_segment_end = try parseEvalBool(value);
+        } else if (std.mem.eql(u8, key, "sequence_seed_replace_on_reset")) {
+            corpus_cfg.sequence_seed_replace_on_reset = try parseEvalBool(value);
+        } else {
+            sban.config.applyOverride(&net_config, key, value) catch |err| {
+                try writer.print("invalid_override={s} err={s}\n", .{ arg, @errorName(err) });
+                return;
+            };
+        }
+    }
+
+    const started_ns: i96 = std.Io.Clock.awake.now(io).nanoseconds;
+    const summary = try sban.experiment.profileSingleCustomVariant(io, arena, corpus_cfg, net_config, profile_steps);
+    const finished_ns: i96 = std.Io.Clock.awake.now(io).nanoseconds;
+    const wall_ns: u64 = @intCast(finished_ns - started_ns);
+    const total_phase_ns = summary.totalNs();
+    const accuracy = if (summary.total_predictions == 0) 0.0 else 100.0 * @as(f64, @floatFromInt(summary.total_correct)) / @as(f64, @floatFromInt(summary.total_predictions));
+    const wall_seconds = @as(f64, @floatFromInt(wall_ns)) / 1_000_000_000.0;
+    const steps_per_second = if (wall_seconds == 0.0) 0.0 else @as(f64, @floatFromInt(summary.total_predictions)) / wall_seconds;
+
+    try writer.print("total_predictions={d}\n", .{summary.total_predictions});
+    try writer.print("accuracy={d:.4}\n", .{accuracy});
+    try writer.print("configured_backend={s}\n", .{net_config.numeric_backend.label()});
+    try writer.print("cpu_steps={d}\n", .{summary.cpu_steps});
+    try writer.print("cpu_mt_steps={d}\n", .{summary.cpu_mt_steps});
+    try writer.print("cuda_steps={d}\n", .{summary.cuda_steps});
+    try writer.print("wall_seconds={d:.6}\n", .{wall_seconds});
+    try writer.print("steps_per_second={d:.2}\n", .{steps_per_second});
+    try writer.print("seed_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.seed_ns)) / 1_000_000_000.0});
+    try writer.print("propagate_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.propagate_ns)) / 1_000_000_000.0});
+    try writer.print("score_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.score_ns)) / 1_000_000_000.0});
+    try writer.print("output_update_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.output_update_ns)) / 1_000_000_000.0});
+    try writer.print("plasticity_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.plasticity_ns)) / 1_000_000_000.0});
+    try writer.print("expert_update_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.expert_update_ns)) / 1_000_000_000.0});
+    try writer.print("housekeeping_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.housekeeping_ns)) / 1_000_000_000.0});
+    try writer.print("maintenance_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.maintenance_ns)) / 1_000_000_000.0});
+    try writer.print("adapt_seconds={d:.6}\n", .{@as(f64, @floatFromInt(summary.adapt_ns)) / 1_000_000_000.0});
+    if (total_phase_ns != 0) {
+        const total_phase_f = @as(f64, @floatFromInt(total_phase_ns));
+        try writer.print("seed_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.seed_ns)) / total_phase_f});
+        try writer.print("propagate_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.propagate_ns)) / total_phase_f});
+        try writer.print("score_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.score_ns)) / total_phase_f});
+        try writer.print("output_update_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.output_update_ns)) / total_phase_f});
+        try writer.print("plasticity_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.plasticity_ns)) / total_phase_f});
+        try writer.print("expert_update_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.expert_update_ns)) / total_phase_f});
+        try writer.print("housekeeping_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.housekeeping_ns)) / total_phase_f});
+        try writer.print("maintenance_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.maintenance_ns)) / total_phase_f});
+        try writer.print("adapt_share={d:.4}\n", .{@as(f64, @floatFromInt(summary.adapt_ns)) / total_phase_f});
+    }
+    try writer.print(
+        "births={d} bridge_births={d} short={d} long={d} bridge={d} regions={d} synapses={d} promotions={d} demotions={d} recycled={d}\n",
+        .{ summary.births, summary.bridge_births, summary.final_short_memories, summary.final_long_memories, summary.final_bridge_memories, summary.final_regions, summary.final_synapses, summary.promotions, summary.demotions, summary.recycled_slots },
+    );
 }
 
 pub fn main(init: std.process.Init) !void {
@@ -250,6 +347,8 @@ pub fn main(init: std.process.Init) !void {
         try dialogue.runAccelBench(arena, io, writer, args);
     } else if (std.mem.eql(u8, command, "numeric-accel-info")) {
         try runNumericAccelInfo(arena, writer, args);
+    } else if (std.mem.eql(u8, command, "profile-variant")) {
+        try runProfileVariant(arena, io, writer, args);
     } else if (std.mem.eql(u8, command, "inspect")) {
         var net = try sban.network.Network.init(arena, sban.config.configForVariant(4, .default));
         defer net.deinit();

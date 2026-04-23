@@ -12,6 +12,24 @@ pub const Prediction = struct {
     surprise: bool,
 };
 
+pub const StepProfile = struct {
+    prediction: Prediction,
+    seed_ns: u64,
+    propagate_ns: u64,
+    score_ns: u64,
+    output_update_ns: u64,
+    plasticity_ns: u64,
+    expert_update_ns: u64,
+    housekeeping_ns: u64,
+    maintenance_ns: u64,
+    adapt_ns: u64,
+    backend_used: cfg.NumericScoreBackend,
+
+    pub fn totalNs(self: StepProfile) u64 {
+        return self.seed_ns + self.propagate_ns + self.score_ns + self.adapt_ns;
+    }
+};
+
 pub const Checkpoint = struct {
     step: u32,
     rolling_accuracy_ppm: u32,
@@ -477,11 +495,23 @@ fn parallelScoreWorkerMain(runtime: *ParallelScoreRuntime, slot_index: usize) vo
     }
 }
 
-fn initNumericCudaRuntime(allocator: std.mem.Allocator, config: cfg.NetworkConfig) !?*numeric_cuda.SparseScoreCudaRuntime {
+fn numericCudaMaxNeuronCount(config: cfg.NetworkConfig) usize {
+    return @as(usize, config.history_lags) * @as(usize, config.vocab_size) +
+        @as(usize, config.vocab_size) +
+        @as(usize, config.max_short_memories) +
+        @as(usize, config.max_long_memories);
+}
+
+fn initNumericCudaRuntime(allocator: std.mem.Allocator, config: cfg.NetworkConfig) !?*numeric_cuda.NumericCudaRuntime {
     if (config.numeric_backend != .cuda and config.numeric_backend != .auto) return null;
-    const runtime = try allocator.create(numeric_cuda.SparseScoreCudaRuntime);
+    const runtime = try allocator.create(numeric_cuda.NumericCudaRuntime);
     errdefer allocator.destroy(runtime);
-    runtime.* = try numeric_cuda.SparseScoreCudaRuntime.init(allocator, @as(usize, config.max_regions) * @as(usize, config.vocab_size));
+    runtime.* = try numeric_cuda.NumericCudaRuntime.init(
+        allocator,
+        @as(usize, config.max_regions) * @as(usize, config.vocab_size),
+        numericCudaMaxNeuronCount(config),
+        config.max_outgoing_per_node,
+    );
     return runtime;
 }
 
@@ -522,9 +552,15 @@ pub const Network = struct {
     region_marks: []u32,
     region_output_scores: []i32,
     parallel_score_runtime: ?*ParallelScoreRuntime = null,
-    numeric_cuda_runtime: ?*numeric_cuda.SparseScoreCudaRuntime = null,
+    numeric_cuda_runtime: ?*numeric_cuda.NumericCudaRuntime = null,
     numeric_cuda_indices: std.ArrayList(u32) = .empty,
     numeric_cuda_values: std.ArrayList(i32) = .empty,
+    numeric_cuda_region_bases: std.ArrayList(u32) = .empty,
+    numeric_cuda_long_scales: std.ArrayList(u32) = .empty,
+    numeric_cuda_bridge_scales: std.ArrayList(u32) = .empty,
+    numeric_cuda_dirty_nodes: std.ArrayList(u32) = .empty,
+    numeric_cuda_dirty_flags: std.ArrayList(u8) = .empty,
+    numeric_cuda_force_full_resync: bool = false,
     free_memory_ids: std.ArrayList(u32) = .empty,
     protected_memories: std.ArrayList(u32) = .empty,
     signature_map: std.AutoHashMap(u64, u32),
@@ -670,6 +706,11 @@ pub const Network = struct {
         self.allocator.free(self.burst_last_step);
         self.numeric_cuda_indices.deinit(self.allocator);
         self.numeric_cuda_values.deinit(self.allocator);
+        self.numeric_cuda_region_bases.deinit(self.allocator);
+        self.numeric_cuda_long_scales.deinit(self.allocator);
+        self.numeric_cuda_bridge_scales.deinit(self.allocator);
+        self.numeric_cuda_dirty_nodes.deinit(self.allocator);
+        self.numeric_cuda_dirty_flags.deinit(self.allocator);
         self.free_memory_ids.deinit(self.allocator);
         self.protected_memories.deinit(self.allocator);
         self.signature_map.deinit();
@@ -771,6 +812,11 @@ pub const Network = struct {
             try self.score_marks.resize(self.allocator, n);
             @memset(self.score_marks.items[old_len..], 0);
         }
+        if (self.numeric_cuda_dirty_flags.items.len < n) {
+            const old_len = self.numeric_cuda_dirty_flags.items.len;
+            try self.numeric_cuda_dirty_flags.resize(self.allocator, n);
+            @memset(self.numeric_cuda_dirty_flags.items[old_len..], 0);
+        }
     }
 
     fn addNeuron(self: *Network, kind: NeuronKind, threshold: i32) !u32 {
@@ -787,6 +833,17 @@ pub const Network = struct {
             return reused_id;
         }
         return try self.addNeuron(kind, threshold);
+    }
+
+    fn markNumericCudaNeuronDirty(self: *Network, id: u32) void {
+        if (self.numeric_cuda_runtime == null) return;
+        const idx: usize = @intCast(id);
+        if (idx >= self.numeric_cuda_dirty_flags.items.len) return;
+        if (self.numeric_cuda_dirty_flags.items[idx] != 0) return;
+        self.numeric_cuda_dirty_flags.items[idx] = 1;
+        self.numeric_cuda_dirty_nodes.append(self.allocator, id) catch {
+            self.numeric_cuda_force_full_resync = true;
+        };
     }
 
     fn maxQuant(self: *const Network) i16 {
@@ -954,27 +1011,95 @@ pub const Network = struct {
         return contribution;
     }
 
+    fn numericCudaBaseContribution(self: *const Network, synapse: Synapse) i32 {
+        return self.scaledValue(synapse.state) + self.synapseContributionBonus(synapse);
+    }
+
+    fn numericCudaLongScalePpm(self: *const Network, neuron: Neuron) u32 {
+        if (neuron.kind != .memory_long) return 1000;
+        return self.longTermContributionScalePpm(neuron);
+    }
+
+    fn numericCudaBridgeScalePpm(self: *const Network, neuron: Neuron) u32 {
+        if (neuron.role != .bridge) return 1000;
+        return if (self.bridgeSatisfied(neuron)) self.config.bridge_bonus_ppm else 900;
+    }
+
     fn countPredictiveOutputEdges(self: *const Network) usize {
         var total: usize = 0;
         for (self.predictive_nodes.items) |src_id| {
             const src_idx: usize = @intCast(src_id);
             const neuron = self.neurons.items[src_idx];
             if (neuron.kind == .dead) continue;
-            for (neuron.outgoing.items) |synapse| {
-                const target_idx: usize = @intCast(synapse.target);
-                if (self.neurons.items[target_idx].kind == .output) total += 1;
-            }
+            total += self.countOutputEdgesForNeuron(neuron);
+        }
+        return total;
+    }
+
+    fn countOutputEdgesForNeuron(self: *const Network, neuron: Neuron) usize {
+        var total: usize = 0;
+        for (neuron.outgoing.items) |synapse| {
+            const target_idx: usize = @intCast(synapse.target);
+            if (target_idx < self.neurons.items.len and self.neurons.items[target_idx].kind == .output) total += 1;
         }
         return total;
     }
 
     fn shouldAttemptCudaScore(self: *const Network, edge_count: usize) bool {
+        _ = edge_count;
         if (self.numeric_cuda_runtime == null) return false;
         return switch (self.config.numeric_backend) {
             .cuda => true,
-            .auto => edge_count >= self.config.cuda_min_scoring_edges,
+            .auto => false,
             else => false,
         };
+    }
+
+    fn syncNumericCudaNeuron(self: *Network, id: u32) !void {
+        const runtime = self.numeric_cuda_runtime orelse return;
+        const idx: usize = @intCast(id);
+        if (idx >= self.neurons.items.len) return;
+
+        self.numeric_cuda_indices.clearRetainingCapacity();
+        self.numeric_cuda_values.clearRetainingCapacity();
+
+        const neuron = self.neurons.items[idx];
+        for (neuron.outgoing.items) |synapse| {
+            const target_idx: usize = @intCast(synapse.target);
+            if (target_idx >= self.neurons.items.len) continue;
+            if (self.neurons.items[target_idx].kind != .output) continue;
+            const logical_index = target_idx - self.output_base;
+            const contribution = self.numericCudaBaseContribution(synapse);
+            if (contribution == 0) continue;
+            try self.numeric_cuda_indices.append(self.allocator, @intCast(logical_index));
+            try self.numeric_cuda_values.append(self.allocator, contribution);
+        }
+        try runtime.syncNeuronOutputEdges(id, self.numeric_cuda_indices.items, self.numeric_cuda_values.items);
+    }
+
+    fn syncDirtyNumericCudaNeurons(self: *Network) bool {
+        if (self.numeric_cuda_runtime == null) return false;
+
+        if (self.numeric_cuda_force_full_resync) {
+            var neuron_id: usize = 0;
+            while (neuron_id < self.neurons.items.len) : (neuron_id += 1) {
+                self.syncNumericCudaNeuron(@intCast(neuron_id)) catch return false;
+            }
+            if (self.numeric_cuda_dirty_flags.items.len != 0) @memset(self.numeric_cuda_dirty_flags.items, 0);
+            self.numeric_cuda_dirty_nodes.clearRetainingCapacity();
+            self.numeric_cuda_force_full_resync = false;
+            return true;
+        }
+
+        for (self.numeric_cuda_dirty_nodes.items) |dirty_id| {
+            const dirty_idx: usize = @intCast(dirty_id);
+            if (dirty_idx >= self.numeric_cuda_dirty_flags.items.len) continue;
+            if (self.numeric_cuda_dirty_flags.items[dirty_idx] == 0) continue;
+            self.syncNumericCudaNeuron(dirty_id) catch return false;
+            self.numeric_cuda_dirty_flags.items[dirty_idx] = 0;
+        }
+        self.numeric_cuda_dirty_nodes.clearRetainingCapacity();
+        return true;
     }
 
     fn fillRegionOutputScoresSerial(self: *Network) void {
@@ -1011,32 +1136,31 @@ pub const Network = struct {
 
     fn fillRegionOutputScoresCuda(self: *Network, edge_count: usize) bool {
         if (!self.shouldAttemptCudaScore(edge_count)) return false;
+        if (!self.syncDirtyNumericCudaNeurons()) return false;
 
-        const required_capacity = edge_count;
-        self.numeric_cuda_indices.ensureTotalCapacity(self.allocator, required_capacity) catch return false;
-        self.numeric_cuda_values.ensureTotalCapacity(self.allocator, required_capacity) catch return false;
-        self.numeric_cuda_indices.clearRetainingCapacity();
-        self.numeric_cuda_values.clearRetainingCapacity();
+        const predictive_len = self.predictive_nodes.items.len;
+        self.numeric_cuda_region_bases.resize(self.allocator, predictive_len) catch return false;
+        self.numeric_cuda_long_scales.resize(self.allocator, predictive_len) catch return false;
+        self.numeric_cuda_bridge_scales.resize(self.allocator, predictive_len) catch return false;
 
-        for (self.predictive_nodes.items) |src_id| {
+        for (self.predictive_nodes.items, 0..) |src_id, predictive_index| {
             const src_idx: usize = @intCast(src_id);
+            if (src_idx >= self.neurons.items.len) return false;
             const neuron = self.neurons.items[src_idx];
-            if (neuron.kind == .dead) continue;
             const region = self.nodeRegion(src_id);
-            const base = @as(usize, region) * @as(usize, self.config.vocab_size);
-            for (neuron.outgoing.items) |synapse| {
-                const target_idx: usize = @intCast(synapse.target);
-                if (self.neurons.items[target_idx].kind != .output) continue;
-                const logical_index = target_idx - self.output_base;
-                const contribution = self.scoreContributionForSynapse(neuron, synapse);
-                if (contribution == 0) continue;
-                self.numeric_cuda_indices.appendAssumeCapacity(@intCast(base + logical_index));
-                self.numeric_cuda_values.appendAssumeCapacity(contribution);
-            }
+            self.numeric_cuda_region_bases.items[predictive_index] = @intCast(@as(usize, region) * @as(usize, self.config.vocab_size));
+            self.numeric_cuda_long_scales.items[predictive_index] = self.numericCudaLongScalePpm(neuron);
+            self.numeric_cuda_bridge_scales.items[predictive_index] = self.numericCudaBridgeScalePpm(neuron);
         }
 
         if (self.numeric_cuda_runtime) |runtime| {
-            runtime.score(self.numeric_cuda_indices.items, self.numeric_cuda_values.items, self.region_output_scores) catch return false;
+            runtime.scoreResident(
+                self.predictive_nodes.items,
+                self.numeric_cuda_region_bases.items,
+                self.numeric_cuda_long_scales.items,
+                self.numeric_cuda_bridge_scales.items,
+                self.region_output_scores,
+            ) catch return false;
             self.last_score_backend_used = .cuda;
             return true;
         }
@@ -2061,6 +2185,8 @@ pub const Network = struct {
         const neuron = &self.neurons.items[src_idx];
         const rep_delta: i32 = if (strong) 3 else 1;
         const permanence_bonus: u8 = if (strong) 2 else 0;
+        const target_idx: usize = @intCast(target_id);
+        const target_is_output = target_idx < self.neurons.items.len and self.neurons.items[target_idx].kind == .output;
         for (neuron.outgoing.items) |*synapse| {
             if (synapse.target != target_id) continue;
             if (make_positive) {
@@ -2074,8 +2200,10 @@ pub const Network = struct {
             }
             synapse.permanence = @min(self.config.synapse_max_permanence, synapse.permanence + 1);
             synapse.last_touched = self.step_index;
+            if (target_is_output) self.markNumericCudaNeuronDirty(src_id);
             return;
         }
+        const output_count_before = self.countOutputEdgesForNeuron(neuron.*);
         const init_state = if (make_positive) self.positiveState(strong) else self.negativeState(strong);
         const init_rep: i16 = if (self.config.use_reputation) clampI16(if (make_positive) rep_delta else -rep_delta) else 0;
         try neuron.outgoing.append(self.allocator, .{
@@ -2086,6 +2214,9 @@ pub const Network = struct {
             .last_touched = self.step_index,
         });
         self.enforceOutgoingBudget(neuron);
+        if (target_is_output or self.countOutputEdgesForNeuron(neuron.*) != output_count_before) {
+            self.markNumericCudaNeuronDirty(src_id);
+        }
     }
 
     fn getSynapsePtr(self: *Network, src_id: u32, target_id: u32) ?*Synapse {
@@ -2176,7 +2307,13 @@ pub const Network = struct {
     fn updateSynapseReputation(self: *Network, src_id: u32, target_id: u32, delta: i16) void {
         if (!self.config.use_reputation) return;
         if (self.getSynapsePtr(src_id, target_id)) |synapse| {
+            const old_bonus = @divTrunc(@as(i32, synapse.reputation), 4);
             synapse.reputation = clampI16(@as(i32, synapse.reputation) + delta);
+            const new_bonus = @divTrunc(@as(i32, synapse.reputation), 4);
+            const target_idx: usize = @intCast(target_id);
+            if (old_bonus != new_bonus and target_idx < self.neurons.items.len and self.neurons.items[target_idx].kind == .output) {
+                self.markNumericCudaNeuronDirty(src_id);
+            }
         }
     }
 
@@ -2402,6 +2539,7 @@ pub const Network = struct {
         neuron.outgoing.deinit(self.allocator);
         neuron.outgoing = .empty;
         neuron.reset(.dead, 0);
+        self.markNumericCudaNeuronDirty(id);
         self.free_memory_ids.append(self.allocator, id) catch {};
         self.pruned_neurons += 1;
     }
@@ -2614,10 +2752,35 @@ pub const Network = struct {
         return prediction;
     }
 
-    pub fn step(self: *Network, current_token: u8, actual_next: u8) !Prediction {
+    fn runStep(self: *Network, current_token: u8, actual_next: u8, profile: ?*StepProfile, profile_io: ?std.Io) !Prediction {
+        const profile_enabled = profile != null;
+        var phase_start_ns: u64 = 0;
+        var seed_elapsed_ns: u64 = 0;
+        var propagate_elapsed_ns: u64 = 0;
+        var score_elapsed_ns: u64 = 0;
+        var output_update_elapsed_ns: u64 = 0;
+        var plasticity_elapsed_ns: u64 = 0;
+        var expert_update_elapsed_ns: u64 = 0;
+        if (profile_enabled) phase_start_ns = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
         try self.seedFromHistory(current_token);
+        if (profile_enabled) {
+            const now_ns: u64 = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
+            seed_elapsed_ns = now_ns - phase_start_ns;
+            phase_start_ns = now_ns;
+        }
         try self.propagateMemories();
+        if (profile_enabled) {
+            const now_ns: u64 = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
+            propagate_elapsed_ns = now_ns - phase_start_ns;
+            phase_start_ns = now_ns;
+        }
         var prediction = self.scoreOutputs(current_token, actual_next);
+        const backend_used = self.last_score_backend_used;
+        if (profile_enabled) {
+            const now_ns: u64 = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
+            score_elapsed_ns = now_ns - phase_start_ns;
+            phase_start_ns = now_ns;
+        }
         const was_correct = prediction.token == actual_next;
         const surprise_like = !was_correct or prediction.margin <= self.config.birth_margin;
         const confident_like = was_correct and prediction.actual_rank == 1 and prediction.margin >= cfg.score_scale / 2;
@@ -2636,6 +2799,11 @@ pub const Network = struct {
             }
             self.neurons.items[idx].last_active_step = self.step_index;
         }
+        if (profile_enabled) {
+            const now_ns: u64 = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
+            output_update_elapsed_ns = now_ns - phase_start_ns;
+            phase_start_ns = now_ns;
+        }
 
         if (surprise_like) {
             try self.spawnMemory(current_token, actual_next, prediction);
@@ -2643,8 +2811,18 @@ pub const Network = struct {
         self.updateUtilities(prediction, actual_next);
         self.maybePromoteOrDemote();
         try self.refreshCarryMemories();
+        if (profile_enabled) {
+            const now_ns: u64 = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
+            plasticity_elapsed_ns = now_ns - phase_start_ns;
+            phase_start_ns = now_ns;
+        }
         try self.updateSequenceExperts(current_token, actual_next);
         self.updateHybridExpertWeights(actual_next);
+        if (profile_enabled) {
+            const now_ns: u64 = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
+            expert_update_elapsed_ns = now_ns - phase_start_ns;
+            phase_start_ns = now_ns;
+        }
         self.recordElasticityStep(was_correct, surprise_like, confident_like);
         self.pushHistory(current_token);
         if (self.step_index % self.config.elasticity_interval == 0) {
@@ -2653,7 +2831,34 @@ pub const Network = struct {
         if (self.step_index % self.config.prune_interval == 0) {
             try self.prune();
         }
+        if (profile) |profile_out| {
+            const end_ns: u64 = @intCast(std.Io.Clock.awake.now(profile_io.?).nanoseconds);
+            const housekeeping_elapsed_ns = end_ns - phase_start_ns;
+            profile_out.* = .{
+                .prediction = prediction,
+                .seed_ns = seed_elapsed_ns,
+                .propagate_ns = propagate_elapsed_ns,
+                .score_ns = score_elapsed_ns,
+                .output_update_ns = output_update_elapsed_ns,
+                .plasticity_ns = plasticity_elapsed_ns,
+                .expert_update_ns = expert_update_elapsed_ns,
+                .housekeeping_ns = housekeeping_elapsed_ns,
+                .maintenance_ns = plasticity_elapsed_ns + expert_update_elapsed_ns + housekeeping_elapsed_ns,
+                .adapt_ns = output_update_elapsed_ns + plasticity_elapsed_ns + expert_update_elapsed_ns + housekeeping_elapsed_ns,
+                .backend_used = backend_used,
+            };
+        }
         return prediction;
+    }
+
+    pub fn step(self: *Network, current_token: u8, actual_next: u8) !Prediction {
+        return self.runStep(current_token, actual_next, null, null);
+    }
+
+    pub fn stepProfile(self: *Network, io: std.Io, current_token: u8, actual_next: u8) !StepProfile {
+        var profile: StepProfile = undefined;
+        _ = try self.runStep(current_token, actual_next, &profile, io);
+        return profile;
     }
 };
 

@@ -1,0 +1,63 @@
+# SBAN v24 open-chat scripted session evaluation
+User: hello
+Expect: Hello.
+
+User: how are you doing
+Expect: ready to help
+
+User: can you help me plan tomorrow
+Expect: fixed commitments
+
+User: help me organize my week
+Expect: one major result for each day
+
+User: how can i stay focused
+Expect: One task
+
+User: help me draft a polite follow-up
+Expect: keep it short
+
+User: can we brainstorm project names
+Expect: the audience
+
+User: help me think through a decision
+Expect: list the options
+
+User: i had a long day
+Expect: hardest part
+
+User: i am stressed about work
+Expect: next concrete task
+
+User: i need motivation
+Expect: Momentum usually
+
+User: what should i make for dinner
+Expect: one protein
+
+User: what should i do this weekend
+Expect: one restful thing
+
+User: do you like music
+Expect: do not have personal taste
+
+User: do you like cooking
+Expect: easy recipe
+
+User: what do you like to do in your spare time
+Expect: vague problems into concrete next steps
+
+User: can you study with the radio on
+Expect: instrumental music or silence
+
+User: i am from london
+Expect: London
+
+User: where am i from
+Expect: London
+
+User: what is the capital of peru
+Expect: not sure
+
+User: thank you
+Expect: welcome

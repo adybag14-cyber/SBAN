@@ -3,7 +3,7 @@ name: Release Demo Bundles
 on:
   push:
     tags:
-      - "v23.5*"
+      - "v24*"
   workflow_dispatch:
 
 env:
@@ -45,17 +45,17 @@ jobs:
 
       - name: Smoke demo
         run: |
-          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); session_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_session_eval_v23_5.txt', 'mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v23_5.txt'], text=True); assert 'passed=23' in session_eval and 'expect_pass=false' not in session_eval, session_eval; overview = subprocess.check_output([str(exe), 'chat-demo', 'what is SBAN v23.5', '180', 'mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v23_5.txt'], text=True); assert 'v23.5' in overview.lower(), overview; paper = subprocess.check_output([str(exe), 'chat-demo', 'where is the v23.5 paper pdf', '180', 'mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v23_5.txt'], text=True); assert 'sban_v23_5_follow_up_research_paper.pdf' in paper.lower(), paper; numeric = subprocess.check_output([str(exe), 'chat-demo', 'what command shows numeric cuda support', '220', 'mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v23_5.txt'], text=True); assert 'numeric-accel-info' in numeric.lower(), numeric; rtx = subprocess.check_output([str(exe), 'chat-demo', 'can this run on an rtx 4090', '180', 'mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v23_5.txt'], text=True); assert 'cuda' in rtx.lower(), rtx; joke = subprocess.check_output([str(exe), 'chat-demo', 'tell me a joke', '180', 'mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v23_5.txt'], text=True); assert 'not sure' not in joke.lower(), joke; noise = subprocess.check_output([str(exe), 'chat-demo', 'blorple zint protocol', '180', 'mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v23_5.txt'], text=True); assert 'not sure' in noise.lower(), noise"
+          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); common = ['mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v24.txt', 'open_seed_path=data/sban_dialogue_open_seed_v24.txt']; session_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_session_eval_v24.txt', *common], text=True); assert 'passed=27' in session_eval and 'expect_pass=false' not in session_eval, session_eval; open_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_open_chat_session_eval_v24.txt', *common], text=True); assert 'passed=21' in open_eval and 'expect_pass=false' not in open_eval, open_eval; overview = subprocess.check_output([str(exe), 'chat-demo', 'what is SBAN v24', '180', *common], text=True); assert 'v24' in overview.lower() and 'conversational product release' in overview.lower(), overview; bundle = subprocess.check_output([str(exe), 'chat-demo', 'what files ship in the bundle', '180', *common], text=True); assert 'sban_v24_repo.zip' in bundle.lower(), bundle; planning = subprocess.check_output([str(exe), 'chat-demo', 'can you help me plan tomorrow', '180', *common], text=True); assert 'fixed commitments' in planning.lower(), planning; weekend = subprocess.check_output([str(exe), 'chat-demo', 'what should i do this weekend', '180', *common], text=True); assert 'one restful thing' in weekend.lower(), weekend; noise = subprocess.check_output([str(exe), 'chat-demo', 'what is the capital of peru', '180', *common], text=True); assert 'not sure' in noise.lower(), noise"
 
       - name: Package demo bundle
         run: |
-          python scripts/package_v23_5_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
+          python scripts/package_v24_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-demo
-          path: deliverables/v23_5/demo/SBAN_v23_5_${{ matrix.platform }}_demo.zip
+          path: deliverables/v24/demo/SBAN_v24_${{ matrix.platform }}_demo.zip
 
       - name: Ensure release exists
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,5 +74,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.ref_name }}" "deliverables/v23_5/demo/SBAN_v23_5_${{ matrix.platform }}_demo.zip" --clobber
+          gh release upload "${{ github.ref_name }}" "deliverables/v24/demo/SBAN_v24_${{ matrix.platform }}_demo.zip" --clobber
 

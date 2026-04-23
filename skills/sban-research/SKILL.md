@@ -16,9 +16,9 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/run_v23_5_release.py` for the current packaged benchmark and dialogue suite
-- `scripts/make_v23_5_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
-- `scripts/package_v23_5_demo.py` for the newcomer demo bundle
+- `scripts/run_v24_release.py` for the current packaged benchmark and dialogue suite
+- `scripts/make_v24_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v24_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -57,6 +57,7 @@ If you need the release targets or commands, read `references/release_profiles.m
 - The v22.5 release keeps the v22 product behavior but adds a real CUDA backend for NVIDIA RTX GPUs, a raw `accel-bench` command, conservative `cpu_mt` retrieval support, and an experimental multithreaded numeric output scorer.
 - The v23 release is the conversational repair release: real versioned dialogue assets, deterministic operational answers, stronger hardware-aware retrieval guards, and constrained free-chat composition instead of the older stale-feeling char-level fallback.
 - The v23.5 release is the technical backend follow-up: keep the v23 conversation surface stable, add a numeric scoring backend selector in `src/network.zig`, add a dedicated sparse numeric CUDA module, expose a `numeric-accel-info` probe in `src/main.zig`, and measure CPU versus `cpu_mt` versus CUDA on the numeric `eval-variant` path without changing the packaged CPU baseline until the measured suite earns it.
+- The v24 release is the conversational product follow-up: keep the v23.5 numeric and backend stack stable, ship a truthful versioned grounded seed plus a separate open-chat seed, validate broader free chat with a versioned open-chat scripted session eval, and keep unsupported factual questions on the uncertainty path instead of broadening by hallucination.
 - The v22 numeric release also learned three practical hardening lessons:
   use a streamed single-variant path when `include_baseline=false`,
   release dead-memory outgoing capacity in `src/network.zig` instead of retaining it forever,
@@ -75,11 +76,17 @@ If you need the release targets or commands, read `references/release_profiles.m
   validate the numeric path with `numeric-accel-info` before inferring that `eval-variant` is actually using the RTX device,
   keep `numeric_backend=cpu` plus `score_threads=1` as the packaged default until end-to-end timings prove otherwise,
   and remember that per-step CUDA wins can disappear if host-side packing dominates, so backend promotion has to follow measured elapsed time rather than architectural preference.
+- The v24 product lessons are separate again:
+  keep the grounded release seed and the broader open-chat seed separate,
+  use curated assistant-safe open-chat pairs rather than raw dialogue data that makes the assistant claim human tastes or biography,
+  validate broader conversation with a scripted open-chat session asset instead of only looking at non-empty counts,
+  keep roadmap routing narrow so it does not hijack ordinary overview or artifact-path questions,
+  and treat natural `i am ...` statements carefully so emotional or support prompts are not misparsed as names.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
 
-- `python scripts/run_v23_5_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
+- `python scripts/run_v24_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
 
@@ -87,8 +94,8 @@ If you need the release targets or commands, read `references/release_profiles.m
 
 For a new release:
 
-1. Run `python scripts/run_v23_5_release.py` or the next-generation equivalent.
-2. Run `python scripts/make_v23_5_deliverables.py` or the next-generation equivalent.
+1. Run `python scripts/run_v24_release.py` or the next-generation equivalent.
+2. Run `python scripts/make_v24_deliverables.py` or the next-generation equivalent.
 3. Confirm the versioned paper PDF, executive summary, repo zip, and demo bundle exist under `deliverables/`.
 4. Update `README.md` so the current release can be reproduced without extra context.
 5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.

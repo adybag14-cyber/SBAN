@@ -59,6 +59,45 @@ pub const ExperimentData = struct {
     }
 };
 
+pub const NumericProfileSummary = struct {
+    total_predictions: usize = 0,
+    total_correct: usize = 0,
+    seed_ns: u64 = 0,
+    propagate_ns: u64 = 0,
+    score_ns: u64 = 0,
+    output_update_ns: u64 = 0,
+    plasticity_ns: u64 = 0,
+    expert_update_ns: u64 = 0,
+    housekeeping_ns: u64 = 0,
+    maintenance_ns: u64 = 0,
+    adapt_ns: u64 = 0,
+    cpu_steps: usize = 0,
+    cpu_mt_steps: usize = 0,
+    cuda_steps: usize = 0,
+    final_memories: usize = 0,
+    final_short_memories: usize = 0,
+    final_long_memories: usize = 0,
+    final_bridge_memories: usize = 0,
+    final_regions: usize = 0,
+    final_target_short: usize = 0,
+    final_synapses: usize = 0,
+    births: usize = 0,
+    bridge_births: usize = 0,
+    promotions: usize = 0,
+    demotions: usize = 0,
+    recycled_slots: usize = 0,
+    pruned_neurons: usize = 0,
+    pruned_synapses: usize = 0,
+    elastic_grows: usize = 0,
+    elastic_shrinks: usize = 0,
+    max_active_nodes: u16 = 0,
+    max_active_regions: u16 = 0,
+
+    pub fn totalNs(self: NumericProfileSummary) u64 {
+        return self.seed_ns + self.propagate_ns + self.score_ns + self.adapt_ns;
+    }
+};
+
 const RowStat = struct {
     best_token: u8,
     actual_rank: u16,
@@ -329,6 +368,26 @@ fn finalizeReport(report: *network.RunReport, net: *const network.Network) void 
     report.summary.max_active_regions = net.max_active_regions_seen;
 }
 
+fn finalizeNumericProfile(summary: *NumericProfileSummary, net: *const network.Network) void {
+    summary.final_short_memories = net.countAliveShortMemories();
+    summary.final_long_memories = net.countAliveLongMemories();
+    summary.final_bridge_memories = net.countAliveBridgeMemories();
+    summary.final_regions = net.countLiveRegions();
+    summary.final_target_short = net.currentShortTarget();
+    summary.final_memories = net.countAliveMemories();
+    summary.final_synapses = net.countAliveSynapses();
+    summary.births = net.births;
+    summary.bridge_births = net.bridge_births;
+    summary.promotions = net.promotions;
+    summary.demotions = net.demotions;
+    summary.recycled_slots = net.recycled_slots;
+    summary.pruned_neurons = net.pruned_neurons;
+    summary.pruned_synapses = net.pruned_synapses;
+    summary.elastic_grows = net.elastic_grows;
+    summary.elastic_shrinks = net.elastic_shrinks;
+    summary.max_active_regions = net.max_active_regions_seen;
+}
+
 fn runSbanConfig(allocator: std.mem.Allocator, bundle: *const stream.StreamBundle, corpus_cfg: cfg.CorpusConfig, sequence_seed_source: []const u8, model_name: []const u8, variant_name: []const u8, net_config: cfg.NetworkConfig) !network.RunReport {
     var net = try network.Network.init(allocator, net_config);
     defer net.deinit();
@@ -565,6 +624,65 @@ pub fn runSingleCustomDetailed(io: std.Io, allocator: std.mem.Allocator, corpus_
     try data.reports.append(allocator, try runSbanConfig(allocator, &loaded.bundle, corpus_cfg, sequence_seed_source.bytes, model_name, variant_name, net_config));
     if (include_baseline) try data.reports.append(allocator, try runOrder2(allocator, &loaded.bundle, corpus_cfg));
     return data;
+}
+
+pub fn profileSingleCustomVariant(io: std.Io, allocator: std.mem.Allocator, corpus_cfg: cfg.CorpusConfig, net_config: cfg.NetworkConfig, step_limit: usize) !NumericProfileSummary {
+    const corpus = try stream.loadCorpus(io, allocator, corpus_cfg.dataset_path);
+    defer allocator.free(corpus);
+    const layout = try buildSegmentLayout(corpus.len, corpus_cfg);
+    var sequence_seed_source = try resolveSequenceSeedSource(io, allocator, corpus_cfg, corpus);
+    defer sequence_seed_source.deinit(allocator);
+
+    var net = try network.Network.init(allocator, net_config);
+    defer net.deinit();
+    const initial_seed = sequenceSeedForLayoutSegment(corpus_cfg, &layout, sequence_seed_source.bytes, 0);
+    if (initial_seed.len > 1) try net.pretrainSequenceExperts(initial_seed);
+
+    var summary = NumericProfileSummary{};
+    var step_idx: usize = 0;
+    outer: for (0..layout.segment_count) |segment_idx_usize| {
+        const segment_idx: u8 = @intCast(segment_idx_usize);
+        if (shouldResetBeforeSegment(corpus_cfg, segment_idx)) {
+            net.resetTransient();
+            const segment_seed = sequenceSeedForLayoutSegment(corpus_cfg, &layout, sequence_seed_source.bytes, segment_idx);
+            const should_seed = (corpus_cfg.sequence_seed_on_reset or corpus_cfg.sequence_seed_align_to_segment) and segment_seed.len > 1;
+            if (should_seed) {
+                if (corpus_cfg.sequence_seed_replace_on_reset) net.resetSequenceExperts();
+                try net.pretrainSequenceExperts(segment_seed);
+            }
+        }
+
+        const source_offset = layout.segment_offsets[segment_idx_usize];
+        const segment_len = layout.segment_lengths[segment_idx_usize];
+        for (0..segment_len) |local_idx| {
+            if (step_limit != 0 and step_idx >= step_limit) break :outer;
+            const current = corpus[source_offset + local_idx];
+            const actual = corpus[source_offset + local_idx + 1];
+            const profile = try net.stepProfile(io, current, actual);
+            summary.total_predictions += 1;
+            if (profile.prediction.token == actual) summary.total_correct += 1;
+            summary.seed_ns += profile.seed_ns;
+            summary.propagate_ns += profile.propagate_ns;
+            summary.score_ns += profile.score_ns;
+            summary.output_update_ns += profile.output_update_ns;
+            summary.plasticity_ns += profile.plasticity_ns;
+            summary.expert_update_ns += profile.expert_update_ns;
+            summary.housekeeping_ns += profile.housekeeping_ns;
+            summary.maintenance_ns += profile.maintenance_ns;
+            summary.adapt_ns += profile.adapt_ns;
+            if (profile.prediction.active_count > summary.max_active_nodes) summary.max_active_nodes = profile.prediction.active_count;
+            switch (profile.backend_used) {
+                .cpu => summary.cpu_steps += 1,
+                .cpu_mt => summary.cpu_mt_steps += 1,
+                .cuda => summary.cuda_steps += 1,
+                .auto => unreachable,
+            }
+            step_idx += 1;
+        }
+    }
+
+    finalizeNumericProfile(&summary, &net);
+    return summary;
 }
 
 test "single variant streamed no-baseline path matches bundled SBAN report" {

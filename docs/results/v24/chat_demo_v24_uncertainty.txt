@@ -1,0 +1,4 @@
+prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, and a wider set of casual prompts, but I still should not improvise beyond that.

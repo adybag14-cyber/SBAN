@@ -91,11 +91,11 @@ What to ask first:
 - tell me a joke
 
 Runtime notes:
-- the starter loop defaults to CPU for the bundled grounded corpus
+- the starter loop uses backend=auto; on the bundled grounded corpus that still typically resolves to CPU, while larger NVIDIA-backed retrieval workloads can promote themselves to CUDA
 - the default chat loop is free mode with safe conversational composition enabled
 - use `sban_v23_5 accel-info seed_path=data/sban_dialogue_seed_v23_5.txt backend=cuda` to probe NVIDIA CUDA retrieval support
 - use `sban_v23_5 numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1` to probe the numeric CUDA backend
-- use `backend=cpu_mt threads=4` or `backend=cuda` explicitly when you want to experiment with the accelerated retrieval paths
+- use `backend=cpu_mt threads=4` or `backend=cuda` explicitly when you want to override the hybrid retrieval path
 
 Important benchmark note:
 The packaged numeric v23.5 suite still stays on the proven single-thread CPU release profile. The release adds experimental numeric cpu_mt and CUDA backends, but they are not the shipped default unless the measured release-profile timings earn that promotion.
@@ -107,7 +107,7 @@ setlocal
 cd /d "%~dp0"
 if exist session_v23_5.txt del /f /q session_v23_5.txt
 echo SBAN v23.5 continuing demo
-echo Default backend: CPU for the bundled grounded corpus.
+echo Default backend: auto. The bundled grounded corpus will usually stay on CPU, while larger NVIDIA-backed retrieval workloads can promote to CUDA.
 echo Run "sban_v23_5.exe accel-info seed_path=data/sban_dialogue_seed_v23_5.txt backend=cuda" to inspect NVIDIA CUDA support.
 echo Run "sban_v23_5.exe numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1" to inspect the numeric CUDA backend.
 echo Press Enter on an empty line to exit.
@@ -116,7 +116,7 @@ echo.
 set /p SBAN_PROMPT=You^>
 if "%SBAN_PROMPT%"=="" goto end
 echo.
-sban_v23_5.exe chat-demo "%SBAN_PROMPT%" 180 seed_path=data/sban_dialogue_seed_v23_5.txt session_path=session_v23_5.txt backend=cpu mode=free allow_generation=true
+sban_v23_5.exe chat-demo "%SBAN_PROMPT%" 180 seed_path=data/sban_dialogue_seed_v23_5.txt session_path=session_v23_5.txt backend=auto mode=free allow_generation=true
 echo.
 goto loop
 :end
@@ -128,7 +128,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 rm -f session_v23_5.txt
 echo "SBAN v23.5 continuing demo"
-echo "Default backend: CPU for the bundled grounded corpus."
+echo "Default backend: auto. The bundled grounded corpus will usually stay on CPU, while larger NVIDIA-backed retrieval workloads can promote to CUDA."
 echo "Run './sban_v23_5 accel-info seed_path=data/sban_dialogue_seed_v23_5.txt backend=cuda' to inspect NVIDIA CUDA support."
 echo "Run './sban_v23_5 numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1' to inspect the numeric CUDA backend."
 echo "Press Enter on an empty line to exit."
@@ -139,7 +139,7 @@ while true; do
     exit 0
   fi
   echo
-  ./sban_v23_5 chat-demo "$SBAN_PROMPT" 180 seed_path=data/sban_dialogue_seed_v23_5.txt session_path=session_v23_5.txt backend=cpu mode=free allow_generation=true
+  ./sban_v23_5 chat-demo "$SBAN_PROMPT" 180 seed_path=data/sban_dialogue_seed_v23_5.txt session_path=session_v23_5.txt backend=auto mode=free allow_generation=true
   echo
 done
 """

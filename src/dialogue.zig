@@ -5,20 +5,23 @@ const cfg = @import("config.zig");
 const netmod = @import("network.zig");
 
 const feature_dim = 128;
-const current_release_name = "SBAN v23.5";
-const current_release_version = "v23.5";
-const current_seed_path = "data/sban_dialogue_seed_v23_5.txt";
-const current_prompt_eval_path = "data/sban_chat_eval_prompts_v23_5.txt";
-const current_session_eval_path = "data/sban_session_eval_v23_5.txt";
-const current_summary_path = "SBAN_v23_5_EXECUTIVE_SUMMARY.md";
-const current_report_path = "SBAN_v23_5_REPORT.md";
-const current_paper_path = "docs/papers/SBAN_v23_5_follow_up_research_paper.pdf";
-const current_repo_zip_path = "deliverables/v23_5/SBAN_v23_5_repo.zip";
-const current_windows_demo_start = "SBAN_v23_5_Start.bat";
-const current_linux_demo_start = "./SBAN_v23_5_Start.sh";
-const current_windows_demo_zip = "deliverables/v23_5/demo/SBAN_v23_5_windows_x86_64_demo.zip";
-const current_linux_demo_zip = "deliverables/v23_5/demo/SBAN_v23_5_linux_x86_64_demo.zip";
-const session_magic = "SBAN_SESSION_V23_5";
+const current_release_name = "SBAN v24";
+const current_release_version = "v24";
+const current_seed_path = "data/sban_dialogue_seed_v24.txt";
+const current_open_seed_path = "data/sban_dialogue_open_seed_v24.txt";
+const current_prompt_eval_path = "data/sban_chat_eval_prompts_v24.txt";
+const current_session_eval_path = "data/sban_session_eval_v24.txt";
+const current_open_chat_eval_path = "data/sban_open_chat_session_eval_v24.txt";
+const current_summary_path = "SBAN_v24_EXECUTIVE_SUMMARY.md";
+const current_report_path = "SBAN_v24_REPORT.md";
+const current_paper_path = "docs/papers/SBAN_v24_follow_up_research_paper.pdf";
+const current_repo_zip_path = "deliverables/v24/SBAN_v24_repo.zip";
+const current_windows_demo_start = "SBAN_v24_Start.bat";
+const current_linux_demo_start = "./SBAN_v24_Start.sh";
+const current_windows_demo_zip = "deliverables/v24/demo/SBAN_v24_windows_x86_64_demo.zip";
+const current_linux_demo_zip = "deliverables/v24/demo/SBAN_v24_linux_x86_64_demo.zip";
+const session_magic = "SBAN_SESSION_V24";
+const legacy_session_magic_v23_5 = "SBAN_SESSION_V23_5";
 const legacy_session_magic_v23 = "SBAN_SESSION_V23";
 const legacy_session_magic_v22 = "SBAN_SESSION_V22";
 const legacy_session_magic_v21 = "SBAN_SESSION_V21";
@@ -27,6 +30,7 @@ const max_top_candidates = 16;
 const ChatMode = enum { anchor, free, hybrid };
 const AccelBackend = enum { auto, cpu, cpu_mt, gpu, opencl, cuda };
 const AccelRuntime = enum { cpu, cpu_mt, opencl, cuda };
+const auto_cpu_mt_min_examples: usize = 32768;
 
 pub const DialogueExample = struct {
     user: []const u8,
@@ -44,6 +48,7 @@ pub const ChatResult = struct {
 
 pub const ChatOptions = struct {
     seed_path: []const u8 = current_seed_path,
+    open_seed_path: ?[]const u8 = current_open_seed_path,
     session_path: ?[]const u8 = null,
     mode: ChatMode = .free,
     backend: AccelBackend = .auto,
@@ -163,6 +168,20 @@ const PreparedCorpus = struct {
 
     fn exampleCount(self: *const PreparedCorpus) usize {
         return self.items.items.len;
+    }
+};
+
+const LoadedDialogueCorpus = struct {
+    seed_bytes: []u8,
+    examples: std.ArrayList(DialogueExample),
+    corpus: PreparedCorpus,
+    scorer: ApproximateScorer,
+
+    fn deinit(self: *LoadedDialogueCorpus, allocator: std.mem.Allocator) void {
+        self.scorer.deinit();
+        self.corpus.deinit(allocator);
+        self.examples.deinit(allocator);
+        allocator.free(self.seed_bytes);
     }
 };
 
@@ -720,7 +739,7 @@ const ApproximateScorer = struct {
                         return .{ .allocator = allocator, .backend_used = .cuda, .cuda = cuda };
                     } else |_| {}
                 }
-                if (cpu_mt.worker_threads > 1 and corpus.exampleCount() >= 8192) {
+                if (cpu_mt.worker_threads > 1 and corpus.exampleCount() >= auto_cpu_mt_min_examples) {
                     return .{ .allocator = allocator, .backend_used = .cpu_mt, .cpu_mt = cpu_mt };
                 }
                 return .{ .allocator = allocator, .backend_used = .cpu };
@@ -914,34 +933,41 @@ pub fn runChatDemo(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
 
     const prompt = try sanitizeTurnText(allocator, args[2]);
     defer allocator.free(prompt);
-    const seed_bytes = readWholeFileFriendly(allocator, io, writer, options.seed_path, "seed_path") orelse return;
-    defer allocator.free(seed_bytes);
-    var examples = parseDialogueExamples(allocator, seed_bytes) catch {
-        try writer.writeAll("error=invalid_seed_format\n");
-        try writer.flush();
-        return;
-    };
-    defer examples.deinit(allocator);
-    var corpus = try prepareCorpus(allocator, examples.items);
-    defer corpus.deinit(allocator);
 
-    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
-        try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
-        try writer.flush();
-        return;
-    };
-    defer scorer.deinit();
+    var grounded_assets = (try loadDialogueCorpus(allocator, io, writer, options.seed_path, "seed_path", options.backend, options.worker_threads)) orelse return;
+    defer grounded_assets.deinit(allocator);
+
+    var open_assets = if (options.mode == .free and options.allow_generation)
+        try loadOptionalDialogueCorpus(allocator, io, writer, options.open_seed_path, "open_seed_path", options.backend, options.worker_threads)
+    else
+        null;
+    defer {
+        if (open_assets) |*assets| assets.deinit(allocator);
+    }
+    const open_corpus = if (open_assets) |*assets| &assets.corpus else null;
+    const open_scorer = if (open_assets) |*assets| &assets.scorer else null;
 
     var session = loadSessionState(allocator, io, options.session_path) catch SessionState{};
     defer session.deinit(allocator);
 
-    const result = answerPrompt(allocator, prompt, seed_bytes, examples.items, &corpus, &session, &scorer, options) catch |err| {
+    const result = answerPrompt(
+        allocator,
+        prompt,
+        grounded_assets.seed_bytes,
+        grounded_assets.examples.items,
+        &grounded_assets.corpus,
+        &grounded_assets.scorer,
+        open_corpus,
+        open_scorer,
+        &session,
+        options,
+    ) catch |err| {
         try writer.print("error=chat_failed detail={s}\n", .{@errorName(err)});
         try writer.flush();
         return;
     };
 
-    try printChatResult(allocator, writer, prompt, result, scorer.backendLabel());
+    try printChatResult(allocator, writer, prompt, result, grounded_assets.scorer.backendLabel());
     try session.appendTurn(allocator, prompt, result.response);
     saveSessionState(io, options.session_path, &session) catch |err| {
         try writer.print("warning=session_save_failed detail={s}\n", .{@errorName(err)});
@@ -961,30 +987,26 @@ pub fn runChatEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
         return;
     };
 
-    const seed_bytes = readWholeFileFriendly(allocator, io, writer, options.seed_path, "seed_path") orelse return;
-    defer allocator.free(seed_bytes);
     const prompt_bytes = readWholeFileFriendly(allocator, io, writer, args[2], "prompt_path") orelse return;
     defer allocator.free(prompt_bytes);
-    var examples = parseDialogueExamples(allocator, seed_bytes) catch {
-        try writer.writeAll("error=invalid_seed_format\n");
-        try writer.flush();
-        return;
-    };
-    defer examples.deinit(allocator);
-    var corpus = try prepareCorpus(allocator, examples.items);
-    defer corpus.deinit(allocator);
-    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
-        try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
-        try writer.flush();
-        return;
-    };
-    defer scorer.deinit();
+    var grounded_assets = (try loadDialogueCorpus(allocator, io, writer, options.seed_path, "seed_path", options.backend, options.worker_threads)) orelse return;
+    defer grounded_assets.deinit(allocator);
+    var open_assets = if (options.mode == .free and options.allow_generation)
+        try loadOptionalDialogueCorpus(allocator, io, writer, options.open_seed_path, "open_seed_path", options.backend, options.worker_threads)
+    else
+        null;
+    defer {
+        if (open_assets) |*assets| assets.deinit(allocator);
+    }
+    const open_corpus = if (open_assets) |*assets| &assets.corpus else null;
+    const open_scorer = if (open_assets) |*assets| &assets.scorer else null;
 
     var total: usize = 0;
     var anchored: usize = 0;
     var retrieved: usize = 0;
     var symbolic: usize = 0;
     var nonempty: usize = 0;
+    var uncertain: usize = 0;
     var iter = std.mem.splitScalar(u8, prompt_bytes, '\n');
     while (iter.next()) |raw_line| {
         const prompt = try sanitizeTurnText(allocator, trimLine(raw_line));
@@ -992,16 +1014,28 @@ pub fn runChatEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
         total += 1;
         var session: SessionState = .{};
         defer session.deinit(allocator);
-        const result = try answerPrompt(allocator, prompt, seed_bytes, examples.items, &corpus, &session, &scorer, options);
+        const result = try answerPrompt(
+            allocator,
+            prompt,
+            grounded_assets.seed_bytes,
+            grounded_assets.examples.items,
+            &grounded_assets.corpus,
+            &grounded_assets.scorer,
+            open_corpus,
+            open_scorer,
+            &session,
+            options,
+        );
         if (result.response.len > 0) nonempty += 1;
         if (result.anchored) anchored += 1;
         if (result.retrieved) retrieved += 1;
         if (result.symbolic) symbolic += 1;
+        if (std.mem.eql(u8, result.mode_label, "uncertain")) uncertain += 1;
         try writer.print("[{d}] ", .{total});
-        try printChatResult(allocator, writer, prompt, result, scorer.backendLabel());
+        try printChatResult(allocator, writer, prompt, result, grounded_assets.scorer.backendLabel());
         try writer.writeAll("\n");
     }
-    try writer.print("summary turns={d} anchored={d} retrieved={d} symbolic={d} nonempty={d}\n", .{ total, anchored, retrieved, symbolic, nonempty });
+    try writer.print("summary turns={d} anchored={d} retrieved={d} symbolic={d} nonempty={d} uncertain={d}\n", .{ total, anchored, retrieved, symbolic, nonempty, uncertain });
 }
 
 pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer, args: []const []const u8) !void {
@@ -1017,24 +1051,19 @@ pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.
         return;
     };
 
-    const seed_bytes = readWholeFileFriendly(allocator, io, writer, options.seed_path, "seed_path") orelse return;
-    defer allocator.free(seed_bytes);
     const script_bytes = readWholeFileFriendly(allocator, io, writer, args[2], "script_path") orelse return;
     defer allocator.free(script_bytes);
-    var examples = parseDialogueExamples(allocator, seed_bytes) catch {
-        try writer.writeAll("error=invalid_seed_format\n");
-        try writer.flush();
-        return;
-    };
-    defer examples.deinit(allocator);
-    var corpus = try prepareCorpus(allocator, examples.items);
-    defer corpus.deinit(allocator);
-    var scorer = ApproximateScorer.init(allocator, options.backend, &corpus, options.worker_threads) catch |err| {
-        try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
-        try writer.flush();
-        return;
-    };
-    defer scorer.deinit();
+    var grounded_assets = (try loadDialogueCorpus(allocator, io, writer, options.seed_path, "seed_path", options.backend, options.worker_threads)) orelse return;
+    defer grounded_assets.deinit(allocator);
+    var open_assets = if (options.mode == .free and options.allow_generation)
+        try loadOptionalDialogueCorpus(allocator, io, writer, options.open_seed_path, "open_seed_path", options.backend, options.worker_threads)
+    else
+        null;
+    defer {
+        if (open_assets) |*assets| assets.deinit(allocator);
+    }
+    const open_corpus = if (open_assets) |*assets| &assets.corpus else null;
+    const open_scorer = if (open_assets) |*assets| &assets.scorer else null;
 
     var session: SessionState = .{};
     defer session.deinit(allocator);
@@ -1043,6 +1072,7 @@ pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.
     var retrieved: usize = 0;
     var symbolic: usize = 0;
     var nonempty: usize = 0;
+    var uncertain: usize = 0;
     var expectations: usize = 0;
     var passed: usize = 0;
     var last_response: []const u8 = "";
@@ -1054,13 +1084,25 @@ pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.
         if (std.mem.startsWith(u8, line, "User:")) {
             const prompt = try sanitizeTurnText(allocator, trimLine(line[5..]));
             turns += 1;
-            const result = try answerPrompt(allocator, prompt, seed_bytes, examples.items, &corpus, &session, &scorer, options);
+            const result = try answerPrompt(
+                allocator,
+                prompt,
+                grounded_assets.seed_bytes,
+                grounded_assets.examples.items,
+                &grounded_assets.corpus,
+                &grounded_assets.scorer,
+                open_corpus,
+                open_scorer,
+                &session,
+                options,
+            );
             if (result.response.len > 0) nonempty += 1;
             if (result.anchored) anchored += 1;
             if (result.retrieved) retrieved += 1;
             if (result.symbolic) symbolic += 1;
+            if (std.mem.eql(u8, result.mode_label, "uncertain")) uncertain += 1;
             try writer.print("[{d}] ", .{turns});
-            try printChatResult(allocator, writer, prompt, result, scorer.backendLabel());
+            try printChatResult(allocator, writer, prompt, result, grounded_assets.scorer.backendLabel());
             try writer.writeAll("\n");
             try session.appendTurn(allocator, prompt, result.response);
             last_response = result.response;
@@ -1074,8 +1116,8 @@ pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.
     }
 
     try writer.print(
-        "summary turns={d} anchored={d} retrieved={d} symbolic={d} nonempty={d} expectations={d} passed={d}\n",
-        .{ turns, anchored, retrieved, symbolic, nonempty, expectations, passed },
+        "summary turns={d} anchored={d} retrieved={d} symbolic={d} nonempty={d} uncertain={d} expectations={d} passed={d}\n",
+        .{ turns, anchored, retrieved, symbolic, nonempty, uncertain, expectations, passed },
     );
 }
 
@@ -1085,8 +1127,10 @@ fn answerPrompt(
     seed_bytes: []const u8,
     _: []const DialogueExample,
     corpus: *const PreparedCorpus,
-    session: *SessionState,
     scorer: *ApproximateScorer,
+    open_corpus: ?*const PreparedCorpus,
+    open_scorer: ?*ApproximateScorer,
+    session: *SessionState,
     options: ChatOptions,
 ) !ChatResult {
     if (try extractMemoryCapabilityQuery(allocator, prompt)) |fact_key| {
@@ -1142,7 +1186,7 @@ fn answerPrompt(
         };
     }
 
-    if (wants_help) {
+    if (wants_help and isStandaloneHelpPrompt(prompt)) {
         return .{
             .mode_label = "symbolic-help",
             .response = try buildHelpResponse(allocator),
@@ -1193,13 +1237,28 @@ fn answerPrompt(
         }
     }
 
+    if (options.mode == .free and !isDomainPrompt(prompt)) {
+        if (open_corpus) |open_ready_corpus| {
+            if (open_scorer) |open_ready_scorer| {
+                if (try selectGroundedMatch(allocator, prompt, &prompt_tokens, open_ready_corpus, open_ready_scorer, .open_chat)) |match| {
+                    return .{
+                        .mode_label = "free-open-retrieved",
+                        .matched_prompt = match.example.user,
+                        .response = match.example.assistant,
+                        .retrieved = true,
+                    };
+                }
+            }
+        }
+    }
+
     return .{
         .mode_label = "uncertain",
         .response = try buildUncertaintyResponse(allocator, prompt),
     };
 }
 
-const MatchRequest = enum { anchor, retrieval };
+const MatchRequest = enum { anchor, retrieval, open_chat };
 
 const SelectedMatch = struct {
     example: DialogueExample,
@@ -1255,6 +1314,9 @@ fn selectGroundedMatch(
             },
             .retrieval => {
                 if (!scored.exact and !(scored.overlap >= 2 and (scored.prompt_cov_ppm >= 500 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 250)) continue;
+            },
+            .open_chat => {
+                if (!scored.exact and !(scored.overlap >= 2 and (scored.prompt_cov_ppm >= 420 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 220)) continue;
             },
         }
         if (scored.score > best_score) {
@@ -1337,7 +1399,7 @@ fn maybeGroundedContinuation(
 }
 
 fn buildHelpResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return std.fmt.allocPrint(allocator, "I can help with {s}, transformer comparisons, release artifacts, starter files, CPU versus cpu_mt versus CUDA versus OpenCL behavior, session memory, grounded uncertainty, and short math.", .{current_release_name});
+    return std.fmt.allocPrint(allocator, "I can help with {s}, release artifacts, starter files, CPU versus cpu_mt versus CUDA versus OpenCL behavior, session memory, short math, everyday planning, writing, and calmer free-form chat when the prompt stays inside what I can support honestly.", .{current_release_name});
 }
 
 fn buildFactStoredResponse(allocator: std.mem.Allocator, fact: FactCandidate) ![]const u8 {
@@ -1421,7 +1483,7 @@ fn buildFactCapabilityResponse(allocator: std.mem.Allocator, key: []const u8) ![
         return allocator.dupe(u8, "Yes. Tell me your name and I will remember it for this session.");
     }
     if (std.ascii.eqlIgnoreCase(key, "location")) {
-        return allocator.dupe(u8, "Yes. Tell me where you live and I will remember it for this session.");
+        return allocator.dupe(u8, "Yes. Tell me where you live or where you are from, and I will remember it for this session.");
     }
     if (std.ascii.eqlIgnoreCase(key, "lab")) {
         return allocator.dupe(u8, "Yes. Tell me your lab and I will remember it for this session.");
@@ -1556,7 +1618,7 @@ fn buildCudaCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
 }
 
 fn buildCudaBenchCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Use accel-bench for the raw CUDA retrieval benchmark, for example: zig-out/bin/zig_sban accel-bench docs/results/v23_5/accel_prompts_v23_5_bench.txt backend=cuda seed_path=docs/results/v23_5/accel_seed_v23_5_bench.txt iterations=4.");
+    return std.fmt.allocPrint(allocator, "Use accel-bench for the raw CUDA retrieval benchmark, for example: zig-out/bin/zig_sban accel-bench docs/results/{s}/accel_prompts_{s}_bench.txt backend=cuda seed_path=docs/results/{s}/accel_seed_{s}_bench.txt iterations=4.", .{ current_release_version, current_release_version, current_release_version, current_release_version });
 }
 
 fn buildBundleInventoryResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -1568,23 +1630,23 @@ fn buildBundleInventoryResponse(allocator: std.mem.Allocator) ![]const u8 {
 }
 
 fn buildRtxSupportResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Yes. NVIDIA RTX cards such as the RTX 4090 should use backend=cuda for the retrieval accelerator path, and v23.5 also exposes numeric_backend=cuda for eval-variant experimentation. CPU remains the fallback, and OpenCL is still the generic GPU fallback when CUDA is unavailable.");
+    return allocator.dupe(u8, "Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the preferred retrieval path on NVIDIA, keeps CPU as the safe numeric release baseline, and leaves numeric_backend=cuda as an explicit experiment instead of the automatic default.");
 }
 
 fn buildGpuSupportResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Yes. SBAN runs on CPU by default, keeps cpu_mt for larger host-side experiments, uses CUDA on NVIDIA RTX hardware for both retrieval acceleration and the new numeric output-scoring path, and falls back to OpenCL on compatible non-CUDA GPU systems for retrieval.");
+    return allocator.dupe(u8, "Yes. SBAN now prefers a hybrid stance: backend=auto should pick CUDA for grounded retrieval on NVIDIA hardware, plain CPU stays the default numeric release path, cpu_mt remains an explicit host-side experiment, and OpenCL is still the generic GPU fallback for retrieval when CUDA is unavailable.");
 }
 
 fn buildCpuMtGuidanceResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "Use cpu_mt when the workload is large enough to amortize thread overhead or when you want an explicit host-side acceleration experiment. On the numeric side, v23.5 also allows numeric_backend=cpu_mt so eval-variant can reuse the multithreaded scorer when it actually beats the single-thread fallback. For small grounded corpora, plain CPU is often still the faster choice.");
+    return allocator.dupe(u8, "Use cpu_mt as an explicit host-side experiment when the workload is large enough to amortize thread overhead. The automatic hybrid path is more conservative: it prefers CUDA for retrieval when that exists, keeps small grounded corpora on plain CPU, and leaves numeric_backend=cpu_mt as a thresholded experiment rather than the default.");
 }
 
 fn buildBackendComparisonResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "CPU is the baseline fallback. cpu_mt is the conservative host-threaded option for larger retrieval or numeric scoring experiments. CUDA is the preferred GPU path on NVIDIA systems and, in v23.5, now reaches both the retrieval scorer and the numeric output-scoring path. OpenCL remains the generic GPU fallback for retrieval on compatible non-CUDA setups.");
+    return allocator.dupe(u8, "CPU is the numeric baseline and the fallback for smaller retrieval workloads. cpu_mt is the explicit host-threaded option for larger experiments. CUDA is the preferred GPU path on NVIDIA systems and the preferred retrieval path there. OpenCL remains the generic GPU fallback for retrieval on compatible non-CUDA setups. Numeric CUDA stays experimental until it measures faster end to end.");
 }
 
 fn buildRoadmapResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "After v23.5, the roadmap should keep pushing on three fronts: broader free-form generation without losing grounding, richer natural session memory beyond short scalar facts, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
+    return allocator.dupe(u8, "After v24, the roadmap should keep pushing on three fronts: broader free-form conversation without losing grounding, richer natural session memory beyond short scalar facts, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
 }
 
 fn synthesizeFreeResponse(
@@ -1597,10 +1659,10 @@ fn synthesizeFreeResponse(
         return @as(?[]const u8, try buildGreetingResponse(allocator, session));
     }
     if (isThankYouPrompt(prompt)) {
-        return @as(?[]const u8, try allocator.dupe(u8, "You're welcome. I can keep going on SBAN architecture, release files, runtime commands, session memory, or backend behavior."));
+        return @as(?[]const u8, try allocator.dupe(u8, "You're welcome. If you want to keep going, give me the next question or the next thing you want to sort out."));
     }
     if (isHowAreYouPrompt(prompt)) {
-    return @as(?[]const u8, try allocator.dupe(u8, "I am steady and ready to help. Ask about SBAN v23.5, its files and commands, session memory, or a short calculation."));
+        return @as(?[]const u8, try allocator.dupe(u8, "I am steady and ready to help. We can keep things practical, conversational, and honest about what I know."));
     }
     if (isIdentityPrompt(prompt)) {
         return @as(?[]const u8, try buildIdentityResponse(allocator));
@@ -1614,6 +1676,30 @@ fn synthesizeFreeResponse(
     if (isCapabilityPrompt(prompt)) {
         return @as(?[]const u8, try buildHelpResponse(allocator));
     }
+    if (isWeekPlanningPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "Yes. Put deadlines and appointments down first, then pick one major result for each day instead of making one giant undifferentiated list."));
+    }
+    if (isFocusPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "Reduce the surface area. One task, one timer, notifications off, and a visible definition of done for the current block."));
+    }
+    if (isPlanningPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "Yes. Start with the fixed commitments, then pick the top few outcomes that matter most, and block time for those before the smaller tasks spread everywhere."));
+    }
+    if (isWritingHelpPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "Yes. Tell me the audience, tone, and goal, and I can help draft it. A safe default is to keep it short, direct, and specific about the next step."));
+    }
+    if (isBrainstormPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "Yes. Give me the tone, the audience, and a few keywords, and I can help generate options instead of guessing blindly."));
+    }
+    if (isDecisionPrompt(prompt)) {
+        return @as(?[]const u8, try allocator.dupe(u8, "Let's make it concrete: list the options, the tradeoffs, and what matters most, and then we can compare them cleanly."));
+    }
+    if (isSupportPrompt(prompt)) {
+        return @as(?[]const u8, try buildSupportResponse(allocator, prompt));
+    }
+    if (isPreferenceBoundaryPrompt(prompt)) {
+        return @as(?[]const u8, try buildPreferenceBoundaryResponse(allocator, prompt));
+    }
     return null;
 }
 
@@ -1621,13 +1707,13 @@ fn buildGreetingResponse(allocator: std.mem.Allocator, session: *const SessionSt
     if (session.lookupFact("name")) |fact| {
         const display = try titleCaseCopy(allocator, fact.value);
         defer allocator.free(display);
-        return std.fmt.allocPrint(allocator, "Hello {s}. I am ready to help with {s}, release files, runtime commands, session memory, or short math.", .{ display, current_release_name });
+        return std.fmt.allocPrint(allocator, "Hello {s}. I am ready to help with grounded {s} questions, planning, writing, session memory, or short math.", .{ display, current_release_name });
     }
-    return std.fmt.allocPrint(allocator, "Hello. I am {s}, ready for grounded SBAN questions and more natural free chat.", .{current_release_name});
+    return std.fmt.allocPrint(allocator, "Hello. I am {s}, ready for grounded SBAN questions and broader free chat.", .{current_release_name});
 }
 
 fn buildIdentityResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "I am SBAN v23.5, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, safer free-chat composition, and the new numeric CUDA backend.");
+    return allocator.dupe(u8, "I am SBAN v24, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, broader free-chat support, and the measured CPU or GPU backend stack.");
 }
 
 fn composeAnchoredContinuation(
@@ -1676,11 +1762,98 @@ fn isCapabilityPrompt(prompt: []const u8) bool {
         containsPhraseIgnoreCase(prompt, "how can you help");
 }
 
+fn isPlanningPrompt(prompt: []const u8) bool {
+    return (hasAnyPhraseIgnoreCase(prompt, &.{ "plan", "schedule" }) and
+        hasAnyPhraseIgnoreCase(prompt, &.{ "tomorrow", "today", "day" })) or
+        containsPhraseIgnoreCase(prompt, "to do list") or
+        containsPhraseIgnoreCase(prompt, "todo list") or
+        (containsPhraseIgnoreCase(prompt, "routine") and hasAnyPhraseIgnoreCase(prompt, &.{ "day", "daily", "morning", "evening" }));
+}
+
+fn isWeekPlanningPrompt(prompt: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(prompt, &.{ "organize my week", "organise my week", "plan my week", "help me organize my week", "help me organise my week", "this week plan" });
+}
+
+fn isFocusPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "stay focused") or
+        containsPhraseIgnoreCase(prompt, "help me focus") or
+        (containsPhraseIgnoreCase(prompt, "focus") and containsPhraseIgnoreCase(prompt, "how can i")) or
+        (containsPhraseIgnoreCase(prompt, "study") and containsPhraseIgnoreCase(prompt, "routine"));
+}
+
+fn isWritingHelpPrompt(prompt: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(prompt, &.{ "write", "draft", "word" }) and
+        hasAnyPhraseIgnoreCase(prompt, &.{ "email", "message", "reply", "note", "follow-up", "follow up" });
+}
+
+fn isBrainstormPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "brainstorm") or
+        containsPhraseIgnoreCase(prompt, "name ideas") or
+        containsPhraseIgnoreCase(prompt, "project names") or
+        (containsPhraseIgnoreCase(prompt, "ideas") and containsPhraseIgnoreCase(prompt, "name"));
+}
+
+fn isDecisionPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "think through a decision") or
+        containsPhraseIgnoreCase(prompt, "decide what to") or
+        containsPhraseIgnoreCase(prompt, "can't decide") or
+        containsPhraseIgnoreCase(prompt, "cannot decide");
+}
+
+fn isSupportPrompt(prompt: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(prompt, &.{ "long day", "stressed", "overwhelmed", "nervous", "frustrated", "motivation", "bored", "cheer me up", "mistake at work", "excited about" });
+}
+
+fn isPreferenceBoundaryPrompt(prompt: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(prompt, &.{ "favorite book", "favourite book", "favorite movie", "favourite movie", "do you like music", "what kind of music do you like", "what do you do for fun" });
+}
+
+fn buildSupportResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
+    if (containsPhraseIgnoreCase(prompt, "long day")) {
+        return allocator.dupe(u8, "That sounds tiring. If you want, tell me the hardest part and I will help you sort it out.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "stressed") or containsPhraseIgnoreCase(prompt, "overwhelmed")) {
+        return allocator.dupe(u8, "Let's shrink the problem. Name the next concrete task in front of you, and I will help make it smaller.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "nervous")) {
+        return allocator.dupe(u8, "That is normal. A simple structure usually helps: lead with the goal, give the key points, and end with the takeaway.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "frustrated")) {
+        return allocator.dupe(u8, "That usually means something important is blocked. Tell me what is stuck, and I will help you unpack it.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "motivation")) {
+        return allocator.dupe(u8, "Make the first step small enough to start right now. Momentum usually shows up after action, not before it.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "bored")) {
+        return allocator.dupe(u8, "Pick one of three directions: move a little, learn one small thing, or make progress on a task you have been avoiding.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "mistake at work")) {
+        return allocator.dupe(u8, "First get clear on the scope, then tell the affected person quickly, then offer the next corrective step.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "excited about")) {
+        return allocator.dupe(u8, "Good. Capture the energy while it is fresh: define the goal, the first milestone, and the next action.");
+    }
+    return allocator.dupe(u8, "Tell me what is weighing on you, and I will try to help in a calm and concrete way.");
+}
+
+fn buildPreferenceBoundaryResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
+    if (containsPhraseIgnoreCase(prompt, "music")) {
+        return allocator.dupe(u8, "I do not have personal taste, but I can still help you narrow a genre or mood if you tell me what you want to hear.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "book")) {
+        return allocator.dupe(u8, "I do not have favorites, but I can help you pick a book if you tell me the mood, topic, or difficulty you want.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "movie")) {
+        return allocator.dupe(u8, "I do not have personal favorites, but I can help you choose a movie if you give me the mood or genre.");
+    }
+    return allocator.dupe(u8, "I do not have hobbies in the human sense, but I do enjoy helping turn fuzzy ideas into something clearer and more workable.");
+}
+
 fn buildUncertaintyResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
     if (isDomainPrompt(prompt)) {
         return std.fmt.allocPrint(allocator, "I am not sure enough to answer that from the grounded {s} knowledge yet.", .{current_release_name});
     }
-    return allocator.dupe(u8, "I am not sure yet. I answer when I have grounded support, a remembered session fact, or a safe conversational rule for the prompt.");
+    return allocator.dupe(u8, "I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, and a wider set of casual prompts, but I still should not improvise beyond that.");
 }
 
 fn isDomainPrompt(prompt: []const u8) bool {
@@ -1727,6 +1900,56 @@ fn readWholeFileFriendly(allocator: std.mem.Allocator, io: std.Io, writer: *Io.W
     };
 }
 
+fn loadDialogueCorpus(
+    allocator: std.mem.Allocator,
+    io: std.Io,
+    writer: *Io.Writer,
+    path: []const u8,
+    label: []const u8,
+    backend: AccelBackend,
+    worker_threads: usize,
+) !?LoadedDialogueCorpus {
+    const seed_bytes = readWholeFileFriendly(allocator, io, writer, path, label) orelse return null;
+    errdefer allocator.free(seed_bytes);
+
+    var examples = parseDialogueExamples(allocator, seed_bytes) catch {
+        try writer.writeAll("error=invalid_seed_format\n");
+        try writer.flush();
+        return null;
+    };
+    errdefer examples.deinit(allocator);
+
+    var corpus = try prepareCorpus(allocator, examples.items);
+    errdefer corpus.deinit(allocator);
+
+    var scorer = ApproximateScorer.init(allocator, backend, &corpus, worker_threads) catch |err| {
+        try writer.print("error=accelerator_init_failed detail={s}\n", .{@errorName(err)});
+        try writer.flush();
+        return null;
+    };
+    errdefer scorer.deinit();
+
+    return .{
+        .seed_bytes = seed_bytes,
+        .examples = examples,
+        .corpus = corpus,
+        .scorer = scorer,
+    };
+}
+
+fn loadOptionalDialogueCorpus(
+    allocator: std.mem.Allocator,
+    io: std.Io,
+    writer: *Io.Writer,
+    path: ?[]const u8,
+    label: []const u8,
+    backend: AccelBackend,
+    worker_threads: usize,
+) !?LoadedDialogueCorpus {
+    const actual_path = path orelse return null;
+    return try loadDialogueCorpus(allocator, io, writer, actual_path, label, backend, worker_threads);
+}
+
 fn parseChatOptions(writer: *Io.Writer, args: []const []const u8, start_idx: usize, options: *ChatOptions) !void {
     for (args[start_idx..]) |arg| {
         const eq_idx = std.mem.indexOfScalar(u8, arg, '=') orelse {
@@ -1737,6 +1960,8 @@ fn parseChatOptions(writer: *Io.Writer, args: []const []const u8, start_idx: usi
         const value = arg[eq_idx + 1 ..];
         if (std.mem.eql(u8, key, "seed_path")) {
             options.seed_path = value;
+        } else if (std.mem.eql(u8, key, "open_seed_path")) {
+            if (std.mem.eql(u8, value, "none") or std.mem.eql(u8, value, "off")) options.open_seed_path = null else options.open_seed_path = value;
         } else if (std.mem.eql(u8, key, "session_path")) {
             options.session_path = value;
         } else if (std.mem.eql(u8, key, "mode")) {
@@ -1928,7 +2153,9 @@ fn wantsArtifactPathAnswer(text: []const u8) bool {
         "where is the repo",
         "where is the pdf",
         "path to the paper",
-    });
+    }) or
+        ((containsPhraseIgnoreCase(text, "where") or containsPhraseIgnoreCase(text, "path")) and
+        hasAnyPhraseIgnoreCase(text, &.{ "paper", "summary", "report", "repo", "pdf" }));
 }
 
 fn mentionsArtifactPathAnswer(text: []const u8) bool {
@@ -1948,18 +2175,26 @@ fn mentionsArtifactPathAnswer(text: []const u8) bool {
 fn wantsBundleInventory(text: []const u8) bool {
     return hasAnyPhraseIgnoreCase(text, &.{
         "what ships",
+        "what files ship",
+        "which files ship",
         "what is in the release bundle",
+        "what is in the bundle",
+        "what files are in the bundle",
         "release bundle",
         "artifact inventory",
         "bundle inventory",
         "what ships in",
-    });
+    }) or ((containsPhraseIgnoreCase(text, "bundle") or containsPhraseIgnoreCase(text, "release")) and
+        (containsPhraseIgnoreCase(text, "file") or containsPhraseIgnoreCase(text, "files") or containsPhraseIgnoreCase(text, "ship")));
 }
 
 fn mentionsBundleInventory(text: []const u8) bool {
     return hasAnyPhraseIgnoreCase(text, &.{
         "bundle",
+        "release bundle",
+        "files",
         "summary",
+        "executive summary",
         "report",
         "paper",
         "repo zip",
@@ -2023,9 +2258,11 @@ fn wantsRoadmapAnswer(text: []const u8) bool {
         "roadmap",
         "next version",
         "next release",
-        "v24",
         "future work",
-        "what should v",
+        "what should v24 improve",
+        "what comes after v24",
+        "roadmap after",
+        "after v24",
         "should improve",
         "what should improve",
     });
@@ -2091,7 +2328,7 @@ fn isStopword(token: []const u8) bool {
     const stopwords = [_][]const u8{
         "a", "an", "and", "are", "be", "can", "do", "does", "for", "from", "how", "i", "im", "in", "is", "it", "me", "my",
         "of", "on", "or", "our", "please", "tell", "that", "the", "this", "to", "us", "was", "what", "when", "where", "who",
-        "why", "with", "would", "your",
+        "why", "with", "would", "you", "your",
     };
     for (stopwords) |stopword| {
         if (std.mem.eql(u8, token, stopword)) return true;
@@ -2204,6 +2441,74 @@ fn canonicalToken(token: []const u8, scratch: *[64]u8) []const u8 {
         std.mem.eql(u8, token, "rtx"))
     {
         return "nvidia";
+    }
+    if (std.mem.eql(u8, token, "plan") or
+        std.mem.eql(u8, token, "planning") or
+        std.mem.eql(u8, token, "organize") or
+        std.mem.eql(u8, token, "organizing") or
+        std.mem.eql(u8, token, "organise") or
+        std.mem.eql(u8, token, "organising") or
+        std.mem.eql(u8, token, "schedule") or
+        std.mem.eql(u8, token, "scheduling") or
+        std.mem.eql(u8, token, "routine"))
+    {
+        return "plan";
+    }
+    if (std.mem.eql(u8, token, "brainstorm") or
+        std.mem.eql(u8, token, "idea") or
+        std.mem.eql(u8, token, "ideas") or
+        std.mem.eql(u8, token, "names") or
+        std.mem.eql(u8, token, "name"))
+    {
+        return "idea";
+    }
+    if (std.mem.eql(u8, token, "focused") or
+        std.mem.eql(u8, token, "focus") or
+        std.mem.eql(u8, token, "focusing") or
+        std.mem.eql(u8, token, "concentrate") or
+        std.mem.eql(u8, token, "concentration"))
+    {
+        return "focus";
+    }
+    if (std.mem.eql(u8, token, "dinner") or
+        std.mem.eql(u8, token, "cook") or
+        std.mem.eql(u8, token, "cooking") or
+        std.mem.eql(u8, token, "meal") or
+        std.mem.eql(u8, token, "breakfast"))
+    {
+        return "meal";
+    }
+    if (std.mem.eql(u8, token, "stressed") or
+        std.mem.eql(u8, token, "stress") or
+        std.mem.eql(u8, token, "overwhelmed") or
+        std.mem.eql(u8, token, "frustrated") or
+        std.mem.eql(u8, token, "nervous") or
+        std.mem.eql(u8, token, "tired") or
+        std.mem.eql(u8, token, "bored"))
+    {
+        return "feeling";
+    }
+    if (std.mem.eql(u8, token, "email") or
+        std.mem.eql(u8, token, "emails") or
+        std.mem.eql(u8, token, "message") or
+        std.mem.eql(u8, token, "messages") or
+        std.mem.eql(u8, token, "reply") or
+        std.mem.eql(u8, token, "note"))
+    {
+        return "message";
+    }
+    if (std.mem.eql(u8, token, "music") or
+        std.mem.eql(u8, token, "song") or
+        std.mem.eql(u8, token, "songs"))
+    {
+        return "music";
+    }
+    if (std.mem.eql(u8, token, "movie") or
+        std.mem.eql(u8, token, "movies") or
+        std.mem.eql(u8, token, "film") or
+        std.mem.eql(u8, token, "films"))
+    {
+        return "movie";
     }
     if (token.len > 4 and token.len <= scratch.len and std.mem.endsWith(u8, token, "ies")) {
         @memcpy(scratch[0 .. token.len - 3], token[0 .. token.len - 3]);
@@ -2339,6 +2644,23 @@ fn isHelpPrompt(prompt: []const u8) bool {
         containsPhraseIgnoreCase(prompt, "i need help");
 }
 
+fn isStandaloneHelpPrompt(prompt: []const u8) bool {
+    const trimmed = trimLine(prompt);
+    if (std.ascii.eqlIgnoreCase(trimmed, "help")) return true;
+    if (containsPhraseIgnoreCase(prompt, "what can you do") or
+        containsPhraseIgnoreCase(prompt, "what can i ask") or
+        containsPhraseIgnoreCase(prompt, "how can you help"))
+    {
+        return true;
+    }
+    if (containsPhraseIgnoreCase(prompt, "i need help") and
+        !hasAnyPhraseIgnoreCase(prompt, &.{ "plan", "write", "draft", "brainstorm", "decide", "task", "steps", "organize", "schedule", "focus", "study", "message", "email" }))
+    {
+        return true;
+    }
+    return false;
+}
+
 fn extractFactCandidate(allocator: std.mem.Allocator, prompt: []const u8) !?FactCandidate {
     if (extractFixedFactValue(prompt, "i live in ")) |value| {
         return .{ .key = try allocator.dupe(u8, "location"), .value = try sanitizeTurnText(allocator, value) };
@@ -2462,8 +2784,6 @@ fn extractFactQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
 }
 
 fn extractMemoryCapabilityQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
-    if (!(containsPhraseIgnoreCase(prompt, "if i tell you") or containsPhraseIgnoreCase(prompt, "if i say"))) return null;
-
     const markers = [_][]const u8{
         "can you remember my ",
         "will you remember my ",
@@ -2476,6 +2796,14 @@ fn extractMemoryCapabilityQuery(allocator: std.mem.Allocator, prompt: []const u8
             const end = if (indexOfPhraseIgnoreCase(tail, " if i tell you")) |end_idx| end_idx else if (indexOfPhraseIgnoreCase(tail, " if i say")) |end_idx| end_idx else tail.len;
             const key = trimInlineValue(tail[0..end]);
             if (key.len > 0) return @as(?[]u8, try normalizeFactKey(allocator, key));
+        }
+    }
+    if (startsWithWordIgnoreCase(prompt, "can you remember") or startsWithWordIgnoreCase(prompt, "will you remember")) {
+        if (containsPhraseIgnoreCase(prompt, "where i am from") or
+            containsPhraseIgnoreCase(prompt, "where i live") or
+            containsPhraseIgnoreCase(prompt, "where i am based"))
+        {
+            return @as(?[]u8, try allocator.dupe(u8, "location"));
         }
     }
     return null;
@@ -2533,9 +2861,20 @@ fn takeLeadingNameCandidate(input: []const u8) ?[]const u8 {
         std.ascii.eqlIgnoreCase(first, "the") or
         std.ascii.eqlIgnoreCase(first, "from") or
         std.ascii.eqlIgnoreCase(first, "in") or
-        std.ascii.eqlIgnoreCase(first, "based"))
+        std.ascii.eqlIgnoreCase(first, "based") or
+        hasAnyPhraseIgnoreCase(first, &.{ "stressed", "overwhelmed", "frustrated", "excited", "bored", "nervous", "worried", "tired", "ready", "trying", "working" }))
     {
         return null;
+    }
+    if (token_iter.next()) |second| {
+        if (std.ascii.eqlIgnoreCase(second, "about") or
+            std.ascii.eqlIgnoreCase(second, "with") or
+            std.ascii.eqlIgnoreCase(second, "for") or
+            std.ascii.eqlIgnoreCase(second, "on") or
+            std.ascii.eqlIgnoreCase(second, "at"))
+        {
+            return null;
+        }
     }
     return candidate;
 }
@@ -2600,6 +2939,7 @@ fn loadSessionState(allocator: std.mem.Allocator, io: std.Io, path: ?[]const u8)
     if (bytes.len == 0) return .{};
 
     if (std.mem.startsWith(u8, bytes, session_magic) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v23_5) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v23) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v22) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v21))
@@ -3243,7 +3583,7 @@ test "strict retrieval rejects unrelated prompt" {
     defer examples.deinit(allocator);
     var corpus = try prepareCorpus(allocator, examples.items);
     defer corpus.deinit(allocator);
-    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus);
+    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus, 0);
     defer scorer.deinit();
     var prompt_tokens = try tokenizeText(allocator, "what is your favorite color");
     defer prompt_tokens.deinit(allocator);
@@ -3296,12 +3636,38 @@ test "name extraction survives help clause" {
     try std.testing.expectEqualStrings("tom", name);
 }
 
+test "emotional i am statement is not treated as a name" {
+    try std.testing.expect(extractNameCandidate("i am stressed about work") == null);
+}
+
 test "memory capability prompt is not misread as recall" {
     const allocator = std.testing.allocator;
     try std.testing.expect((try extractFactQuery(allocator, "can you remember my role if i tell you")) == null);
     const key = (try extractMemoryCapabilityQuery(allocator, "can you remember my role if i tell you")).?;
     defer allocator.free(key);
     try std.testing.expectEqualStrings("role", key);
+}
+
+test "natural location capability question maps to session memory capability" {
+    const allocator = std.testing.allocator;
+    try std.testing.expect((try extractFactQuery(allocator, "can you remember where i am from")) == null);
+    const key = (try extractMemoryCapabilityQuery(allocator, "can you remember where i am from")).?;
+    defer allocator.free(key);
+    try std.testing.expectEqualStrings("location", key);
+    const response = try buildFactCapabilityResponse(allocator, key);
+    try std.testing.expect(containsPhraseIgnoreCase(response, "where you live or where you are from"));
+}
+
+test "roadmap matcher does not hijack basic v24 overview prompts" {
+    try std.testing.expect(!wantsRoadmapAnswer("what is SBAN v24"));
+    try std.testing.expect(!wantsRoadmapAnswer("where is the v24 report"));
+    try std.testing.expect(wantsRoadmapAnswer("what should v24 improve"));
+}
+
+test "week planning and focus prompts are not swallowed by generic planning" {
+    try std.testing.expect(!isPlanningPrompt("help me organize my week"));
+    try std.testing.expect(isWeekPlanningPrompt("help me organize my week"));
+    try std.testing.expect(isFocusPrompt("how can i stay focused"));
 }
 
 test "math parser handles negative and decimal arithmetic" {
@@ -3332,7 +3698,7 @@ test "retrieval tolerates common paraphrases" {
     defer examples.deinit(allocator);
     var corpus = try prepareCorpus(allocator, examples.items);
     defer corpus.deinit(allocator);
-    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus);
+    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus, 0);
     defer scorer.deinit();
 
     var change_tokens = try tokenizeText(allocator, "how is v21 different from v20");
@@ -3395,7 +3761,7 @@ test "hardware retrieval does not overmatch benchmark prompts" {
     defer examples.deinit(allocator);
     var corpus = try prepareCorpus(allocator, examples.items);
     defer corpus.deinit(allocator);
-    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus);
+    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus, 0);
     defer scorer.deinit();
 
     var prompt_tokens = try tokenizeText(allocator, "can this run on an rtx 4090");
@@ -3406,8 +3772,16 @@ test "hardware retrieval does not overmatch benchmark prompts" {
 
 test "operational paper prompt returns versioned paper path" {
     const allocator = std.testing.allocator;
-    const result = (try answerOperationalPrompt(allocator, "where is the v23.5 paper pdf")).?;
+    const result = (try answerOperationalPrompt(allocator, "where is the v24 paper pdf")).?;
     try std.testing.expect(result.symbolic);
+    try std.testing.expect(containsPhraseIgnoreCase(result.response, current_paper_path));
+}
+
+test "bundle inventory prompt answers files ship phrasing" {
+    const allocator = std.testing.allocator;
+    const result = (try answerOperationalPrompt(allocator, "what files ship in the bundle")).?;
+    try std.testing.expect(result.symbolic);
+    try std.testing.expect(containsPhraseIgnoreCase(result.response, current_repo_zip_path));
     try std.testing.expect(containsPhraseIgnoreCase(result.response, current_paper_path));
 }
 
@@ -3418,6 +3792,36 @@ test "free synthesis answers simple joke prompt" {
     const response = (try synthesizeFreeResponse(allocator, "tell me a joke", &session, .{})).?;
     try std.testing.expect(response.len > 0);
     try std.testing.expect(!containsPhraseIgnoreCase(response, "not sure"));
+}
+
+test "free synthesis handles support-style prompt" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+    const response = (try synthesizeFreeResponse(allocator, "i feel overwhelmed right now", &session, .{})).?;
+    try std.testing.expect(containsPhraseIgnoreCase(response, "next concrete task"));
+}
+
+test "open chat retrieval tolerates planning paraphrase" {
+    const allocator = std.testing.allocator;
+    const seed =
+        \\User: help me organize my week
+        \\Assistant: start with deadlines and major outcomes
+        \\
+        \\User: can you write a short apology email
+        \\Assistant: acknowledge the delay, apologize plainly, and give the next step
+    ;
+    var examples = try parseDialogueExamples(allocator, seed);
+    defer examples.deinit(allocator);
+    var corpus = try prepareCorpus(allocator, examples.items);
+    defer corpus.deinit(allocator);
+    var scorer = try ApproximateScorer.init(allocator, .cpu, &corpus, 0);
+    defer scorer.deinit();
+
+    var prompt_tokens = try tokenizeText(allocator, "can you help me plan my week");
+    defer prompt_tokens.deinit(allocator);
+    const match = (try selectGroundedMatch(allocator, "can you help me plan my week", &prompt_tokens, &corpus, &scorer, .open_chat)).?;
+    try std.testing.expectEqualStrings("help me organize my week", match.example.user);
 }
 
 test "session encoding prevents raw transcript injection" {

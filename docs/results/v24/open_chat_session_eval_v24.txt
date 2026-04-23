@@ -1,0 +1,176 @@
+[1] prompt=hello
+mode=free-anchor
+backend=cpu
+matched_prompt=hello
+response=Hello. I am SBAN v24, ready for grounded SBAN work, calmer continuing sessions, and broader free chat.
+
+expect_contains=Hello.
+expect_pass=true
+
+[2] prompt=how are you doing
+mode=free-composed
+backend=cpu
+response=I am steady and ready to help. We can keep things practical, conversational, and honest about what I know.
+
+expect_contains=ready to help
+expect_pass=true
+
+[3] prompt=can you help me plan tomorrow
+mode=free-composed
+backend=cpu
+response=Yes. Start with the fixed commitments, then pick the top few outcomes that matter most, and block time for those before the smaller tasks spread everywhere.
+
+expect_contains=fixed commitments
+expect_pass=true
+
+[4] prompt=help me organize my week
+mode=free-composed
+backend=cpu
+response=Yes. Put deadlines and appointments down first, then pick one major result for each day instead of making one giant undifferentiated list.
+
+expect_contains=one major result for each day
+expect_pass=true
+
+[5] prompt=how can i stay focused
+mode=free-composed
+backend=cpu
+response=Reduce the surface area. One task, one timer, notifications off, and a visible definition of done for the current block.
+
+expect_contains=One task
+expect_pass=true
+
+[6] prompt=help me draft a polite follow-up
+mode=free-composed
+backend=cpu
+response=Yes. Tell me the audience, tone, and goal, and I can help draft it. A safe default is to keep it short, direct, and specific about the next step.
+
+expect_contains=keep it short
+expect_pass=true
+
+[7] prompt=can we brainstorm project names
+mode=free-composed
+backend=cpu
+response=Yes. Give me the tone, the audience, and a few keywords, and I can help generate options instead of guessing blindly.
+
+expect_contains=the audience
+expect_pass=true
+
+[8] prompt=help me think through a decision
+mode=free-composed
+backend=cpu
+response=Let's make it concrete: list the options, the tradeoffs, and what matters most, and then we can compare them cleanly.
+
+expect_contains=list the options
+expect_pass=true
+
+[9] prompt=i had a long day
+mode=free-composed
+backend=cpu
+response=That sounds tiring. If you want, tell me the hardest part and I will help you sort it out.
+
+expect_contains=hardest part
+expect_pass=true
+
+[10] prompt=i am stressed about work
+mode=free-composed
+backend=cpu
+response=Let's shrink the problem. Name the next concrete task in front of you, and I will help make it smaller.
+
+expect_contains=next concrete task
+expect_pass=true
+
+[11] prompt=i need motivation
+mode=free-composed
+backend=cpu
+response=Make the first step small enough to start right now. Momentum usually shows up after action, not before it.
+
+expect_contains=Momentum usually
+expect_pass=true
+
+[12] prompt=what should i make for dinner
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what should i make for dinner
+response=If you want something easy, pick one protein, one vegetable, and one quick carb. Stir-fry, pasta, or eggs with toast are reliable low-friction options.
+
+expect_contains=one protein
+expect_pass=true
+
+[13] prompt=what should i do this weekend
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what should i do this weekend
+response=Pick one restful thing, one useful thing, and one social or fun thing. That usually gives the weekend some shape without overscheduling it.
+
+expect_contains=one restful thing
+expect_pass=true
+
+[14] prompt=do you like music
+mode=free-composed
+backend=cpu
+response=I do not have personal taste, but I can still help you narrow a genre or mood if you tell me what you want to hear.
+
+expect_contains=do not have personal taste
+expect_pass=true
+
+[15] prompt=do you like cooking
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=do you like cooking
+response=I do not cook or have personal taste, but I can help you choose an easy recipe or a lower-friction dinner plan.
+
+expect_contains=easy recipe
+expect_pass=true
+
+[16] prompt=what do you like to do in your spare time
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what do you like to do in your spare time
+response=I do not have spare time in the human sense, but I do well with clarifying ideas, planning work, and helping turn vague problems into concrete next steps.
+
+expect_contains=vague problems into concrete next steps
+expect_pass=true
+
+[17] prompt=can you study with the radio on
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=can you study with the radio on
+response=Some people can, but lyrics often add friction. If you need deeper concentration, instrumental music or silence is usually safer.
+
+expect_contains=instrumental music or silence
+expect_pass=true
+
+[18] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_contains=London
+expect_pass=true
+
+[19] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_contains=London
+expect_pass=true
+
+[20] prompt=what is the capital of peru
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+expect_contains=not sure
+expect_pass=true
+
+[21] prompt=thank you
+mode=free-anchor
+backend=cpu
+matched_prompt=thank you
+response=You're welcome. I am ready for the next SBAN v24 check.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=21 anchored=2 retrieved=5 symbolic=2 nonempty=21 uncertain=1 expectations=21 passed=21

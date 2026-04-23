@@ -1,10 +1,10 @@
-name: V26 Release Suite
+name: V26 Long Hardening
 
 on:
   workflow_dispatch:
     inputs:
       runner_label:
-        description: Runner label for the core v26 release suite
+        description: Runner label for the independent long hardening jobs
         required: false
         default: ubuntu-latest
         type: string
@@ -13,9 +13,22 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  run-release-suite:
+  run-long-hardening:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - benchmark_key: long_10m
+            artifact_name: v26-long-10m-results
+            result_json: longrun_v26_10m.json
+            timeout_minutes: 180
+          - benchmark_key: long_20m
+            artifact_name: v26-long-20m-results
+            result_json: longrun_v26_20m.json
+            timeout_minutes: 240
+
     runs-on: ${{ inputs.runner_label || 'ubuntu-latest' }}
-    timeout-minutes: 240
+    timeout-minutes: ${{ matrix.timeout_minutes }}
 
     steps:
       - name: Checkout
@@ -29,10 +42,11 @@ jobs:
       - name: Install Zig
         run: python scripts/install_zig_ci.py --version master --output-dir .ci-tools/zig
 
-      - name: Build and unit test
+      - name: Build release binary
         run: |
           zig build test
-          python -m py_compile scripts/build_v26_open_seed.py scripts/host_monitor.py scripts/run_v26_release.py scripts/make_v26_deliverables.py scripts/package_v26_demo.py scripts/run_v26_100m_ci.py
+          zig build -Doptimize=ReleaseFast
+          python -m py_compile scripts/host_monitor.py scripts/run_v26_release.py
 
       - name: Capture runner baseline
         shell: bash
@@ -45,6 +59,7 @@ jobs:
             echo "runner_os=${RUNNER_OS:-unknown}"
             echo "runner_arch=${RUNNER_ARCH:-unknown}"
             echo "runner_label=${{ inputs.runner_label || 'ubuntu-latest' }}"
+            echo "benchmark_key=${{ matrix.benchmark_key }}"
             echo
             echo "== uname =="
             uname -a
@@ -69,14 +84,14 @@ jobs:
                 echo
               fi
             done
-          } | tee docs/results/v26/_runner_baseline_release_suite.txt
+          } | tee "docs/results/v26/_runner_baseline_${{ matrix.benchmark_key }}.txt"
 
-      - name: Run hosted-compatible v26 release suite
+      - name: Run independent long hardening benchmark
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p docs/results/v26
-          python scripts/run_v26_release.py --skip-cuda --benchmarks prefix,drift,probe,long_250k,long_1m 2>&1 | tee docs/results/v26/_run_v26_release_suite_ci.log
+          python scripts/run_v26_release.py --skip-cuda --benchmarks "${{ matrix.benchmark_key }}" --skip-dialogue --skip-accel --skip-numeric-backend-probes --skip-status 2>&1 | tee "docs/results/v26/_run_v26_${{ matrix.benchmark_key }}_ci.log"
 
       - name: Capture runner postmortem
         if: always()
@@ -87,6 +102,7 @@ jobs:
           {
             echo "timestamp_utc=$(date -u --iso-8601=seconds)"
             echo "job_status=${{ job.status }}"
+            echo "benchmark_key=${{ matrix.benchmark_key }}"
             echo
             echo "== memory =="
             free -h || true
@@ -104,12 +120,17 @@ jobs:
                 echo
               fi
             done
-          } | tee docs/results/v26/_runner_postmortem_release_suite.txt
+          } | tee "docs/results/v26/_runner_postmortem_${{ matrix.benchmark_key }}.txt"
 
-      - name: Upload v26 release results
+      - name: Upload long hardening results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: v26-release-results
-          path: docs/results/v26
-          if-no-files-found: error
+          name: ${{ matrix.artifact_name }}
+          path: |
+            docs/results/v26/${{ matrix.result_json }}
+            docs/results/v26/_run_v26_${{ matrix.benchmark_key }}_ci.log
+            docs/results/v26/_run_v26_release_heartbeat.jsonl
+            docs/results/v26/_runner_baseline_${{ matrix.benchmark_key }}.txt
+            docs/results/v26/_runner_postmortem_${{ matrix.benchmark_key }}.txt
+          if-no-files-found: warn

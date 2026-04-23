@@ -1,0 +1,36 @@
+{
+  "release_cpu_250k": {
+    "accuracy": 99.4632,
+    "elapsed_seconds": 20.42005989991594,
+    "total_predictions": 250000
+  },
+  "release_cpu_1m": {
+    "accuracy": 99.5334,
+    "elapsed_seconds": 45.548374000005424,
+    "total_predictions": 1000000
+  },
+  "release_cpu_mt4_250k": {
+    "accuracy": 99.4632,
+    "elapsed_seconds": 20.3230691999197,
+    "total_predictions": 250000
+  },
+  "release_cpu_mt4_1m": {
+    "accuracy": 99.5334,
+    "elapsed_seconds": 45.54979049996473,
+    "total_predictions": 1000000
+  },
+  "speedup_cpu_mt_vs_cpu_250k": 1.0048,
+  "speedup_cpu_mt_vs_cpu_1m": 1.0,
+  "release_cuda_250k": {
+    "accuracy": 99.4628,
+    "elapsed_seconds": 70.8223959999159,
+    "total_predictions": 250000
+  },
+  "release_cuda_1m": {
+    "accuracy": 99.5343,
+    "elapsed_seconds": 257.8739740999881,
+    "total_predictions": 1000000
+  },
+  "speedup_cuda_vs_cpu_250k": 0.2883,
+  "speedup_cuda_vs_cpu_1m": 0.1766
+}

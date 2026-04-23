@@ -1,0 +1,129 @@
+# SBAN v27 scripted session evaluation
+User: what is SBAN v27
+Expect: conversational product release
+
+User: what is the windows starter file called
+Expect: SBAN_v27_Start.bat
+
+User: where is the v27 paper pdf
+Expect: docs/papers/SBAN_v27_follow_up_research_paper.pdf
+
+User: what files ship in the bundle
+Expect: deliverables/v27/SBAN_v27_repo.zip
+
+User: what command shows cuda support
+Expect: accel-info
+
+User: what command shows numeric cuda support
+Expect: numeric-accel-info
+
+User: how do cpu, cpu_mt, cuda, and opencl compare here
+Expect: preferred GPU path on NVIDIA systems
+
+User: hi i am tom and i need help
+Expect: remember your name
+
+User: can you recall my name
+Expect: Tom
+
+User: can you remember what team i am on
+Expect: remember it for this session
+
+User: our team is atlas
+Expect: team is atlas
+
+User: what team am i on
+Expect: atlas
+
+User: can you remember where i am from
+Expect: remember it for this session
+
+User: i am from london
+Expect: London
+
+User: where am i from
+Expect: London
+
+User: i work in the sbx lab
+Expect: lab
+
+User: what lab do i work in
+Expect: sbx
+
+User: my role is researcher
+Expect: role
+
+User: what is my role
+Expect: researcher
+
+User: my dog is luna
+Expect: dog's name is Luna
+
+User: what is my dog name
+Expect: Luna
+
+User: our project is nebula
+Expect: project is nebula
+
+User: what project are we on
+Expect: nebula
+
+User: tomorrow i have a dentist appointment
+Expect: dentist appointment
+
+User: what do i have tomorrow
+Expect: dentist appointment
+
+User: what is session memory
+Expect: simple user facts
+
+User: what facts can you remember
+Expect: team
+
+User: help me write a meeting agenda
+Expect: key updates
+
+User: write a short linkedin summary for a researcher
+Expect: measurable results
+
+User: write a python class for a stack
+Expect: class Stack
+
+User: explain inflation simply
+Expect: prices rise over time
+
+User: explain pointers in c simply
+Expect: memory address
+
+User: what is dns
+Expect: Domain Name System
+
+User: tcp vs udp
+Expect: reliable ordered delivery
+
+User: what is 2 + 2
+Expect: = 4.
+
+User: Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have
+Expect: 0 left
+
+User: what is 3 / 0
+Expect: undefined
+
+User: who are you
+Expect: SBAN v27
+
+User: tell me a joke
+Expect: sparse
+
+User: what does std.arraylist do in zig upstream
+Expect: growable contiguous arrays
+
+User: how do i build zig from source
+Expect: CMake
+
+User: blorple zint protocol
+Expect: not sure
+
+User: thank you
+Expect: welcome

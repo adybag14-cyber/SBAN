@@ -3,7 +3,7 @@ name: Release Demo Bundles
 on:
   push:
     tags:
-      - "v26*"
+      - "v27*"
   workflow_dispatch:
 
 env:
@@ -41,21 +41,21 @@ jobs:
       - name: Build and test
         run: |
           zig build test
+          python -m py_compile scripts/ci_smoke_v27.py
           zig build -Doptimize=ReleaseFast
 
       - name: Smoke demo
-        run: |
-          python -c "import os, pathlib, subprocess; exe = pathlib.Path('zig-out/bin/zig_sban.exe' if os.name == 'nt' else 'zig-out/bin/zig_sban'); common = ['mode=free', 'allow_generation=true', 'backend=cpu', 'seed_path=data/sban_dialogue_seed_v26.txt', 'open_seed_path=data/sban_dialogue_open_seed_v26.txt']; session_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_session_eval_v26.txt', *common], text=True); assert 'passed=37' in session_eval and 'expect_pass=false' not in session_eval, session_eval; open_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_open_chat_session_eval_v26.txt', *common], text=True); assert 'passed=50' in open_eval and 'expect_pass=false' not in open_eval, open_eval; broad_eval = subprocess.check_output([str(exe), 'chat-session-eval', 'data/sban_broad_chat_session_eval_v26.txt', *common], text=True); assert 'passed=40' in broad_eval and 'expect_pass=false' not in broad_eval, broad_eval; overview = subprocess.check_output([str(exe), 'chat-demo', 'what is SBAN v26', '180', *common], text=True); assert 'v26' in overview.lower() and 'after v25' in overview.lower(), overview; bundle = subprocess.check_output([str(exe), 'chat-demo', 'what files ship in the bundle', '180', *common], text=True); assert 'sban_v26_repo.zip' in bundle.lower(), bundle; dns = subprocess.check_output([str(exe), 'chat-demo', 'what is dns', '180', *common], text=True); assert 'domain name system' in dns.lower(), dns; zig = subprocess.check_output([str(exe), 'chat-demo', 'where is std.hashmap implemented in zig upstream', '180', *common], text=True); assert 'lib/std/hash_map.zig' in zig.lower(), zig; noise = subprocess.check_output([str(exe), 'chat-demo', 'blorple zint protocol', '180', *common], text=True); assert 'not sure' in noise.lower(), noise"
+        run: python scripts/ci_smoke_v27.py
 
       - name: Package demo bundle
         run: |
-          python scripts/package_v26_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
+          python scripts/package_v27_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-demo
-          path: deliverables/v26/demo/SBAN_v26_${{ matrix.platform }}_demo.zip
+          path: deliverables/v27/demo/SBAN_v27_${{ matrix.platform }}_demo.zip
 
       - name: Ensure release exists
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,5 +74,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.ref_name }}" "deliverables/v26/demo/SBAN_v26_${{ matrix.platform }}_demo.zip" --clobber
+          gh release upload "${{ github.ref_name }}" "deliverables/v27/demo/SBAN_v27_${{ matrix.platform }}_demo.zip" --clobber
 

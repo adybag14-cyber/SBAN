@@ -1,0 +1,188 @@
+User: how is your day going
+Expect: steady and ready to help
+
+User: how do i make coffee taste better
+Expect: fresher beans
+
+User: explain inflation simply
+Expect: prices rise over time
+
+User: explain pointers in c simply
+Expect: memory address
+
+User: what is a black hole
+Expect: event horizon
+
+User: what is dns
+Expect: Domain Name System
+
+User: compare tcp and udp
+Expect: reliable ordered delivery
+
+User: what is json
+Expect: JavaScript Object Notation
+
+User: what is a hash map
+Expect: key-value pairs
+
+User: what is zig
+Expect: programming language and toolchain
+
+User: write a short linkedin summary for a researcher
+Expect: measurable results
+
+User: write a python class for a stack
+Expect: class Stack
+
+User: what is 15% of 240
+Expect: 36
+
+User: Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have
+Expect: 0 left
+
+User: what is 3 / 0
+Expect: Division by zero is undefined
+
+User: tell me a joke
+Expect: sparse network stay calm
+
+User: help me write a meeting agenda
+Expect: purpose
+
+User: help me draft a polite follow-up
+Expect: Keep it short
+
+User: what is photosynthesis in simple terms
+Expect: sunlight
+
+User: how do i reverse a list in python
+Expect: items.reverse
+
+User: write javascript debounce function
+Expect: function debounce
+
+User: write sql to count users per country
+Expect: GROUP BY country
+
+User: explain compound interest simply
+Expect: snowball
+
+User: what is kubernetes in plain english
+Expect: containers
+
+User: what is garbage collection in programming
+Expect: automatically
+
+User: difference between stack and heap memory
+Expect: Stack memory
+
+User: what is oauth
+Expect: password directly
+
+User: what is mutex in programming
+Expect: critical section
+
+User: give me three easy lunch ideas
+Expect: wrap
+
+User: rewrite this professionally: sorry i was late
+Expect: I apologize for arriving late
+
+User: make a haiku about rain
+Expect: Rain taps
+
+User: plan a relaxed weekend in london
+Expect: museum
+
+User: what causes the seasons on earth
+Expect: axial tilt
+
+User: who painted starry night
+Expect: Vincent van Gogh
+
+User: tell me a joke about databases
+Expect: bad joins
+
+User: our team is atlas
+Expect: team is atlas
+
+User: what team am i on
+Expect: team is atlas
+
+User: i am from london
+Expect: live in London
+
+User: where am i from
+Expect: live in London
+
+User: our lab is sbx
+Expect: lab is sbx
+
+User: what is our lab
+Expect: lab is sbx
+
+User: my role is researcher
+Expect: role is researcher
+
+User: what is my role
+Expect: role is researcher
+
+User: my dog is luna
+Expect: dog's name is Luna
+
+User: what is my dog name
+Expect: Luna
+
+User: our project is nebula
+Expect: project is nebula
+
+User: what project are we on
+Expect: project is nebula
+
+User: tomorrow i have a dentist appointment
+Expect: dentist appointment
+
+User: what do i have tomorrow
+Expect: dentist appointment
+
+User: can you remember what project we are on
+Expect: Tell me your project
+
+User: can you remember what team i am on
+Expect: Tell me your team
+
+User: can you remember where i am from
+Expect: where you live or where you are from
+
+User: what files ship in the bundle
+Expect: SBAN_v27_repo.zip
+
+User: where is the v27 paper pdf
+Expect: docs/papers/SBAN_v27_follow_up_research_paper.pdf
+
+User: what command shows cuda support
+Expect: numeric-accel-info
+
+User: can this run on an rtx 4090
+Expect: RTX 4090
+
+User: what does std.arraylist do in zig upstream
+Expect: lib/std/array_list.zig
+
+User: where is std.hashmap implemented in zig upstream
+Expect: lib/std/hash_map.zig
+
+User: what does zig std do
+Expect: browser tab
+
+User: how do i build zig from source
+Expect: cmake
+
+User: how do you build zig without llvm
+Expect: bootstrap.c
+
+User: what can you do
+Expect: Zig upstream questions
+
+User: blorple zint protocol
+Expect: not sure yet

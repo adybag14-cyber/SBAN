@@ -1,0 +1,6 @@
+{
+  "output": "longrun_v26_100m_ci_cpu.json",
+  "accuracy": 45.2346,
+  "elapsed_seconds": 2490.072908,
+  "total_predictions": 99999996
+}

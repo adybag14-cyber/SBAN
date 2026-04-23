@@ -1,0 +1,505 @@
+[1] prompt=how is your day going
+mode=free-composed
+backend=cpu
+response=I am steady and ready to help. We can keep things practical, conversational, and honest about what I know.
+
+expect_contains=steady and ready to help
+expect_pass=true
+
+[2] prompt=how do i make coffee taste better
+mode=free-composed
+backend=cpu
+response=If coffee tastes flat or harsh, the fastest fixes are usually fresher beans, a cleaner grinder, and adjusting the grind. If it tastes bitter, make the grind a bit coarser or shorten the brew. If it tastes sour or weak, grind a bit finer, use hotter water, or raise the coffee dose slightly.
+
+expect_contains=fresher beans
+expect_pass=true
+
+[3] prompt=explain inflation simply
+mode=free-composed
+backend=cpu
+response=Inflation means prices rise over time, so the same amount of money buys less than it used to. Mild inflation is normal, but high inflation makes planning and everyday costs much harder.
+
+expect_contains=prices rise over time
+expect_pass=true
+
+[4] prompt=explain pointers in c simply
+mode=free-composed
+backend=cpu
+response=In C, a pointer is a variable that stores a memory address. Instead of holding the value itself, it points to where the value lives, which is why pointers are useful for arrays, dynamic memory, and passing data by reference.
+
+expect_contains=memory address
+expect_pass=true
+
+[5] prompt=what is a black hole
+mode=free-composed
+backend=cpu
+response=A black hole is a region where gravity is so strong that once something crosses the event horizon, it cannot escape. You can think of it as matter packed so densely that spacetime is bent extremely hard around it.
+
+expect_contains=event horizon
+expect_pass=true
+
+[6] prompt=what is dns
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+expect_contains=Domain Name System
+expect_pass=true
+
+[7] prompt=compare tcp and udp
+mode=free-composed
+backend=cpu
+response=TCP emphasizes reliable ordered delivery: it retries lost data and keeps packets in sequence. UDP is simpler and faster but does not guarantee delivery or order, which is why it fits things like streaming, voice, or games where low latency matters more than perfect reliability.
+
+expect_contains=reliable ordered delivery
+expect_pass=true
+
+[8] prompt=what is json
+mode=free-composed
+backend=cpu
+response=JSON stands for JavaScript Object Notation. It is a text format for structured data built from objects, arrays, strings, numbers, booleans, and null.
+
+expect_contains=JavaScript Object Notation
+expect_pass=true
+
+[9] prompt=what is a hash map
+mode=free-composed
+backend=cpu
+response=A hash map stores key-value pairs and uses a hash function to decide where keys should live internally, which is why lookups are often close to constant time on average.
+
+expect_contains=key-value pairs
+expect_pass=true
+
+[10] prompt=what is zig
+mode=free-composed
+backend=cpu
+response=Zig is a general-purpose programming language and toolchain focused on robust, optimal, and reusable software, with explicit memory management and a strong emphasis on control and clarity.
+
+expect_contains=programming language and toolchain
+expect_pass=true
+
+[11] prompt=write a short linkedin summary for a researcher
+mode=free-composed
+backend=cpu
+response=Here is a compact LinkedIn summary for a researcher:\n\nResearcher focused on turning complex technical questions into measurable results. I work across experiments, analysis, and implementation, with an emphasis on clear reasoning, reproducible evaluation, and building systems that hold up outside the happy path.
+
+expect_contains=measurable results
+expect_pass=true
+
+[12] prompt=write a python class for a stack
+mode=free-composed
+backend=cpu
+response=Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: object) -> None:\n        self._items.append(item)\n\n    def pop(self) -> object:\n        if not self._items:\n            raise IndexError('pop from empty stack')\n        return self._items.pop()\n\n    def peek(self) -> object:\n        if not self._items:\n            raise IndexError('peek from empty stack')\n        return self._items[-1]\n\n    def is_empty(self) -> bool:\n        return not self._items\n```\nThis uses a list internally, where `append` and `pop` from the end are the natural stack operations.
+
+expect_contains=class Stack
+expect_pass=true
+
+[13] prompt=what is 15% of 240
+mode=symbolic-math
+backend=cpu
+response=15 / 100 * 240 = 36.
+
+expect_contains=36
+expect_pass=true
+
+[14] prompt=Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have
+mode=free-composed
+backend=cpu
+response=He has 0 left.
+
+expect_contains=0 left
+expect_pass=true
+
+[15] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+expect_contains=Division by zero is undefined
+expect_pass=true
+
+[16] prompt=tell me a joke
+mode=free-composed
+backend=cpu
+response=Why did the sparse network stay calm? It only activated the paths that actually had support.
+
+expect_contains=sparse network stay calm
+expect_pass=true
+
+[17] prompt=help me write a meeting agenda
+mode=free-composed
+backend=cpu
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners. If you want, give me the meeting type and I will turn that into a tighter draft.
+
+expect_contains=purpose
+expect_pass=true
+
+[18] prompt=help me draft a polite follow-up
+mode=free-composed
+backend=cpu
+response=Keep it short: restate the thread in one line, ask the direct question, and make the next action easy for the other person.
+
+expect_contains=Keep it short
+expect_pass=true
+
+[19] prompt=what is photosynthesis in simple terms
+mode=free-composed
+backend=cpu
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+expect_contains=sunlight
+expect_pass=true
+
+[20] prompt=how do i reverse a list in python
+mode=free-composed
+backend=cpu
+response=Yes. In Python you can reverse a list in place with:\n```python\nitems = [1, 2, 3]\nitems.reverse()\n```\nIf you want a reversed copy instead, use:\n```python\nreversed_items = items[::-1]\n```
+
+expect_contains=items.reverse
+expect_pass=true
+
+[21] prompt=write javascript debounce function
+mode=free-composed
+backend=cpu
+response=A compact JavaScript debounce function is:\n```javascript\nfunction debounce(fn, delay) {\n  let timer = null;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}\n```\nThis resets the timer on each call, so `fn` only runs after calls stop for the given delay.
+
+expect_contains=function debounce
+expect_pass=true
+
+[22] prompt=write sql to count users per country
+mode=free-composed
+backend=cpu
+response=A simple SQL version is:\n```sql\nSELECT country, COUNT(*) AS user_count\nFROM users\nGROUP BY country\nORDER BY user_count DESC;\n```\nThat groups rows by `country` and counts how many users fall into each group.
+
+expect_contains=GROUP BY country
+expect_pass=true
+
+[23] prompt=explain compound interest simply
+mode=free-composed
+backend=cpu
+response=Compound interest means you earn interest not just on the original amount, but also on the interest that has already been added. Over time that snowball effect is why growth speeds up.
+
+expect_contains=snowball
+expect_pass=true
+
+[24] prompt=what is kubernetes in plain english
+mode=free-composed
+backend=cpu
+response=Kubernetes is a system for running and managing containers across multiple machines. In plain English, it helps deploy applications, keep them running, and scale them without handling each server by hand.
+
+expect_contains=containers
+expect_pass=true
+
+[25] prompt=what is garbage collection in programming
+mode=free-composed
+backend=cpu
+response=Garbage collection is a runtime system that automatically finds memory the program no longer uses and reclaims it, so developers do not have to free every object manually.
+
+expect_contains=automatically
+expect_pass=true
+
+[26] prompt=difference between stack and heap memory
+mode=free-composed
+backend=cpu
+response=Stack memory usually holds short-lived call-frame data such as local variables, while heap memory is the larger pool used for data that needs to live beyond one function call. The stack is usually simpler and faster; the heap is more flexible but needs more careful management.
+
+expect_contains=Stack memory
+expect_pass=true
+
+[27] prompt=what is oauth
+mode=free-composed
+backend=cpu
+response=OAuth is a way to let one application access another service on your behalf without handing over your password directly. In practice, it is the pattern behind many 'Sign in with ...' flows and delegated API access tokens.
+
+expect_contains=password directly
+expect_pass=true
+
+[28] prompt=what is mutex in programming
+mode=free-composed
+backend=cpu
+response=A mutex is a mutual-exclusion lock. It lets one thread enter a critical section at a time so shared data does not get modified concurrently in unsafe ways.
+
+expect_contains=critical section
+expect_pass=true
+
+[29] prompt=give me three easy lunch ideas
+mode=free-composed
+backend=cpu
+response=Three easy lunch ideas are: a chicken or chickpea wrap with salad and yogurt sauce, rice with roasted vegetables and a fried egg, or tomato soup with a grilled cheese or tuna melt on the side.
+
+expect_contains=wrap
+expect_pass=true
+
+[30] prompt=rewrite this professionally: sorry i was late
+mode=free-composed
+backend=cpu
+response=A more professional version is: I apologize for arriving late. Thank you for your patience.
+
+expect_contains=I apologize for arriving late
+expect_pass=true
+
+[31] prompt=make a haiku about rain
+mode=free-composed
+backend=cpu
+response=Rain taps at the glass\nCity lights blur into mist\nEvening slows its pace
+
+expect_contains=Rain taps
+expect_pass=true
+
+[32] prompt=plan a relaxed weekend in london
+mode=free-composed
+backend=cpu
+response=A relaxed weekend in London could be: a slow morning walk and coffee, one museum or gallery, lunch in a neighborhood you actually enjoy wandering, a park break in the afternoon, and one easy evening anchor like a pub meal, a film, or a quiet dinner instead of overpacking the schedule.
+
+expect_contains=museum
+expect_pass=true
+
+[33] prompt=what causes the seasons on earth
+mode=free-composed
+backend=cpu
+response=The seasons are caused mainly by Earth's axial tilt, not by Earth simply being closer to or farther from the Sun. As Earth orbits the Sun, the tilt changes how directly sunlight hits each hemisphere over the year.
+
+expect_contains=axial tilt
+expect_pass=true
+
+[34] prompt=who painted starry night
+mode=free-composed
+backend=cpu
+response=Vincent van Gogh painted The Starry Night.
+
+expect_contains=Vincent van Gogh
+expect_pass=true
+
+[35] prompt=tell me a joke about databases
+mode=free-composed
+backend=cpu
+response=Why did the database admin leave the party early? Too many bad joins and not enough committed relationships.
+
+expect_contains=bad joins
+expect_pass=true
+
+[36] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+expect_contains=team is atlas
+expect_pass=true
+
+[37] prompt=what team am i on
+mode=session-recall
+backend=cpu
+response=Your team is atlas.
+
+expect_contains=team is atlas
+expect_pass=true
+
+[38] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_contains=live in London
+expect_pass=true
+
+[39] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_contains=live in London
+expect_pass=true
+
+[40] prompt=our lab is sbx
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+expect_contains=lab is sbx
+expect_pass=true
+
+[41] prompt=what is our lab
+mode=session-recall
+backend=cpu
+response=Your lab is sbx.
+
+expect_contains=lab is sbx
+expect_pass=true
+
+[42] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+expect_contains=role is researcher
+expect_pass=true
+
+[43] prompt=what is my role
+mode=session-recall
+backend=cpu
+response=Your role is researcher.
+
+expect_contains=role is researcher
+expect_pass=true
+
+[44] prompt=my dog is luna
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Luna, and I will remember that for this session.
+
+expect_contains=dog's name is Luna
+expect_pass=true
+
+[45] prompt=what is my dog name
+mode=session-recall
+backend=cpu
+response=Your dog's name is Luna.
+
+expect_contains=Luna
+expect_pass=true
+
+[46] prompt=our project is nebula
+mode=session-fact-store
+backend=cpu
+response=Noted. Your project is nebula, and I will remember that for this session.
+
+expect_contains=project is nebula
+expect_pass=true
+
+[47] prompt=what project are we on
+mode=session-recall
+backend=cpu
+response=Your project is nebula.
+
+expect_contains=project is nebula
+expect_pass=true
+
+[48] prompt=tomorrow i have a dentist appointment
+mode=session-fact-store
+backend=cpu
+response=Noted. Tomorrow you have a dentist appointment, and I will remember that for this session.
+
+expect_contains=dentist appointment
+expect_pass=true
+
+[49] prompt=what do i have tomorrow
+mode=session-recall
+backend=cpu
+response=Tomorrow you have a dentist appointment.
+
+expect_contains=dentist appointment
+expect_pass=true
+
+[50] prompt=can you remember what project we are on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your project and I will remember it for this session.
+
+expect_contains=Tell me your project
+expect_pass=true
+
+[51] prompt=can you remember what team i am on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your team and I will remember it for this session.
+
+expect_contains=Tell me your team
+expect_pass=true
+
+[52] prompt=can you remember where i am from
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me where you live or where you are from, and I will remember it for this session.
+
+expect_contains=where you live or where you are from
+expect_pass=true
+
+[53] prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v27 release bundle ships the executive summary at SBAN_v27_EXECUTIVE_SUMMARY.md, the report at SBAN_v27_REPORT.md, the paper PDF at docs/papers/SBAN_v27_follow_up_research_paper.pdf, the repo archive at deliverables/v27/SBAN_v27_repo.zip, and demo bundles at deliverables/v27/demo/SBAN_v27_windows_x86_64_demo.zip and deliverables/v27/demo/SBAN_v27_linux_x86_64_demo.zip.
+
+expect_contains=SBAN_v27_repo.zip
+expect_pass=true
+
+[54] prompt=where is the v27 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v27 paper PDF is generated at docs/papers/SBAN_v27_follow_up_research_paper.pdf.
+
+expect_contains=docs/papers/SBAN_v27_follow_up_research_paper.pdf
+expect_pass=true
+
+[55] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v27.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v27 bench assets.
+
+expect_contains=numeric-accel-info
+expect_pass=true
+
+[56] prompt=can this run on an rtx 4090
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the preferred retrieval path on NVIDIA, keeps CPU as the safe numeric release baseline, and leaves numeric_backend=cuda as an explicit experiment instead of the automatic default.
+
+expect_contains=RTX 4090
+expect_pass=true
+
+[57] prompt=what does std.arraylist do in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, lib/std/array_list.zig implements ArrayList and related growable contiguous arrays.
+
+expect_contains=lib/std/array_list.zig
+expect_pass=true
+
+[58] prompt=where is std.hashmap implemented in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.
+
+expect_contains=lib/std/hash_map.zig
+expect_pass=true
+
+[59] prompt=what does zig std do
+mode=free-composed
+backend=cpu
+response=The Zig README says `zig std` opens the standard library documentation in a browser tab.
+
+expect_contains=browser tab
+expect_pass=true
+
+[60] prompt=how do i build zig from source
+mode=free-composed
+backend=cpu
+response=The upstream Zig README describes the standard source build as the normal CMake process: create a build directory, run cmake, and then make install.
+
+expect_contains=cmake
+expect_pass=true
+
+[61] prompt=how do you build zig without llvm
+mode=free-composed
+backend=cpu
+response=The upstream Zig README says you can compile bootstrap.c with a C compiler, run the resulting bootstrap executable, and produce a zig2 stage2 compiler without LLVM extensions.
+
+expect_contains=bootstrap.c
+expect_pass=true
+
+[62] prompt=what can you do
+mode=symbolic-help
+backend=cpu
+response=I can help with SBAN v27, release artifacts, starter files, CPU versus cpu_mt versus CUDA versus OpenCL behavior, session memory, short math, everyday planning, writing, coding help, Zig upstream questions, simple explanations, and broader free-form chat when the prompt stays inside what I can support honestly.
+
+expect_contains=Zig upstream questions
+expect_pass=true
+
+[63] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+expect_contains=not sure yet
+expect_pass=true
+
+summary turns=63 anchored=0 retrieved=0 symbolic=24 nonempty=63 uncertain=1 expectations=63 passed=63

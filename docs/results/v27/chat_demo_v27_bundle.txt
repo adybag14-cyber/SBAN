@@ -1,0 +1,4 @@
+prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v27 release bundle ships the executive summary at SBAN_v27_EXECUTIVE_SUMMARY.md, the report at SBAN_v27_REPORT.md, the paper PDF at docs/papers/SBAN_v27_follow_up_research_paper.pdf, the repo archive at deliverables/v27/SBAN_v27_repo.zip, and demo bundles at deliverables/v27/demo/SBAN_v27_windows_x86_64_demo.zip and deliverables/v27/demo/SBAN_v27_linux_x86_64_demo.zip.

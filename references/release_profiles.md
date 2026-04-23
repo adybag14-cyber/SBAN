@@ -1,8 +1,8 @@
 # SBAN Release Profiles
 
-## Current baseline for v24 work
+## Current baseline for v25 work
 
-Use the packaged v23.5 numeric release as the baseline when testing or extending v24.
+Use the packaged v24 numeric release as the baseline when testing or extending v25.
 
 ### Packaged numeric metrics
 
@@ -13,40 +13,48 @@ Use the packaged v23.5 numeric release as the baseline when testing or extending
 - 1M: `99.4344%`
 - 10M: `77.9175%`
 
-## v24 target
+## v25 target
 
-The v24 research and product goal is **broader real free chat without numeric regression**:
+The v25 research and product goal is **broader real free chat without numeric regression**:
 
-- keep each original packaged numeric benchmark at roughly the v23.5 level on the original CPU release profile
-- ship a real v24 grounded seed plus a separate curated v24 open-chat seed
-- fix version-stale artifact answers, starter-file answers, bundle inventory answers, and memory-capability answers
-- measure broader conversational behavior directly with a versioned open-chat scripted session evaluation
+- keep each original packaged numeric benchmark at roughly the v24 level on the original CPU release profile
+- ship a real v25 grounded seed plus a separate curated and dataset-enriched v25 open-chat seed
+- fix the narrow free-chat failure mode where ordinary prompts either fell to uncertainty or overmatched SBAN-domain blurbs
+- keep operational answers exact for starter files, artifact paths, bundle inventory, backend commands, and hardware support questions
+- broaden deterministic free-chat composition for everyday planning, writing, explanation, coding, light knowledge, and short math prompts
+- validate the broader conversational surface directly with versioned session evaluations instead of only counting non-empty outputs
 - keep CPU fallback automatic and keep `numeric_backend=cpu` as the packaged default unless measured wins justify promotion
 - keep measuring CPU versus `cpu_mt` versus CUDA on the numeric path explicitly instead of inferring backend wins from chat latency
 
-## v24 release commands
+## v25 release commands
 
 Run the measured suite:
 
 ```bash
-python scripts/run_v24_release.py
+python scripts/run_v25_release.py
 ```
 
 Generate the packaged report, summary, PDF, demo bundle, and repo zip:
 
 ```bash
-python scripts/make_v24_deliverables.py
+python scripts/make_v25_deliverables.py
 ```
 
 Package the newcomer demo directly:
 
 ```bash
-python scripts/package_v24_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
+python scripts/package_v25_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
+```
+
+Rebuild the shipped open-chat seed:
+
+```bash
+python scripts/build_v25_open_seed.py
 ```
 
 ## Packaged numeric profile
 
-The packaged v24 numeric core intentionally preserves the earlier regression-safe profile as an engine-health guardrail.
+The packaged v25 numeric core intentionally preserves the earlier regression-safe profile as an engine-health guardrail.
 
 Common network overrides:
 
@@ -87,15 +95,16 @@ The near-100M run is intentionally just under a literal 100,000,000 predictions 
 
 The 100M-class run is a long-horizon hardening profile rather than a strict copy of the short-suite common profile. It disables the order-4, order-5, and continuation expert bonuses so the long run does not waste memory and time maintaining expert tables that are not part of that hardened measurement.
 
-## v24 dialogue and product profile
+## v25 dialogue and product profile
 
-- default grounded seed: `data/sban_dialogue_seed_v24.txt`
-- default open-chat seed: `data/sban_dialogue_open_seed_v24.txt`
-- grounded prompt eval asset: `data/sban_chat_eval_prompts_v24.txt`
-- main session eval asset: `data/sban_session_eval_v24.txt`
-- open-chat scripted session eval asset: `data/sban_open_chat_session_eval_v24.txt`
-- default product stance: grounded answers first, operational answers when the runtime knows its own files or commands, broader free chat through deterministic composition plus the open seed, honest uncertainty otherwise
-- session persistence: encoded structured `SBAN_SESSION_V24` format with legacy v23.5 compatibility and no retained-turn cap
+- default grounded seed: `data/sban_dialogue_seed_v25.txt`
+- default open-chat seed: `data/sban_dialogue_open_seed_v25.txt`
+- open seed builder: `scripts/build_v25_open_seed.py`
+- grounded prompt eval asset: `data/sban_chat_eval_prompts_v25.txt`
+- main session eval asset: `data/sban_session_eval_v25.txt`
+- open-chat scripted session eval asset: `data/sban_open_chat_session_eval_v25.txt`
+- default product stance: grounded answers for SBAN-domain prompts, exact operational answers when the runtime knows its own files or commands, broader free chat through deterministic composition plus the open seed, honest uncertainty otherwise
+- session persistence: encoded structured `SBAN_SESSION_V25` format with legacy v24 compatibility and no retained-turn cap
 - default chat mode: free mode with safe conversational composition enabled
 - acceleration: CPU by default for numeric release checks, `backend=auto` for the newcomer chat loop, optional `cpu_mt`, direct CUDA on NVIDIA, OpenCL fallback through `backend=gpu`, and a numeric backend selector (`numeric_backend=cpu|cpu_mt|cuda|auto`) for `eval-variant`
 
@@ -103,9 +112,10 @@ The 100M-class run is a long-horizon hardening profile rather than a strict copy
 
 - The numeric benchmark story and the usability story are separate and should stay separate.
 - The original short numeric suite is the baseline guardrail; the 10M and near-100M runs are hardening extensions.
-- GPU support is real and validated, and CUDA is the preferred large-corpus accelerator on NVIDIA hardware.
+- GPU support is real and validated, and CUDA is the preferred large-corpus retrieval accelerator on NVIDIA hardware.
 - Treat dialogue retrieval CUDA and numeric CUDA as separate claims. Measure both directly.
 - The experimental numeric multithread path is not the packaged default unless the measured suite proves it is faster.
-- Preserve the v21-to-v23 trustworthiness gains. Do not loosen retrieval thresholds in a way that turns uncertainty failures back into plausible-but-wrong blurbs.
+- Preserve the v21-to-v24 trustworthiness gains. Do not loosen retrieval thresholds in a way that turns uncertainty failures back into plausible-but-wrong blurbs.
 - Prefer direct operational answers for artifact paths, starter files, bundle inventory, and backend commands when the runtime can know them exactly, instead of forcing those questions through fuzzy retrieval.
 - Treat the open-chat evaluation as a real release gate: if the shipped conversational surface broadens, prove it with the versioned open-chat session asset instead of hand-picked one-off demos.
+- Treat the dataset-enriched open seed as a product support asset, not as proof of broad reasoning. Broader coverage should still be described honestly.

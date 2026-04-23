@@ -16,9 +16,9 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/run_v24_release.py` for the current packaged benchmark and dialogue suite
-- `scripts/make_v24_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
-- `scripts/package_v24_demo.py` for the newcomer demo bundle
+- `scripts/run_v25_release.py` for the current packaged benchmark and dialogue suite
+- `scripts/make_v25_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v25_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -82,11 +82,17 @@ If you need the release targets or commands, read `references/release_profiles.m
   validate broader conversation with a scripted open-chat session asset instead of only looking at non-empty counts,
   keep roadmap routing narrow so it does not hijack ordinary overview or artifact-path questions,
   and treat natural `i am ...` statements carefully so emotional or support prompts are not misparsed as names.
+- The v25 product lessons are the next step:
+  broaden free chat by routing non-domain prompts into the open-chat path before grounded SBAN retrieval,
+  keep the grounded seed and the open-chat seed versioned separately so stale release answers do not leak across generations,
+  use a reproducible seed builder plus a curated assistant-safe corpus instead of pretending broad capability came from a single hand-written prompt file,
+  validate broader everyday prompts directly with versioned session assets instead of claiming "99 percent" from anecdotes,
+  and keep unsupported prompts on an honest uncertainty path even after widening paraphrase coverage and light factual support.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
 
-- `python scripts/run_v24_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
+- `python scripts/run_v25_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
 
@@ -94,8 +100,8 @@ If you need the release targets or commands, read `references/release_profiles.m
 
 For a new release:
 
-1. Run `python scripts/run_v24_release.py` or the next-generation equivalent.
-2. Run `python scripts/make_v24_deliverables.py` or the next-generation equivalent.
+1. Run `python scripts/run_v25_release.py` or the next-generation equivalent.
+2. Run `python scripts/make_v25_deliverables.py` or the next-generation equivalent.
 3. Confirm the versioned paper PDF, executive summary, repo zip, and demo bundle exist under `deliverables/`.
 4. Update `README.md` so the current release can be reproduced without extra context.
 5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.

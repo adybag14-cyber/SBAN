@@ -1,0 +1,4 @@
+prompt=can you remember where i am from
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me where you live or where you are from, and I will remember it for this session.

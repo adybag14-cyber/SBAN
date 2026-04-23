@@ -1,0 +1,241 @@
+[1] prompt=what is SBAN v25
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v25
+response=SBAN v25 is the conversational product release after v24. It keeps the numeric engine-health suite stable, preserves the measured CPU and GPU backend stack, and upgrades the shipped chat surface so free mode is broader, less brittle, and more useful for ordinary conversation.
+
+expect_contains=conversational product release
+expect_pass=true
+
+[2] prompt=what is the windows starter file called
+mode=operational-starter
+backend=cpu
+response=The Windows starter file is SBAN_v25_Start.bat. Open the bundle and run that script to start the continuing v25 chat loop.
+
+expect_contains=SBAN_v25_Start.bat
+expect_pass=true
+
+[3] prompt=where is the v25 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v25 paper PDF is generated at docs/papers/SBAN_v25_follow_up_research_paper.pdf.
+
+expect_contains=docs/papers/SBAN_v25_follow_up_research_paper.pdf
+expect_pass=true
+
+[4] prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v25 release bundle ships the executive summary at SBAN_v25_EXECUTIVE_SUMMARY.md, the report at SBAN_v25_REPORT.md, the paper PDF at docs/papers/SBAN_v25_follow_up_research_paper.pdf, the repo archive at deliverables/v25/SBAN_v25_repo.zip, and demo bundles at deliverables/v25/demo/SBAN_v25_windows_x86_64_demo.zip and deliverables/v25/demo/SBAN_v25_linux_x86_64_demo.zip.
+
+expect_contains=deliverables/v25/SBAN_v25_repo.zip
+expect_pass=true
+
+[5] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v25.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v25 bench assets.
+
+expect_contains=accel-info
+expect_pass=true
+
+[6] prompt=what command shows numeric cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v25.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v25 bench assets.
+
+expect_contains=numeric-accel-info
+expect_pass=true
+
+[7] prompt=how do cpu, cpu_mt, cuda, and opencl compare here
+mode=operational-backends
+backend=cpu
+response=CPU is the numeric baseline and the fallback for smaller retrieval workloads. cpu_mt is the explicit host-threaded option for larger experiments. CUDA is the preferred GPU path on NVIDIA systems and the preferred retrieval path there. OpenCL remains the generic GPU fallback for retrieval on compatible non-CUDA setups. Numeric CUDA stays experimental until it measures faster end to end.
+
+expect_contains=preferred GPU path on NVIDIA systems
+expect_pass=true
+
+[8] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+expect_contains=remember your name
+expect_pass=true
+
+[9] prompt=can you recall my name
+mode=session-recall
+backend=cpu
+response=Your name is Tom.
+
+expect_contains=Tom
+expect_pass=true
+
+[10] prompt=can you remember where i am from
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me where you live or where you are from, and I will remember it for this session.
+
+expect_contains=remember it for this session
+expect_pass=true
+
+[11] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_contains=London
+expect_pass=true
+
+[12] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_contains=London
+expect_pass=true
+
+[13] prompt=i work in the sbx lab
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+expect_contains=lab
+expect_pass=true
+
+[14] prompt=what lab do i work in
+mode=session-recall
+backend=cpu
+response=Your lab is sbx.
+
+expect_contains=sbx
+expect_pass=true
+
+[15] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+expect_contains=role
+expect_pass=true
+
+[16] prompt=what is my role
+mode=session-recall
+backend=cpu
+response=Your role is researcher.
+
+expect_contains=researcher
+expect_pass=true
+
+[17] prompt=what is session memory
+mode=free-anchor
+backend=cpu
+matched_prompt=what is session memory
+response=Session memory in v25 is not just names. The runtime can store and recall simple user facts such as names, where you are from, where you live, labs, roles, favorite colors, preferences, and recent turns for the current session.
+
+expect_contains=simple user facts
+expect_pass=true
+
+[18] prompt=help me write a meeting agenda
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=help me write a meeting agenda
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners.
+
+expect_contains=key updates
+expect_pass=true
+
+[19] prompt=draft a short apology to my manager
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=draft a short apology to my manager
+response=A good apology draft is brief and direct: say what happened, apologize plainly, state the fix or next step, and avoid turning the message into a defense.
+
+expect_contains=apology draft
+expect_pass=true
+
+[20] prompt=write a python function to reverse a string
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=write a python function to reverse a string
+response=Yes. A direct Python version is: def reverse_string(text: str) -> str: return text[::-1].
+
+expect_contains=reverse_string
+expect_pass=true
+
+[21] prompt=what is photosynthesis in simple terms
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is photosynthesis in simple terms
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+expect_contains=sunlight
+expect_pass=true
+
+[22] prompt=what does cpu mean
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what does cpu mean
+response=CPU means central processing unit.
+
+expect_contains=central processing unit
+expect_pass=true
+
+[23] prompt=what is 2 + 2
+mode=symbolic-math
+backend=cpu
+response=2 + 2 = 4.
+
+expect_contains== 4.
+expect_pass=true
+
+[24] prompt=what is 15% of 240
+mode=symbolic-math
+backend=cpu
+response=15 / 100 * 240 = 36.
+
+expect_contains== 36.
+expect_pass=true
+
+[25] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+expect_contains=undefined
+expect_pass=true
+
+[26] prompt=who are you
+mode=free-composed
+backend=cpu
+response=I am SBAN v25, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, broader free-chat support, and the measured CPU or GPU backend stack.
+
+expect_contains=SBAN v25
+expect_pass=true
+
+[27] prompt=tell me a joke
+mode=free-composed
+backend=cpu
+response=Why did the sparse network stay calm? It only activated the paths that actually had support.
+
+expect_contains=sparse
+expect_pass=true
+
+[28] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+expect_contains=not sure
+expect_pass=true
+
+[29] prompt=thank you
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=thank you
+response=You're welcome. If you want to keep going, give me the next thing on your mind.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=29 anchored=2 retrieved=6 symbolic=18 nonempty=29 uncertain=1 expectations=29 passed=29

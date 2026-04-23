@@ -1,0 +1,90 @@
+# SBAN v25 open-chat scripted session evaluation
+User: hello
+Expect: Hello.
+
+User: how are you doing
+Expect: ready to help
+
+User: can you help me plan tomorrow
+Expect: fixed commitments
+
+User: help me organize my week
+Expect: one major result for each day
+
+User: how can i stay focused
+Expect: One task
+
+User: help me draft a polite follow-up
+Expect: Keep it short
+
+User: help me write a meeting agenda
+Expect: purpose
+
+User: draft a short apology to my manager
+Expect: apologize plainly
+
+User: help me prepare for an interview
+Expect: three stories
+
+User: i am procrastinating and need help
+Expect: ten-minute timer
+
+User: how can i stop doomscrolling
+Expect: phone out of reach
+
+User: can you suggest a workout plan
+Expect: three full-body sessions
+
+User: give me three birthday ideas
+Expect: bowling
+
+User: how do i boil eggs
+Expect: 10 to 12 minutes
+
+User: write a python function to reverse a string
+Expect: reverse_string
+
+User: explain recursion simply
+Expect: base case
+
+User: what is photosynthesis in simple terms
+Expect: sunlight
+
+User: what is dna in simple words
+Expect: instructions
+
+User: what does cpu mean
+Expect: central processing unit
+
+User: what is ram versus storage
+Expect: short-term working memory
+
+User: what is the capital of japan
+Expect: Tokyo
+
+User: who wrote pride and prejudice
+Expect: Jane Austen
+
+User: tell me something cool about octopuses
+Expect: three hearts
+
+User: recommend a comforting movie
+Expect: comforting
+
+User: i am from london
+Expect: London
+
+User: where am i from
+Expect: London
+
+User: what is 12 percent of 85
+Expect: = 10.2.
+
+User: what is the capital of peru
+Expect: Lima
+
+User: blorple zint protocol
+Expect: not sure
+
+User: thank you
+Expect: welcome

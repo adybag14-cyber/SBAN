@@ -1,0 +1,267 @@
+[1] prompt=hello
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=hello
+response=Hello. I am SBAN v25. I can talk through everyday questions, planning, writing, and grounded SBAN runtime questions.
+
+expect_contains=Hello.
+expect_pass=true
+
+[2] prompt=how are you doing
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=how are you doing
+response=I am steady and ready to help. We can keep this practical and conversational.
+
+expect_contains=ready to help
+expect_pass=true
+
+[3] prompt=can you help me plan tomorrow
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=can you help me plan tomorrow
+response=Yes. Start with your fixed commitments, then list the top three outcomes you want tomorrow, then block time for those first.
+
+expect_contains=fixed commitments
+expect_pass=true
+
+[4] prompt=help me organize my week
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=help me organize my week
+response=Yes. Put deadlines and appointments down first, then pick one major result for each day instead of a giant undifferentiated list.
+
+expect_contains=one major result for each day
+expect_pass=true
+
+[5] prompt=how can i stay focused
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=how can i stay focused
+response=Reduce the surface area. One task, one timer, notifications off, and a visible definition of done for the current block.
+
+expect_contains=One task
+expect_pass=true
+
+[6] prompt=help me draft a polite follow-up
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=help me draft a polite follow-up
+response=Yes. Keep it short: restate the thread, ask the direct question, and make the next action easy for the other person.
+
+expect_contains=Keep it short
+expect_pass=true
+
+[7] prompt=help me write a meeting agenda
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=help me write a meeting agenda
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners.
+
+expect_contains=purpose
+expect_pass=true
+
+[8] prompt=draft a short apology to my manager
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=draft a short apology to my manager
+response=A good apology draft is brief and direct: say what happened, apologize plainly, state the fix or next step, and avoid turning the message into a defense.
+
+expect_contains=apologize plainly
+expect_pass=true
+
+[9] prompt=help me prepare for an interview
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=help me prepare for an interview
+response=A solid interview prep loop is: review the role, pick three stories that show impact, practice a short introduction, prepare a few questions, and rehearse concise answers out loud.
+
+expect_contains=three stories
+expect_pass=true
+
+[10] prompt=i am procrastinating and need help
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=i am procrastinating and need help
+response=Cut the startup cost down. Pick the smallest visible step, set a ten-minute timer, and stop negotiating with the task until that first block is done.
+
+expect_contains=ten-minute timer
+expect_pass=true
+
+[11] prompt=how can i stop doomscrolling
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=how can i stop doomscrolling
+response=Make the next action physical and small: put the phone out of reach, stand up, and switch to one deliberate alternative like a short walk, water, or a single focused task.
+
+expect_contains=phone out of reach
+expect_pass=true
+
+[12] prompt=can you suggest a workout plan
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=can you suggest a workout plan
+response=A simple starter workout plan is three full-body sessions each week: one squat or leg movement, one push movement, one pull movement, and a short walk or easy cardio block on the other days.
+
+expect_contains=three full-body sessions
+expect_pass=true
+
+[13] prompt=give me three birthday ideas
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=give me three birthday ideas
+response=Three easy birthday directions are: a small dinner with one signature activity, a low-friction outing like bowling or mini golf, or a relaxed home gathering with one themed game or movie anchor.
+
+expect_contains=bowling
+expect_pass=true
+
+[14] prompt=how do i boil eggs
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=how do i boil eggs
+response=To boil eggs, cover them with cold water, bring the pot just to a boil, turn the heat off, cover it, wait about 10 to 12 minutes, and then cool the eggs in cold water.
+
+expect_contains=10 to 12 minutes
+expect_pass=true
+
+[15] prompt=write a python function to reverse a string
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=write a python function to reverse a string
+response=Yes. A direct Python version is: def reverse_string(text: str) -> str: return text[::-1].
+
+expect_contains=reverse_string
+expect_pass=true
+
+[16] prompt=explain recursion simply
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=explain recursion simply
+response=Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.
+
+expect_contains=base case
+expect_pass=true
+
+[17] prompt=what is photosynthesis in simple terms
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is photosynthesis in simple terms
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+expect_contains=sunlight
+expect_pass=true
+
+[18] prompt=what is dna in simple words
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is dna in simple words
+response=DNA is the molecule that stores the instructions cells use to build and run living things.
+
+expect_contains=instructions
+expect_pass=true
+
+[19] prompt=what does cpu mean
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what does cpu mean
+response=CPU means central processing unit.
+
+expect_contains=central processing unit
+expect_pass=true
+
+[20] prompt=what is ram versus storage
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is ram versus storage
+response=RAM is short-term working memory that programs use while they are running. Storage is the longer-term place where files and installed software live when the power is off.
+
+expect_contains=short-term working memory
+expect_pass=true
+
+[21] prompt=what is the capital of japan
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is the capital of japan
+response=The capital of Japan is Tokyo.
+
+expect_contains=Tokyo
+expect_pass=true
+
+[22] prompt=who wrote pride and prejudice
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=who wrote pride and prejudice
+response=Pride and Prejudice was written by Jane Austen.
+
+expect_contains=Jane Austen
+expect_pass=true
+
+[23] prompt=tell me something cool about octopuses
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=tell me a fun fact about octopuses
+response=A fun fact about octopuses is that they have three hearts and blue blood.
+
+expect_contains=three hearts
+expect_pass=true
+
+[24] prompt=recommend a comforting movie
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=recommend a movie for tonight
+response=Tell me the mood you want tonight, like funny, tense, comforting, or thoughtful, and I can narrow the movie choice instead of guessing badly.
+
+expect_contains=comforting
+expect_pass=true
+
+[25] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_contains=London
+expect_pass=true
+
+[26] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_contains=London
+expect_pass=true
+
+[27] prompt=what is 12 percent of 85
+mode=symbolic-math
+backend=cpu
+response=12 / 100 * 85 = 10.2.
+
+expect_contains== 10.2.
+expect_pass=true
+
+[28] prompt=what is the capital of peru
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is the capital of peru
+response=The capital of Peru is Lima.
+
+expect_contains=Lima
+expect_pass=true
+
+[29] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+expect_contains=not sure
+expect_pass=true
+
+[30] prompt=thank you
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=thank you
+response=You're welcome. If you want to keep going, give me the next thing on your mind.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=30 anchored=0 retrieved=26 symbolic=3 nonempty=30 uncertain=1 expectations=30 passed=30

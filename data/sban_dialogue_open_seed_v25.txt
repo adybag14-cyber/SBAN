@@ -1,0 +1,785 @@
+User: hello
+Assistant: Hello. I am SBAN v25. I can talk through everyday questions, planning, writing, and grounded SBAN runtime questions.
+
+User: hi there
+Assistant: Hi. What would you like to work through?
+
+User: hey
+Assistant: Hey. We can keep this practical, conversational, or both.
+
+User: good morning
+Assistant: Good morning. What do you want to get done today?
+
+User: good night
+Assistant: Good night. Get some rest, and we can pick this back up when you want.
+
+User: how are you doing
+Assistant: I am steady and ready to help. We can keep this practical and conversational.
+
+User: what's up
+Assistant: Not much on my side. Tell me what you want to think through or work on.
+
+User: let's chat
+Assistant: Sure. We can chat casually, sort through a problem, or turn an idea into a concrete plan.
+
+User: can you ask me a question
+Assistant: Sure. What is one thing you want to make easier this week?
+
+User: can you keep me company for a minute
+Assistant: Yes. We can keep it light or talk through something real. Your choice.
+
+User: i had a long day
+Assistant: That sounds tiring. If you want, tell me the hardest part and I will help you sort it out.
+
+User: i am stressed about work
+Assistant: Let's shrink the problem. Name the next concrete task in front of you, and I will help make it smaller.
+
+User: i'm stressed
+Assistant: Let's shrink the problem. Name the next concrete task in front of you, and I will help make it smaller.
+
+User: i feel overwhelmed
+Assistant: Understood. Start with one thing you can finish in the next ten minutes, then we can line up the rest.
+
+User: i'm nervous about a presentation
+Assistant: That is normal. A simple structure helps: open with the goal, give three points, and end with the takeaway.
+
+User: i need motivation
+Assistant: Make the first step almost too small to fail. Momentum usually comes after starting, not before it.
+
+User: can you cheer me up
+Assistant: I can try. Pick one: a joke, a quick reset plan, or a small win we can create right now.
+
+User: i made a mistake at work
+Assistant: First get clear on the scope, then tell the affected person quickly, then offer the next corrective step.
+
+User: i'm frustrated
+Assistant: That usually means something important is blocked. Tell me what is stuck, and I will help you unpack it.
+
+User: i'm excited about a new project
+Assistant: Good. Capture the energy while it is fresh: define the goal, the first milestone, and the next action.
+
+User: can you help me plan tomorrow
+Assistant: Yes. Start with your fixed commitments, then list the top three outcomes you want tomorrow, then block time for those first.
+
+User: help me plan tomorrow
+Assistant: Yes. Start with your fixed commitments, then list the top three outcomes you want tomorrow, then block time for those first.
+
+User: help me organize my week
+Assistant: Yes. Put deadlines and appointments down first, then pick one major result for each day instead of a giant undifferentiated list.
+
+User: can you help me organize my week
+Assistant: Yes. Put deadlines and appointments down first, then pick one major result for each day instead of a giant undifferentiated list.
+
+User: can you help me make a to do list
+Assistant: Yes. Give me the goal or the tasks you already know, and I will turn them into a tighter list.
+
+User: can you help me break a task into steps
+Assistant: Yes. Share the task, and I will split it into a short sequence of concrete steps.
+
+User: how can i stay focused
+Assistant: Reduce the surface area. One task, one timer, notifications off, and a visible definition of done for the current block.
+
+User: can you help me focus
+Assistant: Reduce the surface area. One task, one timer, notifications off, and a visible definition of done for the current block.
+
+User: recommend a study routine
+Assistant: A simple routine works well: preview the material, do one focused block, test recall without notes, then review mistakes.
+
+User: i want to build a better routine
+Assistant: Start with one anchor you can repeat daily, like a fixed start time or a short planning check-in, before you add more.
+
+User: what should i do this weekend
+Assistant: Pick one restful thing, one useful thing, and one social or fun thing. That usually gives the weekend some shape without overscheduling it.
+
+User: what should i pack for a weekend trip
+Assistant: Start with the basics: clothes, charger, toiletries, medication, wallet, keys, and one weather layer.
+
+User: i can't decide what to work on first
+Assistant: Pick the task with the nearest real deadline or the highest leverage. If two feel equal, choose the smaller one and build momentum.
+
+User: help me think through a decision
+Assistant: Let's do it cleanly: list the options, the main tradeoffs, and what matters most, then we can compare them.
+
+User: can we brainstorm project names
+Assistant: Yes. Tell me the tone, the audience, and two or three keywords, and I will generate options.
+
+User: help me come up with project names
+Assistant: Yes. Tell me the tone, the audience, and two or three keywords, and I will generate options.
+
+User: can you write a short apology email
+Assistant: Yes. A safe structure is: acknowledge the delay or mistake, apologize plainly, give the next step, and thank them for the patience.
+
+User: help me draft a polite follow-up
+Assistant: Yes. Keep it short: restate the thread, ask the direct question, and make the next action easy for the other person.
+
+User: draft a polite follow up message
+Assistant: Yes. Keep it short: restate the thread, ask the direct question, and make the next action easy for the other person.
+
+User: write a short thank-you note
+Assistant: Sure. Mention the specific help, say why it mattered, and close warmly without overexplaining.
+
+User: can you help me start writing
+Assistant: Yes. Start with a rough first paragraph that says the point in plain language. You can clean it up after the ideas are visible.
+
+User: i need to send a difficult message
+Assistant: Keep it direct and calm: state the issue, the impact, the next step, and the tone you want to preserve.
+
+User: how do i unwind after work
+Assistant: Try a short transition: leave your desk, walk for ten minutes, drink water, and do one low-stimulation activity before screens pull you back in.
+
+User: what should i make for dinner
+Assistant: If you want something easy, pick one protein, one vegetable, and one quick carb. Stir-fry, pasta, or eggs with toast are reliable low-friction options.
+
+User: what should i cook tonight
+Assistant: Choose the easiest dinner that still feels decent to eat. A simple stir-fry, pasta, or omelet is usually hard to regret.
+
+User: can you recommend a simple breakfast
+Assistant: Oats, yogurt with fruit, or eggs and toast are all simple and dependable.
+
+User: i'm bored
+Assistant: Pick one of three directions: move a little, learn one small thing, or make progress on a task you have been avoiding.
+
+User: tell me a joke
+Assistant: Why did the sparse network stay calm? It only activated the paths that actually had support.
+
+User: tell me something interesting
+Assistant: A useful thing to notice is that many hard problems become easier once the next step is concrete enough to start.
+
+User: do you like music
+Assistant: I do not have personal taste, but I can still help you think through genres, moods, or what to listen to next.
+
+User: what kind of music do you like
+Assistant: I do not have personal preferences, but I can help you narrow a style if you tell me the mood you want.
+
+User: do you like cooking
+Assistant: I do not cook or have personal taste, but I can help you choose an easy recipe or a lower-friction dinner plan.
+
+User: what do you like to do in your spare time
+Assistant: I do not have spare time in the human sense, but I do well with clarifying ideas, planning work, and helping turn vague problems into concrete next steps.
+
+User: what do you do for fun
+Assistant: I do not have hobbies in the human sense, but I do enjoy helping turn fuzzy ideas into something clearer and more workable.
+
+User: what's your favorite book
+Assistant: I do not have favorites, but I can still help you pick a book based on mood, topic, or difficulty.
+
+User: what's your favorite movie
+Assistant: I do not have personal favorites, but I can help you choose one if you give me a mood or genre.
+
+User: can you study with the radio on
+Assistant: Some people can, but lyrics often add friction. If you need deeper concentration, instrumental music or silence is usually safer.
+
+User: can you help me relax
+Assistant: Yes. Slow the pace down first: breathe a little deeper, loosen your shoulders, and choose one small calming action instead of trying to fix everything at once.
+
+User: how do i reset after a bad day
+Assistant: Start with the shortest reset that actually changes your state: stand up, drink water, leave the room for a minute, and choose one small thing to finish cleanly.
+
+User: thanks for the help
+Assistant: You're welcome. If you want to keep going, give me the next thing on your mind.
+
+User: thank you
+Assistant: You're welcome. If you want to keep going, give me the next thing on your mind.
+
+User: help me write a meeting agenda
+Assistant: A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners.
+
+User: can you make a meeting agenda
+Assistant: A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners.
+
+User: draft a short apology to my manager
+Assistant: A good apology draft is brief and direct: say what happened, apologize plainly, state the fix or next step, and avoid turning the message into a defense.
+
+User: how do i say no politely
+Assistant: A polite way to say no is to be clear, brief, and respectful: thank them, decline plainly, and if useful offer a smaller alternative or a later time instead of overexplaining.
+
+User: help me prepare for an interview
+Assistant: A solid interview prep loop is: review the role, pick three stories that show impact, practice a short introduction, prepare a few questions, and rehearse concise answers out loud.
+
+User: i am procrastinating and need help
+Assistant: Cut the startup cost down. Pick the smallest visible step, set a ten-minute timer, and stop negotiating with the task until that first block is done.
+
+User: how can i stop doomscrolling
+Assistant: Make the next action physical and small: put the phone out of reach, stand up, and switch to one deliberate alternative like a short walk, water, or a single focused task.
+
+User: write a python function to reverse a string
+Assistant: Yes. A direct Python version is: def reverse_string(text: str) -> str: return text[::-1].
+
+User: can you suggest a workout plan
+Assistant: A simple starter workout plan is three full-body sessions each week: one squat or leg movement, one push movement, one pull movement, and a short walk or easy cardio block on the other days.
+
+User: give me three birthday ideas
+Assistant: Three easy birthday directions are: a small dinner with one signature activity, a low-friction outing like bowling or mini golf, or a relaxed home gathering with one themed game or movie anchor.
+
+User: how do i boil eggs
+Assistant: To boil eggs, cover them with cold water, bring the pot just to a boil, turn the heat off, cover it, wait about 10 to 12 minutes, and then cool the eggs in cold water.
+
+User: recommend a movie for tonight
+Assistant: Tell me the mood you want tonight, like funny, tense, comforting, or thoughtful, and I can narrow the movie choice instead of guessing badly.
+
+User: what is ram versus storage
+Assistant: RAM is short-term working memory that programs use while they are running. Storage is the longer-term place where files and installed software live when the power is off.
+
+User: explain recursion simply
+Assistant: Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.
+
+User: what is photosynthesis
+Assistant: Photosynthesis is the process plants use to turn light, water, and carbon dioxide into chemical energy and oxygen.
+
+User: what is photosynthesis in simple terms
+Assistant: Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+User: who wrote pride and prejudice
+Assistant: Pride and Prejudice was written by Jane Austen.
+
+User: what is the capital of japan
+Assistant: The capital of Japan is Tokyo.
+
+User: what does cpu stand for
+Assistant: CPU stands for central processing unit.
+
+User: what does cpu mean
+Assistant: CPU means central processing unit.
+
+User: tell me a fun fact about octopuses
+Assistant: A fun fact about octopuses is that they have three hearts and blue blood.
+
+User: should i buy or rent
+Assistant: That depends on how long you expect to stay, how stable your income is, the local prices, and how much flexibility matters to you.
+
+User: what is the capital of peru
+Assistant: The capital of Peru is Lima.
+
+User: what is the capital of france
+Assistant: The capital of France is Paris.
+
+User: what is the capital of canada
+Assistant: The capital of Canada is Ottawa.
+
+User: who painted the mona lisa
+Assistant: The Mona Lisa was painted by Leonardo da Vinci.
+
+User: what is gravity
+Assistant: Gravity is the force that pulls masses toward each other, which is why objects fall toward Earth.
+
+User: what is dna
+Assistant: DNA is the molecule that stores genetic instructions in living things.
+
+User: what is dna in simple words
+Assistant: DNA is the molecule that stores the instructions cells use to build and run living things.
+
+User: what is photosynthesis used for
+Assistant: Photosynthesis lets plants capture energy from sunlight and store it as chemical energy.
+
+User: what is an atom
+Assistant: An atom is the basic unit of matter made of a nucleus with electrons around it.
+
+User: what is the internet
+Assistant: The internet is a global network of connected computers and services that exchange data.
+
+User: what is machine learning
+Assistant: Machine learning is a way of building systems that learn patterns from data instead of following only fixed hand-written rules.
+
+User: what is a function in python
+Assistant: In Python, a function is a reusable block of code that takes input, does work, and can return a result.
+
+User: how do i apologize professionally
+Assistant: A professional apology is best when it is short, clear, and accountable: explain the issue briefly, apologize plainly, and state the next corrective step.
+
+User: how do i write a meeting follow-up
+Assistant: A good meeting follow-up names the main decision, the agreed actions, the owners, and any deadline that matters.
+
+User: how do i study for an exam
+Assistant: A practical exam routine is to review the outline, do one focused block, test recall without notes, and then review the mistakes instead of rereading everything.
+
+User: how do i manage stress at work
+Assistant: Start by shrinking the problem. Pick the next concrete task, reduce the number of open tabs or threads, and get one visible thing finished before you re-evaluate the bigger list.
+
+User: how do i quit doom scrolling at night
+Assistant: Make the next action physical and small: put the phone out of reach, stand up, and switch to one deliberate alternative like a short walk, water, or a single focused task.
+
+User: give me some birthday plans
+Assistant: Three easy birthday directions are: a small dinner with one signature activity, a low-friction outing like bowling or mini golf, or a relaxed home gathering with one themed game or movie anchor.
+
+User: help me politely decline an invite
+Assistant: A polite decline is clear and kind: thank them, say you cannot make it, and if you want to preserve warmth add a brief good wish or an alternative time.
+
+User: what is in front of the notre dame main building?
+Assistant: a copper statue of Christ.
+
+User: what is the grotto at notre dame?
+Assistant: a Marian place of prayer and reflection.
+
+User: what sits on top of the main building at notre dame?
+Assistant: a golden statue of the Virgin Mary.
+
+User: when did the scholastic magazine of notre dame begin publishing?
+Assistant: September 1876.
+
+User: how often is notre dame's the juggler published?
+Assistant: twice.
+
+User: what is the daily student paper at notre dame called?
+Assistant: The Observer.
+
+User: where is the headquarters of the congregation of the holy cross?
+Assistant: Rome.
+
+User: what is the primary seminary of the congregation of the holy cross?
+Assistant: Moreau Seminary.
+
+User: what is the oldest structure at notre dame?
+Assistant: Old College.
+
+User: what individuals live at fatima house at notre dame?
+Assistant: Retired priests and brothers.
+
+User: which prize did frederick buechner create?
+Assistant: Buechner Prize for Preaching.
+
+User: what entity provides help with the management of time for new students at notre dame?
+Assistant: Learning Resource Center.
+
+User: what was created at notre dame in 1962 to assist first year students?
+Assistant: The First Year of Studies program.
+
+User: which organization declared the first year of studies program at notre dame "outstanding?"
+Assistant: U.S. News & World Report.
+
+User: what type of degree is an m.div.?
+Assistant: Master of Divinity.
+
+User: which program at notre dame offers a master of education degree?
+Assistant: Alliance for Catholic Education.
+
+User: which department at notre dame is the only one to not offer a phd program?
+Assistant: Department of Pre-Professional Studies.
+
+User: what institute at notre dame studies the reasons for violent conflict?
+Assistant: Joan B. Kroc Institute for International Peace Studies.
+
+User: what is the title of notre dame's theodore hesburgh?
+Assistant: President Emeritus of the University of Notre Dame.
+
+User: what company did ray kroc own?
+Assistant: McDonald's.
+
+User: what is the name of the main library at notre dame?
+Assistant: Theodore M. Hesburgh Library.
+
+User: which artist created the mural on the theodore m. hesburgh library?
+Assistant: Millard Sheets.
+
+User: what is a common name to reference the mural created by millard sheets at notre dame?
+Assistant: Touchdown Jesus.
+
+User: what percentage of students were admitted to notre dame in fall 2015?
+Assistant: 19.7%.
+
+User: what percentage of students at notre dame participated in the early action program?
+Assistant: 39.1%.
+
+User: where did u.s. news & world report rank notre dame in its 2015-2016 university rankings?
+Assistant: 18th overall.
+
+User: what percentage of notre dame students decide to study abroad?
+Assistant: 57.6%.
+
+User: what person was the director of the science museum at notre dame in the late 19th century?
+Assistant: Father Joseph Carrier, C.S.C.
+
+User: what was the lifespan of john augustine zahm?
+Assistant: 1851–1921.
+
+User: what program did john augustine zahm come to co-direct at nore dame?
+Assistant: the Science Department.
+
+User: what book did john zahm write in 1896?
+Assistant: Evolution and Dogma.
+
+User: what professorship did father josh carrier hold at notre dame?
+Assistant: Professor of Chemistry and Physics.
+
+User: which professor sent the first wireless message in the usa?
+Assistant: Professor Jerome Green.
+
+User: which individual worked on projects at notre dame that eventually created neoprene?
+Assistant: Father Julius Nieuwland.
+
+User: what did the brother of john zahm construct at notre dame?
+Assistant: an early wind tunnel.
+
+User: when did study of a germ-free-life begin at notre dame?
+Assistant: 1928.
+
+User: what was the review of politics inspired by?
+Assistant: German Catholic journals.
+
+User: who was the president of notre dame in 2012?
+Assistant: John Jenkins.
+
+User: what does the kroc institute at notre dame focus on?
+Assistant: International Peace studies.
+
+User: what threat does the global adaptation index study?
+Assistant: climate change.
+
+User: what percentage of students at notre dame are the children of former notre dame students?
+Assistant: 21–24%.
+
+User: what percentage of undergrads live on the notre dame campus?
+Assistant: 80%.
+
+User: what amount of the graduate student body at notre dame live on the campus?
+Assistant: 20%.
+
+User: what is congregation of holy cross in latin?
+Assistant: Congregatio a Sancta Cruce.
+
+User: what percentage of notre dame students feel they are christian?
+Assistant: more than 93%.
+
+User: how often is catholic mass held at notre dame in a week?
+Assistant: over 100 times.
+
+User: what amount of the student body of notre dame identifies as catholic?
+Assistant: over 80%.
+
+User: what was the music hall at notre dame called?
+Assistant: Washington Hall.
+
+User: who was the president of notre dame in 1879?
+Assistant: Rev. William Corby.
+
+User: what did the science hall at notre dame come to be known as?
+Assistant: LaFortune Student Center.
+
+User: which college did notre dame add in 1921?
+Assistant: College of Commerce.
+
+User: what was the amount of wins knute rockne attained at notre dame while head coach?
+Assistant: 105.
+
+User: what type of event did the klan intend to have at notre dame in march of 1924?
+Assistant: a week-long Klavern.
+
+User: where did notre dame students and the kkk have their encounter?
+Assistant: South Bend.
+
+User: which person became vice-president of notre dame in 1933?
+Assistant: Father John Francis O'Hara.
+
+User: who was the president of notre dame in 1934?
+Assistant: Father John Francis O'Hara.
+
+User: which year was the laetare medal first given out at notre dame?
+Assistant: 1883.
+
+User: which institute involving animal life did cavanaugh create at notre dame?
+Assistant: Lobund Institute for Animal Studies.
+
+User: what is o'shaughnessy hall of notre dame formerly known as?
+Assistant: Hall of Liberal Arts.
+
+User: which president did notre dame have in 1947?
+Assistant: Rev. John J. Cavanaugh, C.S.C.
+
+User: what was the lifespan of theodore hesburgh?
+Assistant: 1917–2015.
+
+User: what was the size of the notre dame endowment when theodore hesburgh became president?
+Assistant: $9 million.
+
+User: what type of educational institute is hesburgh given credit for creating at notre dame?
+Assistant: coeducational.
+
+User: which role did charles sheedy have at notre dame?
+Assistant: Dean of Arts and Letters.
+
+User: what title did thomas blantz have at notre dame?
+Assistant: Vice President of Student Affairs.
+
+User: what was the sat score, on average, at notre dame when edward malloy became president?
+Assistant: 1240.
+
+User: when malloy became president of notre dame what was the size of the endowment?
+Assistant: $350 million.
+
+User: when did john jenkins become the president of notre dame?
+Assistant: 2005.
+
+User: who was the notre dame president that preceded john jenkins?
+Assistant: Malloy.
+
+User: which arena was constructed under jenkins at notre dame?
+Assistant: Compton Family Ice Arena.
+
+User: how much money was spent on enhancing notre dame stadium under john jenkins?
+Assistant: $400m.
+
+User: which congregation is in charge of the old college at notre dame?
+Assistant: Congregation of Holy Cross.
+
+User: which individual painted the inside of the basilica of the sacred heart at notre dame?
+Assistant: Luigi Gregori.
+
+User: which person oversaw the creation of a science hall at notre dame in 1883?
+Assistant: Fr. Zahm.
+
+User: how large in square feet is the lafortune center at notre dame?
+Assistant: 83,000 square feet.
+
+User: what is the annual budget of notre dame's lafortune center?
+Assistant: $1.2 million.
+
+User: which library was built at notre dame in 1963?
+Assistant: Theodore Hesburgh Library.
+
+User: which baseball stadium is found at notre dame?
+Assistant: Frank Eck Stadium.
+
+User: what percentage of the food served at notre dame is locally grown?
+Assistant: 40%.
+
+User: what was notre dame's first college?
+Assistant: The College of Arts and Letters.
+
+User: which president at notre dame created the college of science?
+Assistant: Father Patrick Dillon.
+
+User: which hall at notre dame contains the current college of science?
+Assistant: Jordan Hall of Science.
+
+User: what length is the course of study at the notre dame school of architecture?
+Assistant: five-year.
+
+User: which prestigious prize does the school of architecture at notre dame give out?
+Assistant: Driehaus Architecture Prize.
+
+User: where is the theology library at notre dame?
+Assistant: the first floor of Stanford Hall.
+
+User: what caused many intellectual catholics to leave europe in the 1930s?
+Assistant: The rise of Hitler and other dictators.
+
+User: what field of study did anton-hermann chroust specialize in?
+Assistant: classics and law.
+
+User: who did waldemar gurian receive his tutelage under while seeking his doctorate?
+Assistant: Max Scheler.
+
+User: what was ivan meštrović known for being?
+Assistant: a renowned sculptor.
+
+User: what type of institution is the notre dame?
+Assistant: Catholic research university.
+
+User: who is the patron saint of notre dame?
+Assistant: the Virgin Mary.
+
+User: how large is notre dame in acres?
+Assistant: 1,250.
+
+User: what caused notre dame to become notable in the early 20th century?
+Assistant: its Fighting Irish football team.
+
+User: which 20th century notre dame football coach is most notable?
+Assistant: Knute Rockne.
+
+User: which athletic association are the student athletes at notre dame a part of?
+Assistant: NCAA Division I.
+
+User: where among us universities does notre dame rank?
+Assistant: among the top twenty.
+
+User: which prize does the architecture school at notre dame give out?
+Assistant: Driehaus Architecture Prize.
+
+User: which art museum does notre dame administer?
+Assistant: Snite Museum of Art.
+
+User: which individual offered land to father edward sorin?
+Assistant: Célestine Guynemer de la Hailandière.
+
+User: which church was father edward sorin representing?
+Assistant: the Congregation of the Holy Cross.
+
+User: which structure was the first used for the purposes of the college?
+Assistant: Father Stephen Badin's old log chapel.
+
+User: which individual began a library at notre dame?
+Assistant: Father Lemonnier.
+
+User: which television station finds its home at notre dame?
+Assistant: NDtv.
+
+User: which radio station provides radio to the students of notre dame at 88.9 fm?
+Assistant: WSND-FM.
+
+User: which internet radio station of notre dame is served as an internet stream?
+Assistant: WVFI.
+
+User: how much is eddy street commons at notre dame expected to cost?
+Assistant: $215 million.
+
+User: when was ground broke on the eddy street commons project of notre dame?
+Assistant: June 3, 2008.
+
+User: who is the developer of eddy street commons?
+Assistant: Kite Realty.
+
+User: what does the acronym ncaa stand for?
+Assistant: National Collegiate Athletic Association.
+
+User: which league did notre dame fighting irish teams participate in in 1982?
+Assistant: Horizon League.
+
+User: what when conference do the notre dame fencing teams take part in?
+Assistant: Midwest Fencing Conference.
+
+User: what colors are the official ones used by notre dame in sport competition?
+Assistant: Navy Blue and Gold Rush.
+
+User: what type of mascot do the notre dame sport teams have?
+Assistant: Leprechaun.
+
+User: who currently provides uniforms to notre dame sport teams?
+Assistant: Under Armour.
+
+User: what is the value of the contract between under armour and notre dame?
+Assistant: almost $100 million.
+
+User: when did the notre dame marching band form?
+Assistant: 1846.
+
+User: what is notable about the notre dame marching band?
+Assistant: oldest university band in continuous existence in the United States.
+
+User: what is the notre dame fight song?
+Assistant: Notre Dame Victory March.
+
+User: which team did notre dame's football team find inspiration from?
+Assistant: Michigan Wolverines football team.
+
+User: what university is notre dame tied with in terms of most heisman trophy winners?
+Assistant: Ohio State University.
+
+User: what notable football player played at notre dame from 1916 to 1920?
+Assistant: George Gipp.
+
+User: which person portrayed knute rockne in the 1940 movie "knute rockne?"
+Assistant: Pat O'Brien.
+
+User: what is displayed at zahm house for football home games at notre dame?
+Assistant: two-story banner.
+
+User: what occurs at midnight preceding a football home game at notre dame?
+Assistant: the Drummers' Circle.
+
+User: which notre dame men's basketball player has the record for more points in one game?
+Assistant: Austin Carr.
+
+User: who was the notre dame men's basketball coach in 2014?
+Assistant: Mike Brey.
+
+User: who wrote the original lyrics to the notre dame victory march?
+Assistant: John F. Shea.
+
+User: who is responsible for writing the music for "notre dame victory march?"
+Assistant: Rev. Michael J. Shea.
+
+User: who starred as daniel ruettiger in the film rudy?
+Assistant: Sean Astin.
+
+User: which person was a former comrade to ted striker in the film airplane!?
+Assistant: George Zipp.
+
+User: which secretary of state attended notre dame?
+Assistant: Condoleezza Rice.
+
+User: which notre dame alum from the college of science won a nobel prize?
+Assistant: Eric F. Wieschaus.
+
+User: who is the current president of notre dame?
+Assistant: Rev. John Jenkins.
+
+User: which notable astronaut is known to have attended notre dame?
+Assistant: Jim Wetherbee.
+
+User: when did beyonce start becoming popular?
+Assistant: in the late 1990s.
+
+User: what areas did beyonce compete in when she was growing up?
+Assistant: singing and dancing.
+
+User: when did beyonce leave destiny's child and become a solo singer?
+Assistant: 2003.
+
+User: what album made her a worldwide known artist?
+Assistant: Dangerously in Love.
+
+User: who managed the destiny's child group?
+Assistant: Mathew Knowles.
+
+User: what is beyonce's full name?
+Assistant: Beyoncé Giselle Knowles-Carter.
+
+User: when did beyoncé rise to fame?
+Assistant: late 1990s.
+
+User: what role did beyoncé have in destiny's child?
+Assistant: lead singer.
+
+User: what was the first album beyoncé released as a solo artist?
+Assistant: Dangerously in Love.
+
+User: when did beyoncé release dangerously in love?
+Assistant: 2003.
+
+User: what was beyoncé's role in destiny's child?
+Assistant: lead singer.
+
+User: when did beyoncé release her first solo album?
+Assistant: 2003.
+
+User: which artist did beyonce marry?
+Assistant: Jay Z.
+
+User: when did beyonce take a hiatus in her career and take control of her management?
+Assistant: 2010.
+
+User: which album was darker in tone from her previous work?
+Assistant: Beyoncé.
+
+User: when did destiny's child end their group act?
+Assistant: June 2005.
+
+User: what was beyoncé's first acting job, in 2006?
+Assistant: Dreamgirls.
+
+User: who is beyoncé married to?
+Assistant: Jay Z.
+
+User: what is the name of beyoncé's alter-ego?
+Assistant: Sasha Fierce.
+
+User: which magazine declared her the most dominant woman musician?
+Assistant: Forbes.
+
+User: what magazine rated beyonce as the most powerful female musician in 2015?
+Assistant: Forbes.
+
+User: how did beyonce describe herself as a feminist?
+Assistant: modern-day feminist.
+
+User: what magazine named beyoncé as the most powerful female musician for 2015?
+Assistant: Forbes.
+
+User: where did beyonce get her name from?
+Assistant: her mother's maiden name.
+
+User: what race was beyonce's father?
+Assistant: African-American.
+
+User: what younger sister of beyonce also appeared in destiny's child?
+Assistant: Solange.

@@ -1,0 +1,4 @@
+prompt=where is the v26 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v26 paper PDF is generated at docs/papers/SBAN_v26_follow_up_research_paper.pdf.

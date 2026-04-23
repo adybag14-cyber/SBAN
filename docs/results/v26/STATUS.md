@@ -1,0 +1,2 @@
+SBAN v26 keeps the packaged numeric suite on numeric_backend=cpu and score_threads=1 so the regression-safe CPU path remains the release baseline. The product release focus is conversational: a real v26 grounded seed, a separate v26 open-chat seed, broader operational answers, stronger session-memory behavior, a 20M hardening extension, and versioned open-chat evaluations that measure broader free chat directly.
+No completed 100M JSON artifact was found in docs/results at release time, so v26 reports through 20M only.

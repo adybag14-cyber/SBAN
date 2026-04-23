@@ -1,0 +1,72 @@
+what is SBAN v26
+what changed in v26
+how is v26 different from v25
+give me the elevator pitch for SBAN v26
+explain sparse bridge-adaptive network architecture
+what is bridge memory
+compare SBAN to transformers in detail
+what are the main limits of SBAN versus transformers
+what should new users try first
+what is the windows starter file called
+how do i launch it on linux
+what files ship in the bundle
+where is the v26 paper pdf
+what command shows cuda support
+how do cpu, cpu_mt, cuda, and opencl compare here
+do you support nvidia rtx gpus
+can this run on an rtx 4090
+what is numeric accel info
+is numeric cuda the default
+hi i am tom and i need help
+can you remember what team i am on
+our team is atlas
+what team am i on
+i am from london
+where am i from
+i work in the sbx lab
+what lab do i work in
+my role is researcher
+what is my role
+what facts can you remember
+how do you remember facts
+how do you avoid transcript corruption
+help me write a meeting agenda
+write a concise linkedin summary for a researcher
+show me a python class for a stack
+write a python function to reverse a string
+explain inflation simply
+explain pointers in c simply
+what is a black hole
+what does dns do
+compare tcp and udp
+how is your day going
+how can i make coffee taste better
+help me prepare for an interview
+i am procrastinating and need help
+how can i stop doomscrolling
+can you suggest a workout plan
+give me three birthday ideas
+how do i boil eggs
+what is json
+what is a hash map
+what is big o of binary search
+what is http 404
+what is sql join
+what is photosynthesis in simple terms
+what is dna in simple words
+what does cpu mean
+what is ram versus storage
+what is the capital of japan
+who wrote pride and prejudice
+tell me something cool about octopuses
+recommend a comforting movie
+what is 12 percent of 85
+if bob has 3 oranges, gives 2 away, and then eats the last one, how many oranges does he have
+what is zig
+what does std.arraylist do in zig upstream
+where is std.hashmap implemented in zig upstream
+what does zig std do
+how do i build zig from source
+how do you build zig without llvm
+blorple zint protocol
+thank you

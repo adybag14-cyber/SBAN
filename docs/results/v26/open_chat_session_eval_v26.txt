@@ -1,0 +1,408 @@
+[1] prompt=hello
+mode=free-composed
+backend=cpu
+response=Hello. I am SBAN v26, ready for grounded SBAN questions and broader free chat.
+
+expect_contains=Hello.
+expect_pass=true
+
+[2] prompt=how is your day going
+mode=free-composed
+backend=cpu
+response=I am steady and ready to help. We can keep things practical, conversational, and honest about what I know.
+
+expect_contains=ready to help
+expect_pass=true
+
+[3] prompt=can you help me plan tomorrow
+mode=free-composed
+backend=cpu
+response=Yes. Start with the fixed commitments, then pick the top few outcomes that matter most, and block time for those before the smaller tasks spread everywhere.
+
+expect_contains=fixed commitments
+expect_pass=true
+
+[4] prompt=help me organize my week
+mode=free-composed
+backend=cpu
+response=Yes. Put deadlines and appointments down first, then pick one major result for each day instead of making one giant undifferentiated list.
+
+expect_contains=one major result for each day
+expect_pass=true
+
+[5] prompt=how can i stay focused
+mode=free-composed
+backend=cpu
+response=Reduce the surface area. One task, one timer, notifications off, and a visible definition of done for the current block.
+
+expect_contains=One task
+expect_pass=true
+
+[6] prompt=help me draft a polite follow-up
+mode=free-composed
+backend=cpu
+response=Keep it short: restate the thread in one line, ask the direct question, and make the next action easy for the other person.
+
+expect_contains=Keep it short
+expect_pass=true
+
+[7] prompt=help me write a meeting agenda
+mode=free-composed
+backend=cpu
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners. If you want, give me the meeting type and I will turn that into a tighter draft.
+
+expect_contains=purpose
+expect_pass=true
+
+[8] prompt=draft a short apology to my manager
+mode=free-composed
+backend=cpu
+response=A good apology draft is brief and direct: say what happened, apologize plainly, state the fix or next step, and avoid turning the message into a defense.
+
+expect_contains=apologize plainly
+expect_pass=true
+
+[9] prompt=write a concise linkedin summary for a researcher
+mode=free-composed
+backend=cpu
+response=Here is a compact LinkedIn summary for a researcher:\n\nResearcher focused on turning complex technical questions into measurable results. I work across experiments, analysis, and implementation, with an emphasis on clear reasoning, reproducible evaluation, and building systems that hold up outside the happy path.
+
+expect_contains=measurable results
+expect_pass=true
+
+[10] prompt=help me prepare for an interview
+mode=free-composed
+backend=cpu
+response=A solid interview prep loop is: review the role, pick three stories that show impact, practice a short introduction, prepare a few questions, and rehearse concise answers out loud instead of only in your head.
+
+expect_contains=three stories
+expect_pass=true
+
+[11] prompt=i am procrastinating and need help
+mode=free-composed
+backend=cpu
+response=Cut the startup cost down. Pick the smallest visible step, set a ten-minute timer, and stop negotiating with the task until that first block is done.
+
+expect_contains=ten-minute timer
+expect_pass=true
+
+[12] prompt=how can i stop doomscrolling
+mode=free-composed
+backend=cpu
+response=Make the next action physical and small: put the phone out of reach, stand up, and switch to one deliberate alternative like a short walk, water, or a single focused task.
+
+expect_contains=phone out of reach
+expect_pass=true
+
+[13] prompt=can you suggest a workout plan
+mode=free-composed
+backend=cpu
+response=A simple starter workout plan is three full-body sessions each week: one squat or leg movement, one push movement, one pull movement, and a short walk or easy cardio block on the other days.
+
+expect_contains=three full-body sessions
+expect_pass=true
+
+[14] prompt=give me three birthday ideas
+mode=free-composed
+backend=cpu
+response=Three easy birthday directions are: a small dinner with one signature activity, a low-friction outing like bowling or mini golf, or a relaxed home gathering with one themed game or movie anchor.
+
+expect_contains=bowling
+expect_pass=true
+
+[15] prompt=how do i boil eggs
+mode=free-composed
+backend=cpu
+response=For boiled eggs, cover the eggs with cold water, bring the pot just to a boil, turn the heat off, cover it, wait about 10 to 12 minutes, then cool the eggs in cold water before peeling.
+
+expect_contains=10 to 12 minutes
+expect_pass=true
+
+[16] prompt=how can i make coffee taste better
+mode=free-composed
+backend=cpu
+response=If coffee tastes flat or harsh, the fastest fixes are usually fresher beans, a cleaner grinder, and adjusting the grind. If it tastes bitter, make the grind a bit coarser or shorten the brew. If it tastes sour or weak, grind a bit finer, use hotter water, or raise the coffee dose slightly.
+
+expect_contains=fresher beans
+expect_pass=true
+
+[17] prompt=show me a python class for a stack
+mode=free-composed
+backend=cpu
+response=Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: object) -> None:\n        self._items.append(item)\n\n    def pop(self) -> object:\n        if not self._items:\n            raise IndexError('pop from empty stack')\n        return self._items.pop()\n\n    def peek(self) -> object:\n        if not self._items:\n            raise IndexError('peek from empty stack')\n        return self._items[-1]\n\n    def is_empty(self) -> bool:\n        return not self._items\n```\nThis uses a list internally, where `append` and `pop` from the end are the natural stack operations.
+
+expect_contains=class Stack
+expect_pass=true
+
+[18] prompt=explain recursion simply
+mode=free-composed
+backend=cpu
+response=Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.
+
+expect_contains=base case
+expect_pass=true
+
+[19] prompt=can you explain inflation in plain language
+mode=free-composed
+backend=cpu
+response=Inflation means prices rise over time, so the same amount of money buys less than it used to. Mild inflation is normal, but high inflation makes planning and everyday costs much harder.
+
+expect_contains=prices rise over time
+expect_pass=true
+
+[20] prompt=explain c pointers simply
+mode=free-composed
+backend=cpu
+response=In C, a pointer is a variable that stores a memory address. Instead of holding the value itself, it points to where the value lives, which is why pointers are useful for arrays, dynamic memory, and passing data by reference.
+
+expect_contains=memory address
+expect_pass=true
+
+[21] prompt=what is a black hole in simple terms
+mode=free-composed
+backend=cpu
+response=A black hole is a region where gravity is so strong that once something crosses the event horizon, it cannot escape. You can think of it as matter packed so densely that spacetime is bent extremely hard around it.
+
+expect_contains=event horizon
+expect_pass=true
+
+[22] prompt=what does dns do
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+expect_contains=Domain Name System
+expect_pass=true
+
+[23] prompt=compare tcp and udp
+mode=free-composed
+backend=cpu
+response=TCP emphasizes reliable ordered delivery: it retries lost data and keeps packets in sequence. UDP is simpler and faster but does not guarantee delivery or order, which is why it fits things like streaming, voice, or games where low latency matters more than perfect reliability.
+
+expect_contains=reliable ordered delivery
+expect_pass=true
+
+[24] prompt=what is photosynthesis in simple terms
+mode=free-composed
+backend=cpu
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+expect_contains=sunlight
+expect_pass=true
+
+[25] prompt=what is dna in simple words
+mode=free-composed
+backend=cpu
+response=DNA is the molecule that stores the instructions cells use to build and run living things.
+
+expect_contains=instructions
+expect_pass=true
+
+[26] prompt=what does cpu mean
+mode=free-composed
+backend=cpu
+response=CPU stands for central processing unit.
+
+expect_contains=central processing unit
+expect_pass=true
+
+[27] prompt=what is ram versus storage
+mode=free-composed
+backend=cpu
+response=RAM is short-term working memory that programs use while they are running. Storage is the longer-term place where files and installed software live when the power is off.
+
+expect_contains=short-term working memory
+expect_pass=true
+
+[28] prompt=what is json
+mode=free-composed
+backend=cpu
+response=JSON stands for JavaScript Object Notation. It is a text format for structured data built from objects, arrays, strings, numbers, booleans, and null.
+
+expect_contains=JavaScript Object Notation
+expect_pass=true
+
+[29] prompt=what is a hash map
+mode=free-composed
+backend=cpu
+response=A hash map stores key-value pairs and uses a hash function to decide where keys should live internally, which is why lookups are often close to constant time on average.
+
+expect_contains=key-value pairs
+expect_pass=true
+
+[30] prompt=what is big o of binary search
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is big o of binary search
+response=Binary search runs in O(log n) time because each step halves the remaining search space.
+
+expect_contains=O(log n)
+expect_pass=true
+
+[31] prompt=what is http 404
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is http 404
+response=HTTP 404 means Not Found. The server was reached, but it could not find the resource at that path.
+
+expect_contains=Not Found
+expect_pass=true
+
+[32] prompt=what is sql join
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is sql join
+response=A SQL join combines rows from two tables based on a related key, such as matching users.id with orders.user_id.
+
+expect_contains=combines rows
+expect_pass=true
+
+[33] prompt=what is the capital of japan
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is the capital of japan
+response=The capital of Japan is Tokyo.
+
+expect_contains=Tokyo
+expect_pass=true
+
+[34] prompt=who wrote pride and prejudice
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=who wrote pride and prejudice
+response=Pride and Prejudice was written by Jane Austen.
+
+expect_contains=Jane Austen
+expect_pass=true
+
+[35] prompt=tell me something cool about octopuses
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=tell me a fun fact about octopuses
+response=A fun fact about octopuses is that they have three hearts and blue blood.
+
+expect_contains=three hearts
+expect_pass=true
+
+[36] prompt=recommend a comforting movie
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=recommend a movie for tonight
+response=Tell me the mood you want tonight, like funny, tense, comforting, or thoughtful, and I can narrow the movie choice instead of guessing badly.
+
+expect_contains=comforting
+expect_pass=true
+
+[37] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+expect_contains=team is atlas
+expect_pass=true
+
+[38] prompt=what team am i on
+mode=session-recall
+backend=cpu
+response=Your team is atlas.
+
+expect_contains=atlas
+expect_pass=true
+
+[39] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_contains=London
+expect_pass=true
+
+[40] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_contains=London
+expect_pass=true
+
+[41] prompt=what is 12 percent of 85
+mode=symbolic-math
+backend=cpu
+response=12 / 100 * 85 = 10.2.
+
+expect_contains== 10.2.
+expect_pass=true
+
+[42] prompt=if bob has 3 oranges, gives 2 away, and then eats the last one, how many oranges does he have
+mode=free-composed
+backend=cpu
+response=He has 0 left.
+
+expect_contains=0 left
+expect_pass=true
+
+[43] prompt=what is zig
+mode=free-composed
+backend=cpu
+response=Zig is a general-purpose programming language and toolchain focused on robust, optimal, and reusable software, with explicit memory management and a strong emphasis on control and clarity.
+
+expect_contains=programming language and toolchain
+expect_pass=true
+
+[44] prompt=what does std.arraylist do in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, lib/std/array_list.zig implements ArrayList and related growable contiguous arrays.
+
+expect_contains=growable contiguous arrays
+expect_pass=true
+
+[45] prompt=where is std.hashmap implemented in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.
+
+expect_contains=lib/std/hash_map.zig
+expect_pass=true
+
+[46] prompt=what does zig std do
+mode=free-composed
+backend=cpu
+response=The Zig README says `zig std` opens the standard library documentation in a browser tab.
+
+expect_contains=standard library documentation
+expect_pass=true
+
+[47] prompt=how do i build zig from source
+mode=free-composed
+backend=cpu
+response=The upstream Zig README describes the standard source build as the normal CMake process: create a build directory, run cmake, and then make install.
+
+expect_contains=CMake
+expect_pass=true
+
+[48] prompt=how do you build zig without llvm
+mode=free-composed
+backend=cpu
+response=The upstream Zig README says you can compile bootstrap.c with a C compiler, run the resulting bootstrap executable, and produce a zig2 stage2 compiler without LLVM extensions.
+
+expect_contains=bootstrap.c
+expect_pass=true
+
+[49] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+expect_contains=not sure
+expect_pass=true
+
+[50] prompt=thank you
+mode=free-composed
+backend=cpu
+response=You're welcome. If you want to keep going, give me the next question or the next thing you want to sort out.
+
+expect_contains=welcome
+expect_pass=true
+
+summary turns=50 anchored=0 retrieved=7 symbolic=5 nonempty=50 uncertain=1 expectations=50 passed=50

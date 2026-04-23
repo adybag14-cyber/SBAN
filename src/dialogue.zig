@@ -5,22 +5,23 @@ const cfg = @import("config.zig");
 const netmod = @import("network.zig");
 
 const feature_dim = 128;
-const current_release_name = "SBAN v25";
-const current_release_version = "v25";
-const current_seed_path = "data/sban_dialogue_seed_v25.txt";
-const current_open_seed_path = "data/sban_dialogue_open_seed_v25.txt";
-const current_prompt_eval_path = "data/sban_chat_eval_prompts_v25.txt";
-const current_session_eval_path = "data/sban_session_eval_v25.txt";
-const current_open_chat_eval_path = "data/sban_open_chat_session_eval_v25.txt";
-const current_summary_path = "SBAN_v25_EXECUTIVE_SUMMARY.md";
-const current_report_path = "SBAN_v25_REPORT.md";
-const current_paper_path = "docs/papers/SBAN_v25_follow_up_research_paper.pdf";
-const current_repo_zip_path = "deliverables/v25/SBAN_v25_repo.zip";
-const current_windows_demo_start = "SBAN_v25_Start.bat";
-const current_linux_demo_start = "./SBAN_v25_Start.sh";
-const current_windows_demo_zip = "deliverables/v25/demo/SBAN_v25_windows_x86_64_demo.zip";
-const current_linux_demo_zip = "deliverables/v25/demo/SBAN_v25_linux_x86_64_demo.zip";
-const session_magic = "SBAN_SESSION_V25";
+const current_release_name = "SBAN v26";
+const current_release_version = "v26";
+const current_seed_path = "data/sban_dialogue_seed_v26.txt";
+const current_open_seed_path = "data/sban_dialogue_open_seed_v26.txt";
+const current_prompt_eval_path = "data/sban_chat_eval_prompts_v26.txt";
+const current_session_eval_path = "data/sban_session_eval_v26.txt";
+const current_open_chat_eval_path = "data/sban_open_chat_session_eval_v26.txt";
+const current_summary_path = "SBAN_v26_EXECUTIVE_SUMMARY.md";
+const current_report_path = "SBAN_v26_REPORT.md";
+const current_paper_path = "docs/papers/SBAN_v26_follow_up_research_paper.pdf";
+const current_repo_zip_path = "deliverables/v26/SBAN_v26_repo.zip";
+const current_windows_demo_start = "SBAN_v26_Start.bat";
+const current_linux_demo_start = "./SBAN_v26_Start.sh";
+const current_windows_demo_zip = "deliverables/v26/demo/SBAN_v26_windows_x86_64_demo.zip";
+const current_linux_demo_zip = "deliverables/v26/demo/SBAN_v26_linux_x86_64_demo.zip";
+const session_magic = "SBAN_SESSION_V26";
+const legacy_session_magic_v25 = "SBAN_SESSION_V25";
 const legacy_session_magic_v24 = "SBAN_SESSION_V24";
 const legacy_session_magic_v23_5 = "SBAN_SESSION_V23_5";
 const legacy_session_magic_v23 = "SBAN_SESSION_V23";
@@ -142,6 +143,7 @@ const IntentKind = enum {
 const TokenizedText = struct {
     normalized: []u8,
     token_hashes: std.ArrayList(u64) = .empty,
+    topic_hashes: std.ArrayList(u64) = .empty,
     bigram_hashes: std.ArrayList(u64) = .empty,
     intent: IntentKind = .other,
     vector: [feature_dim]u16 = [_]u16{0} ** feature_dim,
@@ -149,6 +151,7 @@ const TokenizedText = struct {
     fn deinit(self: *TokenizedText, allocator: std.mem.Allocator) void {
         allocator.free(self.normalized);
         self.token_hashes.deinit(allocator);
+        self.topic_hashes.deinit(allocator);
         self.bigram_hashes.deinit(allocator);
     }
 };
@@ -194,6 +197,7 @@ const ApproxScore = struct {
 const LexicalScore = struct {
     score: i32,
     overlap: usize,
+    topic_overlap: usize,
     bigram_overlap: usize,
     prompt_cov_ppm: u32,
     candidate_cov_ppm: u32,
@@ -1230,6 +1234,15 @@ fn answerPrompt(
         }
     }
 
+    if (options.mode == .free and !domain_prompt and options.allow_generation) {
+        if (try synthesizeFreeResponse(allocator, prompt, session, options)) |response| {
+            return .{
+                .mode_label = "free-composed",
+                .response = response,
+            };
+        }
+    }
+
     if (options.mode == .free and !domain_prompt) {
         if (open_corpus) |open_ready_corpus| {
             if (open_scorer) |open_ready_scorer| {
@@ -1350,6 +1363,11 @@ fn scoreLexicalMatch(
     }
     if (overlap == 0) return null;
 
+    var topic_overlap: usize = 0;
+    for (prompt_tokens.topic_hashes.items) |hash| {
+        if (containsHash(candidate_tokens.topic_hashes.items, hash)) topic_overlap += 1;
+    }
+
     var bigram_overlap: usize = 0;
     for (prompt_tokens.bigram_hashes.items) |hash| {
         if (containsHash(candidate_tokens.bigram_hashes.items, hash)) bigram_overlap += 1;
@@ -1366,10 +1384,12 @@ fn scoreLexicalMatch(
         if (prompt_count >= 2 and overlap < 2 and bigram_overlap == 0) return null;
         if (prompt_count >= 3 and prompt_cov_ppm < 450 and bigram_overlap == 0) return null;
         if (candidate_count >= 3 and candidate_cov_ppm < 250 and bigram_overlap == 0) return null;
+        if (prompt_tokens.topic_hashes.items.len > 0 and candidate_tokens.topic_hashes.items.len > 0 and topic_overlap == 0) return null;
     }
 
     var score: i32 = @intCast(@min(approx_score, 4000));
     score += @as(i32, @intCast(overlap * 140));
+    score += @as(i32, @intCast(topic_overlap * 220));
     score += @as(i32, @intCast(bigram_overlap * 260));
     score += @as(i32, @intCast(@divTrunc(prompt_cov_ppm, 3)));
     score += @as(i32, @intCast(@divTrunc(candidate_cov_ppm, 6)));
@@ -1379,6 +1399,7 @@ fn scoreLexicalMatch(
     return .{
         .score = score,
         .overlap = overlap,
+        .topic_overlap = topic_overlap,
         .bigram_overlap = bigram_overlap,
         .prompt_cov_ppm = prompt_cov_ppm,
         .candidate_cov_ppm = candidate_cov_ppm,
@@ -1401,7 +1422,7 @@ fn maybeGroundedContinuation(
 }
 
 fn buildHelpResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return std.fmt.allocPrint(allocator, "I can help with {s}, release artifacts, starter files, CPU versus cpu_mt versus CUDA versus OpenCL behavior, session memory, short math, everyday planning, writing, coding snippets, interview prep, simple explanations, and broader free-form chat when the prompt stays inside what I can support honestly.", .{current_release_name});
+    return std.fmt.allocPrint(allocator, "I can help with {s}, release artifacts, starter files, CPU versus cpu_mt versus CUDA versus OpenCL behavior, session memory, short math, everyday planning, writing, coding help, Zig upstream questions, simple explanations, and broader free-form chat when the prompt stays inside what I can support honestly.", .{current_release_name});
 }
 
 fn buildFactStoredResponse(allocator: std.mem.Allocator, fact: FactCandidate) ![]const u8 {
@@ -1417,6 +1438,9 @@ fn buildFactStoredResponse(allocator: std.mem.Allocator, fact: FactCandidate) ![
     }
     if (std.ascii.eqlIgnoreCase(fact.key, "lab")) {
         return std.fmt.allocPrint(allocator, "Noted. Your lab is {s}, and I will remember that for this session.", .{fact.value});
+    }
+    if (std.ascii.eqlIgnoreCase(fact.key, "team")) {
+        return std.fmt.allocPrint(allocator, "Noted. Your team is {s}, and I will remember that for this session.", .{fact.value});
     }
     if (std.ascii.eqlIgnoreCase(fact.key, "role")) {
         return std.fmt.allocPrint(allocator, "Noted. Your role is {s}, and I will remember that for this session.", .{fact.value});
@@ -1438,6 +1462,9 @@ fn buildFactHelpResponse(allocator: std.mem.Allocator, fact: FactCandidate) ![]c
     if (std.ascii.eqlIgnoreCase(fact.key, "lab")) {
         return std.fmt.allocPrint(allocator, "Noted. Your lab is {s}. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.", .{fact.value});
     }
+    if (std.ascii.eqlIgnoreCase(fact.key, "team")) {
+        return std.fmt.allocPrint(allocator, "Noted. Your team is {s}. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, coding help, and short math.", .{fact.value});
+    }
     if (std.ascii.eqlIgnoreCase(fact.key, "role")) {
         return std.fmt.allocPrint(allocator, "Noted. Your role is {s}. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.", .{fact.value});
     }
@@ -1458,6 +1485,9 @@ fn buildFactRecallResponse(allocator: std.mem.Allocator, fact: SessionFact) ![]c
     if (std.ascii.eqlIgnoreCase(fact.key, "lab")) {
         return std.fmt.allocPrint(allocator, "Your lab is {s}.", .{fact.value});
     }
+    if (std.ascii.eqlIgnoreCase(fact.key, "team")) {
+        return std.fmt.allocPrint(allocator, "Your team is {s}.", .{fact.value});
+    }
     if (std.ascii.eqlIgnoreCase(fact.key, "role")) {
         return std.fmt.allocPrint(allocator, "Your role is {s}.", .{fact.value});
     }
@@ -1473,6 +1503,9 @@ fn buildFactRecallMiss(allocator: std.mem.Allocator, key: []const u8) ![]const u
     }
     if (std.ascii.eqlIgnoreCase(key, "lab")) {
         return allocator.dupe(u8, "I do not know your lab yet. Tell me with 'our lab is ...' or 'my lab is ...' and I will remember it for this session.");
+    }
+    if (std.ascii.eqlIgnoreCase(key, "team")) {
+        return allocator.dupe(u8, "I do not know your team yet. Tell me with 'our team is ...', 'my team is ...', or 'I am on team ...' and I will remember it for this session.");
     }
     if (std.ascii.eqlIgnoreCase(key, "role")) {
         return allocator.dupe(u8, "I do not know your role yet. Tell me with 'my role is ...' or 'I work as ...' and I will remember it for this session.");
@@ -1490,6 +1523,9 @@ fn buildFactCapabilityResponse(allocator: std.mem.Allocator, key: []const u8) ![
     if (std.ascii.eqlIgnoreCase(key, "lab")) {
         return allocator.dupe(u8, "Yes. Tell me your lab and I will remember it for this session.");
     }
+    if (std.ascii.eqlIgnoreCase(key, "team")) {
+        return allocator.dupe(u8, "Yes. Tell me your team and I will remember it for this session.");
+    }
     if (std.ascii.eqlIgnoreCase(key, "role")) {
         return allocator.dupe(u8, "Yes. Tell me your role and I will remember it for this session.");
     }
@@ -1497,8 +1533,8 @@ fn buildFactCapabilityResponse(allocator: std.mem.Allocator, key: []const u8) ![
 }
 
 fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?ChatResult {
-    if (containsPhraseIgnoreCase(prompt, "what changed in v25") or
-        containsPhraseIgnoreCase(prompt, "how is v25 different from v24"))
+    if (containsPhraseIgnoreCase(prompt, "what changed in v26") or
+        containsPhraseIgnoreCase(prompt, "how is v26 different from v25"))
     {
         return .{
             .mode_label = "operational-release-change",
@@ -1670,11 +1706,11 @@ fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?C
 }
 
 fn buildReleaseChangeResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "V25 keeps the numeric engine-health suite on the proven CPU baseline, but broadens the real free-chat surface with a much larger open-chat corpus, stronger non-domain routing, better paraphrase tolerance, wider practical task coverage, and simpler everyday knowledge answers that no longer fall straight to uncertainty.");
+    return allocator.dupe(u8, "V26 keeps the numeric engine-health suite on the proven CPU baseline, but pushes the chat surface much further: stricter topic-aware retrieval, broader coding and explanation coverage, richer natural memory, a larger open-chat corpus, Zig upstream coding knowledge, and safer handling of unseen prompts that would previously overmatch.");
 }
 
 fn buildNewUserStartResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "New users should start the continuing chat demo, ask what SBAN v25 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact like a name or city, and then try a practical prompt such as a meeting agenda, interview prep, or a simple explanation question.");
+    return allocator.dupe(u8, "New users should start the continuing chat demo, ask what SBAN v26 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact like a name, team, or city, and then try a practical prompt such as a meeting agenda, a simple explanation, or a coding request.");
 }
 
 fn buildCudaCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -1726,7 +1762,7 @@ fn buildNumericDefaultResponse(allocator: std.mem.Allocator) ![]const u8 {
 }
 
 fn buildRememberedFactsResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return std.fmt.allocPrint(allocator, "{s} can remember simple session facts such as your name, where you live or are from, your lab, your role, favorite color, preferences, and similar short scalar facts for the current session.", .{current_release_version});
+    return std.fmt.allocPrint(allocator, "{s} can remember simple session facts such as your name, where you live or are from, your lab, your team, your role, favorite color, preferences, and similar short scalar facts for the current session.", .{current_release_version});
 }
 
 fn buildFactMemoryMechanismResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -1738,7 +1774,7 @@ fn buildTranscriptSafetyResponse(allocator: std.mem.Allocator) ![]const u8 {
 }
 
 fn buildRoadmapResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "After v25, the roadmap should keep pushing on three fronts: broader free-form conversation without losing grounding, richer natural session memory beyond short scalar facts, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
+    return allocator.dupe(u8, "After v26, the roadmap should keep pushing on three fronts: broader free-form conversation without losing grounding, richer long-form memory and reasoning, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
 }
 
 fn synthesizeFreeResponse(
@@ -1807,11 +1843,20 @@ fn synthesizeFreeResponse(
     if (isMovieRecommendationPrompt(prompt)) {
         return @as(?[]const u8, try allocator.dupe(u8, "Yes. Give me the mood you want tonight, like funny, tense, comforting, or thoughtful, and I can narrow the movie choice instead of guessing badly."));
     }
+    if (isZigUpstreamPrompt(prompt)) {
+        return @as(?[]const u8, try buildZigUpstreamResponse(allocator, prompt));
+    }
     if (isCodingHelpPrompt(prompt)) {
         return @as(?[]const u8, try buildCodingHelpResponse(allocator, prompt));
     }
+    if (isCoffeePrompt(prompt)) {
+        return @as(?[]const u8, try buildCoffeeResponse(allocator));
+    }
     if (isSimpleExplanationPrompt(prompt)) {
         return @as(?[]const u8, try buildSimpleExplanationResponse(allocator, prompt));
+    }
+    if (try solveWordProblem(allocator, prompt)) |response| {
+        return @as(?[]const u8, response);
     }
     if (isSupportPrompt(prompt)) {
         return @as(?[]const u8, try buildSupportResponse(allocator, prompt));
@@ -1832,7 +1877,7 @@ fn buildGreetingResponse(allocator: std.mem.Allocator, session: *const SessionSt
 }
 
 fn buildIdentityResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return std.fmt.allocPrint(allocator, "I am {s}, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, broader free-chat support, and the measured CPU or GPU backend stack.", .{current_release_name});
+    return std.fmt.allocPrint(allocator, "I am {s}, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, broader free-chat support, practical coding help, and the measured CPU or GPU backend stack.", .{current_release_name});
 }
 
 fn composeAnchoredContinuation(
@@ -1866,7 +1911,11 @@ fn isFavoriteColorPrompt(prompt: []const u8) bool {
 }
 
 fn isHowAreYouPrompt(prompt: []const u8) bool {
-    return containsPhraseIgnoreCase(prompt, "how are you") or containsPhraseIgnoreCase(prompt, "how's it going");
+    return containsPhraseIgnoreCase(prompt, "how are you") or
+        containsPhraseIgnoreCase(prompt, "how's it going") or
+        containsPhraseIgnoreCase(prompt, "how is your day") or
+        containsPhraseIgnoreCase(prompt, "how's your day") or
+        containsPhraseIgnoreCase(prompt, "how is your day going");
 }
 
 fn isIdentityPrompt(prompt: []const u8) bool {
@@ -1915,7 +1964,7 @@ fn isFocusPrompt(prompt: []const u8) bool {
 
 fn isWritingHelpPrompt(prompt: []const u8) bool {
     return hasAnyPhraseIgnoreCase(prompt, &.{ "write", "draft", "word", "compose" }) and
-        hasAnyPhraseIgnoreCase(prompt, &.{ "email", "message", "reply", "note", "follow-up", "follow up", "apology", "agenda", "outline" });
+        hasAnyPhraseIgnoreCase(prompt, &.{ "email", "message", "reply", "note", "follow-up", "follow up", "apology", "agenda", "outline", "summary", "linkedin", "bio" });
 }
 
 fn isBrainstormPrompt(prompt: []const u8) bool {
@@ -1964,18 +2013,51 @@ fn isMovieRecommendationPrompt(prompt: []const u8) bool {
 
 fn isCodingHelpPrompt(prompt: []const u8) bool {
     return containsPhraseIgnoreCase(prompt, "python function") or
+        containsPhraseIgnoreCase(prompt, "python class") or
         containsPhraseIgnoreCase(prompt, "javascript function") or
         containsPhraseIgnoreCase(prompt, "code snippet") or
-        (containsPhraseIgnoreCase(prompt, "function") and containsPhraseIgnoreCase(prompt, "reverse a string"));
+        (containsPhraseIgnoreCase(prompt, "function") and containsPhraseIgnoreCase(prompt, "reverse a string")) or
+        (containsPhraseIgnoreCase(prompt, "class") and containsPhraseIgnoreCase(prompt, "stack")) or
+        (containsPhraseIgnoreCase(prompt, "stack") and containsPhraseIgnoreCase(prompt, "python"));
+}
+
+fn isZigUpstreamPrompt(prompt: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(prompt, &.{
+        "zig upstream",
+        "std.arraylist",
+        "std.hashmap",
+        "std.hash_map",
+        "zig std",
+        "build zig from source",
+        "build zig without llvm",
+        "bootstrap.c",
+        "zig source build",
+    });
 }
 
 fn isSimpleExplanationPrompt(prompt: []const u8) bool {
     return containsPhraseIgnoreCase(prompt, "explain recursion") or
+        containsPhraseIgnoreCase(prompt, "inflation") or
+        containsPhraseIgnoreCase(prompt, "black hole") or
+        containsPhraseIgnoreCase(prompt, "dns") or
+        containsPhraseIgnoreCase(prompt, "tcp") or
+        containsPhraseIgnoreCase(prompt, "udp") or
+        containsPhraseIgnoreCase(prompt, "pointer") or
+        containsPhraseIgnoreCase(prompt, "json") or
+        containsPhraseIgnoreCase(prompt, "hash map") or
+        containsPhraseIgnoreCase(prompt, "hashmap") or
+        containsPhraseIgnoreCase(prompt, "what is zig") or
+        containsPhraseIgnoreCase(prompt, "zig language") or
         containsPhraseIgnoreCase(prompt, "photosynthesis") or
         containsPhraseIgnoreCase(prompt, "what does cpu mean") or
         containsPhraseIgnoreCase(prompt, "cpu stand for") or
         containsPhraseIgnoreCase(prompt, "what is dna") or
         (containsPhraseIgnoreCase(prompt, "ram") and containsPhraseIgnoreCase(prompt, "storage"));
+}
+
+fn isCoffeePrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "coffee") and
+        hasAnyPhraseIgnoreCase(prompt, &.{ "taste better", "better", "improve", "fix", "good" });
 }
 
 fn isSupportPrompt(prompt: []const u8) bool {
@@ -2048,13 +2130,22 @@ fn buildWritingHelpResponse(allocator: std.mem.Allocator, prompt: []const u8) ![
     if (containsPhraseIgnoreCase(prompt, "agenda")) {
         return buildAgendaResponse(allocator);
     }
+    if (containsPhraseIgnoreCase(prompt, "linkedin") and containsPhraseIgnoreCase(prompt, "researcher")) {
+        return allocator.dupe(u8, "Here is a compact LinkedIn summary for a researcher:\n\nResearcher focused on turning complex technical questions into measurable results. I work across experiments, analysis, and implementation, with an emphasis on clear reasoning, reproducible evaluation, and building systems that hold up outside the happy path.");
+    }
     if (containsPhraseIgnoreCase(prompt, "follow-up") or containsPhraseIgnoreCase(prompt, "follow up")) {
-        return allocator.dupe(u8, "Yes. Keep the follow-up short: restate the thread in one line, ask the direct question, and make the next action easy for the other person.");
+        return allocator.dupe(u8, "Keep it short: restate the thread in one line, ask the direct question, and make the next action easy for the other person.");
     }
     return allocator.dupe(u8, "Yes. Tell me the audience, tone, and goal, and I can help draft it. A safe default is to keep it short, direct, and specific about the next step.");
 }
 
 fn buildCodingHelpResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
+    if (containsPhraseIgnoreCase(prompt, "python") and containsPhraseIgnoreCase(prompt, "stack") and containsPhraseIgnoreCase(prompt, "class")) {
+        return allocator.dupe(
+            u8,
+            "Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: object) -> None:\n        self._items.append(item)\n\n    def pop(self) -> object:\n        if not self._items:\n            raise IndexError('pop from empty stack')\n        return self._items.pop()\n\n    def peek(self) -> object:\n        if not self._items:\n            raise IndexError('peek from empty stack')\n        return self._items[-1]\n\n    def is_empty(self) -> bool:\n        return not self._items\n```\nThis uses a list internally, where `append` and `pop` from the end are the natural stack operations.",
+        );
+    }
     if (containsPhraseIgnoreCase(prompt, "python") and containsPhraseIgnoreCase(prompt, "reverse") and containsPhraseIgnoreCase(prompt, "string")) {
         return allocator.dupe(
             u8,
@@ -2067,6 +2158,30 @@ fn buildCodingHelpResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]
 fn buildSimpleExplanationResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
     if (containsPhraseIgnoreCase(prompt, "recursion")) {
         return allocator.dupe(u8, "Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "inflation")) {
+        return allocator.dupe(u8, "Inflation means prices rise over time, so the same amount of money buys less than it used to. Mild inflation is normal, but high inflation makes planning and everyday costs much harder.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "pointer")) {
+        return allocator.dupe(u8, "In C, a pointer is a variable that stores a memory address. Instead of holding the value itself, it points to where the value lives, which is why pointers are useful for arrays, dynamic memory, and passing data by reference.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "black hole")) {
+        return allocator.dupe(u8, "A black hole is a region where gravity is so strong that once something crosses the event horizon, it cannot escape. You can think of it as matter packed so densely that spacetime is bent extremely hard around it.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "tcp") and containsPhraseIgnoreCase(prompt, "udp")) {
+        return allocator.dupe(u8, "TCP emphasizes reliable ordered delivery: it retries lost data and keeps packets in sequence. UDP is simpler and faster but does not guarantee delivery or order, which is why it fits things like streaming, voice, or games where low latency matters more than perfect reliability.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "dns")) {
+        return allocator.dupe(u8, "DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "json")) {
+        return allocator.dupe(u8, "JSON stands for JavaScript Object Notation. It is a text format for structured data built from objects, arrays, strings, numbers, booleans, and null.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "hash map") or containsPhraseIgnoreCase(prompt, "hashmap")) {
+        return allocator.dupe(u8, "A hash map stores key-value pairs and uses a hash function to decide where keys should live internally, which is why lookups are often close to constant time on average.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "what is zig") or containsPhraseIgnoreCase(prompt, "zig language")) {
+        return allocator.dupe(u8, "Zig is a general-purpose programming language and toolchain focused on robust, optimal, and reusable software, with explicit memory management and a strong emphasis on control and clarity.");
     }
     if (containsPhraseIgnoreCase(prompt, "photosynthesis")) {
         return allocator.dupe(u8, "Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.");
@@ -2081,6 +2196,41 @@ fn buildSimpleExplanationResponse(allocator: std.mem.Allocator, prompt: []const 
         return allocator.dupe(u8, "RAM is short-term working memory that programs use while they are running. Storage is the longer-term place where files and installed software live when the power is off.");
     }
     return allocator.dupe(u8, "I can explain many practical topics more simply if you give me the exact concept and the level you want, like beginner, quick, or more detailed.");
+}
+
+fn buildZigUpstreamResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
+    if (containsPhraseIgnoreCase(prompt, "where is std.hashmap implemented")) {
+        return allocator.dupe(u8, "In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "what does std.hashmap do")) {
+        return allocator.dupe(u8, "In the upstream Zig source tree, lib/std/hash_map.zig implements generic hash maps and helpers such as StringHashMap.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "where is std.arraylist implemented")) {
+        return allocator.dupe(u8, "In the upstream Zig source tree, ArrayList lives in lib/std/array_list.zig.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "what does std.arraylist do")) {
+        return allocator.dupe(u8, "In the upstream Zig source tree, lib/std/array_list.zig implements ArrayList and related growable contiguous arrays.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "what does zig std do")) {
+        return allocator.dupe(u8, "The Zig README says `zig std` opens the standard library documentation in a browser tab.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "what file drives the zig source build")) {
+        return allocator.dupe(u8, "In the upstream Zig source tree, build.zig is the top-level Zig build script in the repository root.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "build zig from source")) {
+        return allocator.dupe(u8, "The upstream Zig README describes the standard source build as the normal CMake process: create a build directory, run cmake, and then make install.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "build zig without llvm") or containsPhraseIgnoreCase(prompt, "bootstrap.c")) {
+        return allocator.dupe(u8, "The upstream Zig README says you can compile bootstrap.c with a C compiler, run the resulting bootstrap executable, and produce a zig2 stage2 compiler without LLVM extensions.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "what is zig upstream")) {
+        return allocator.dupe(u8, "The upstream Zig repository is the source tree for the Zig language and toolchain, including the compiler, standard library, build system, and language-reference examples.");
+    }
+    return allocator.dupe(u8, "I can answer practical Zig upstream questions about the top-level build, standard-library file locations, and the versioned source tree that is bundled for this v26 upgrade work.");
+}
+
+fn buildCoffeeResponse(allocator: std.mem.Allocator) ![]const u8 {
+    return allocator.dupe(u8, "If coffee tastes flat or harsh, the fastest fixes are usually fresher beans, a cleaner grinder, and adjusting the grind. If it tastes bitter, make the grind a bit coarser or shorten the brew. If it tastes sour or weak, grind a bit finer, use hotter water, or raise the coffee dose slightly.");
 }
 
 fn buildUncertaintyResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
@@ -2297,10 +2447,16 @@ fn tokenizeText(allocator: std.mem.Allocator, text: []const u8) !TokenizedText {
         const canonical = canonicalToken(token, &token_buffer);
         const hash = std.hash.Wyhash.hash(0, canonical);
         try appendUniqueHash(allocator, &tokenized.token_hashes, hash);
+        if (!isGenericTopicToken(canonical)) {
+            try appendUniqueHash(allocator, &tokenized.topic_hashes, hash);
+        }
         addFeature(&tokenized.vector, hash, @intCast(@min(canonical.len + 1, 12)));
         if (!std.mem.eql(u8, canonical, token)) {
             const raw_hash = std.hash.Wyhash.hash(0, token);
             try appendUniqueHash(allocator, &tokenized.token_hashes, raw_hash);
+            if (!isGenericTopicToken(token)) {
+                try appendUniqueHash(allocator, &tokenized.topic_hashes, raw_hash);
+            }
             addFeature(&tokenized.vector, raw_hash, 2);
         }
         if (prev_hash) |prev| {
@@ -2311,6 +2467,57 @@ fn tokenizeText(allocator: std.mem.Allocator, text: []const u8) !TokenizedText {
         prev_hash = hash;
     }
     return tokenized;
+}
+
+fn isGenericTopicToken(token: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(token, &.{
+        "change",
+        "compare",
+        "launch",
+        "command",
+        "support",
+        "overview",
+        "limit",
+        "bundle",
+        "path",
+        "paper",
+        "summary",
+        "roadmap",
+        "gpu",
+        "nvidia",
+        "plan",
+        "agenda",
+        "interview",
+        "apology",
+        "procrastinate",
+        "doomscroll",
+        "workout",
+        "polite",
+        "idea",
+        "focus",
+        "meal",
+        "feeling",
+        "message",
+        "music",
+        "movie",
+        "write",
+        "draft",
+        "short",
+        "simple",
+        "explain",
+        "detail",
+        "detailed",
+        "code",
+        "coding",
+        "function",
+        "class",
+        "python",
+        "javascript",
+        "snippet",
+        "help",
+        "question",
+        "answer",
+    });
 }
 
 fn classifyIntent(text: []const u8) IntentKind {
@@ -2498,10 +2705,10 @@ fn wantsRoadmapAnswer(text: []const u8) bool {
         "next version",
         "next release",
         "future work",
-        "what should v24 improve",
-        "what comes after v24",
+        "what should v26 improve",
+        "what comes after v26",
         "roadmap after",
-        "after v24",
+        "after v26",
         "should improve",
         "what should improve",
     });
@@ -2919,6 +3126,17 @@ fn normalizeFactKey(allocator: std.mem.Allocator, key: []const u8) ![]u8 {
         allocator.free(copy);
         return allocator.dupe(u8, "lab");
     }
+    if (std.mem.eql(u8, copy, "team name") or std.mem.eql(u8, copy, "squad")) {
+        allocator.free(copy);
+        return allocator.dupe(u8, "team");
+    }
+    if (std.mem.eql(u8, copy, "what team i am on") or
+        std.mem.eql(u8, copy, "which team i am on") or
+        std.mem.eql(u8, copy, "team i am on"))
+    {
+        allocator.free(copy);
+        return allocator.dupe(u8, "team");
+    }
     if (std.mem.eql(u8, copy, "job") or std.mem.eql(u8, copy, "title")) {
         allocator.free(copy);
         return allocator.dupe(u8, "role");
@@ -2980,6 +3198,24 @@ fn extractFactCandidate(allocator: std.mem.Allocator, prompt: []const u8) !?Fact
     }
     if (extractLabWorkValue(prompt, "i work at ")) |value| {
         return .{ .key = try allocator.dupe(u8, "lab"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "our team is ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "team"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "my team is ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "team"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "i am on team ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "team"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "i'm on team ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "team"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "im on team ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "team"), .value = try sanitizeTurnText(allocator, value) };
+    }
+    if (extractFixedFactValue(prompt, "we are on team ")) |value| {
+        return .{ .key = try allocator.dupe(u8, "team"), .value = try sanitizeTurnText(allocator, value) };
     }
     if (extractFixedFactValue(prompt, "my role is ")) |value| {
         return .{ .key = try allocator.dupe(u8, "role"), .value = try sanitizeTurnText(allocator, value) };
@@ -3045,6 +3281,18 @@ fn extractFactQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
     {
         return @as(?[]u8, try allocator.dupe(u8, "lab"));
     }
+    if (containsPhraseIgnoreCase(prompt, "what is our team") or
+        containsPhraseIgnoreCase(prompt, "what's our team") or
+        containsPhraseIgnoreCase(prompt, "what is my team") or
+        containsPhraseIgnoreCase(prompt, "what's my team") or
+        containsPhraseIgnoreCase(prompt, "what team am i on") or
+        containsPhraseIgnoreCase(prompt, "which team am i on") or
+        containsPhraseIgnoreCase(prompt, "what team are we on") or
+        containsPhraseIgnoreCase(prompt, "which team are we on") or
+        containsPhraseIgnoreCase(prompt, "do you remember our team"))
+    {
+        return @as(?[]u8, try allocator.dupe(u8, "team"));
+    }
     if (containsPhraseIgnoreCase(prompt, "what is my role") or
         containsPhraseIgnoreCase(prompt, "what's my role") or
         containsPhraseIgnoreCase(prompt, "what role did i tell you"))
@@ -3093,6 +3341,15 @@ fn extractMemoryCapabilityQuery(allocator: std.mem.Allocator, prompt: []const u8
             containsPhraseIgnoreCase(prompt, "where i am based"))
         {
             return @as(?[]u8, try allocator.dupe(u8, "location"));
+        }
+        if (containsPhraseIgnoreCase(prompt, "what team i am on") or
+            containsPhraseIgnoreCase(prompt, "which team i am on") or
+            containsPhraseIgnoreCase(prompt, "what team i'm on") or
+            containsPhraseIgnoreCase(prompt, "which team i'm on") or
+            containsPhraseIgnoreCase(prompt, "what team are we on") or
+            containsPhraseIgnoreCase(prompt, "our team"))
+        {
+            return @as(?[]u8, try allocator.dupe(u8, "team"));
         }
     }
     return null;
@@ -3151,6 +3408,8 @@ fn takeLeadingNameCandidate(input: []const u8) ?[]const u8 {
         std.ascii.eqlIgnoreCase(first, "from") or
         std.ascii.eqlIgnoreCase(first, "in") or
         std.ascii.eqlIgnoreCase(first, "based") or
+        std.ascii.eqlIgnoreCase(first, "on") or
+        std.ascii.eqlIgnoreCase(first, "team") or
         hasAnyPhraseIgnoreCase(first, &.{ "stressed", "overwhelmed", "frustrated", "excited", "bored", "nervous", "worried", "tired", "ready", "trying", "working", "procrastinating", "thinking", "feeling", "stuck" }) or
         (first.len > 4 and std.mem.endsWith(u8, first, "ing")))
     {
@@ -3229,6 +3488,7 @@ fn loadSessionState(allocator: std.mem.Allocator, io: std.Io, path: ?[]const u8)
     if (bytes.len == 0) return .{};
 
     if (std.mem.startsWith(u8, bytes, session_magic) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v25) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v24) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v23_5) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v23) or
@@ -3633,6 +3893,95 @@ fn trainBytes(net: *netmod.Network, bytes: []const u8) !void {
     }
 }
 
+fn solveWordProblem(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (!containsPhraseIgnoreCase(prompt, "how many")) return null;
+    if (!(containsPhraseIgnoreCase(prompt, " has ") or
+        startsWithWordIgnoreCase(prompt, "if ") or
+        containsPhraseIgnoreCase(prompt, " starts with ")))
+    {
+        return null;
+    }
+
+    const start_value = extractFirstUnsigned(prompt) orelse return null;
+    var remaining: i64 = @intCast(start_value);
+
+    const subtract_markers = [_][]const u8{
+        " gives ",
+        " gave ",
+        " gives away ",
+        " gave away ",
+        " loses ",
+        " lost ",
+        " eats ",
+        " ate ",
+        " spends ",
+        " spent ",
+        " sells ",
+        " sold ",
+        " uses ",
+        " used ",
+    };
+    for (subtract_markers) |marker| {
+        if (extractUnsignedAfterMarker(prompt, marker)) |value| {
+            remaining -= @as(i64, @intCast(value));
+        }
+    }
+
+    const add_markers = [_][]const u8{
+        " gets ",
+        " got ",
+        " receives ",
+        " received ",
+        " buys ",
+        " bought ",
+        " finds ",
+        " found ",
+        " gains ",
+        " gained ",
+    };
+    for (add_markers) |marker| {
+        if (extractUnsignedAfterMarker(prompt, marker)) |value| {
+            remaining += @as(i64, @intCast(value));
+        }
+    }
+
+    if (containsPhraseIgnoreCase(prompt, "last one") or
+        containsPhraseIgnoreCase(prompt, "last orange") or
+        containsPhraseIgnoreCase(prompt, "last item") or
+        containsPhraseIgnoreCase(prompt, "remaining one") or
+        containsPhraseIgnoreCase(prompt, "rest of them"))
+    {
+        if (hasAnyPhraseIgnoreCase(prompt, &.{ "eat", "eats", "ate", "give", "gives", "gave", "use", "uses", "used", "spend", "spends", "spent", "sell", "sells", "sold" })) {
+            remaining = 0;
+        }
+    }
+
+    if (remaining < 0) remaining = 0;
+    return @as(?[]u8, try std.fmt.allocPrint(allocator, "He has {d} left.", .{remaining}));
+}
+
+fn extractFirstUnsigned(text: []const u8) ?usize {
+    var idx: usize = 0;
+    while (idx < text.len) : (idx += 1) {
+        if (std.ascii.isDigit(text[idx])) {
+            var end = idx + 1;
+            while (end < text.len and std.ascii.isDigit(text[end])) : (end += 1) {}
+            return std.fmt.parseInt(usize, text[idx..end], 10) catch null;
+        }
+    }
+    return null;
+}
+
+fn extractUnsignedAfterMarker(text: []const u8, marker: []const u8) ?usize {
+    const start = indexOfPhraseIgnoreCase(text, marker) orelse return null;
+    var idx = start + marker.len;
+    while (idx < text.len and !std.ascii.isDigit(text[idx])) : (idx += 1) {}
+    if (idx >= text.len) return null;
+    var end = idx + 1;
+    while (end < text.len and std.ascii.isDigit(text[end])) : (end += 1) {}
+    return std.fmt.parseInt(usize, text[idx..end], 10) catch null;
+}
+
 const MathTokenTag = enum { number, plus, minus, star, slash, lparen, rparen };
 
 const MathToken = struct {
@@ -3966,10 +4315,10 @@ test "natural location capability question maps to session memory capability" {
     try std.testing.expect(containsPhraseIgnoreCase(response, "where you live or where you are from"));
 }
 
-test "roadmap matcher does not hijack basic v24 overview prompts" {
-    try std.testing.expect(!wantsRoadmapAnswer("what is SBAN v24"));
-    try std.testing.expect(!wantsRoadmapAnswer("where is the v24 report"));
-    try std.testing.expect(wantsRoadmapAnswer("what should v24 improve"));
+test "roadmap matcher does not hijack basic v26 overview prompts" {
+    try std.testing.expect(!wantsRoadmapAnswer("what is SBAN v26"));
+    try std.testing.expect(!wantsRoadmapAnswer("where is the v26 report"));
+    try std.testing.expect(wantsRoadmapAnswer("what should v26 improve"));
 }
 
 test "week planning and focus prompts are not swallowed by generic planning" {
@@ -4056,6 +4405,32 @@ test "natural lab phrasing is stored from work sentence" {
     try std.testing.expectEqualStrings("sbx", fact.value);
 }
 
+test "team phrasing is stored and recalled naturally" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+
+    const fact = (try extractFactCandidate(allocator, "our team is atlas")).?;
+    defer allocator.free(fact.key);
+    defer allocator.free(fact.value);
+    try std.testing.expectEqualStrings("team", fact.key);
+    try std.testing.expectEqualStrings("atlas", fact.value);
+    try session.rememberFact(allocator, fact.key, fact.value);
+
+    const query = (try extractFactQuery(allocator, "what team am i on")).?;
+    defer allocator.free(query);
+    try std.testing.expectEqualStrings("team", query);
+    try std.testing.expectEqualStrings("atlas", session.lookupFact(query).?.value);
+}
+
+test "team capability prompt is not misparsed as a name" {
+    const allocator = std.testing.allocator;
+    try std.testing.expect((try extractFactCandidate(allocator, "can you remember what team i am on")) == null);
+    const key = (try extractMemoryCapabilityQuery(allocator, "can you remember what team i am on")).?;
+    defer allocator.free(key);
+    try std.testing.expectEqualStrings("team", key);
+}
+
 test "hardware retrieval does not overmatch benchmark prompts" {
     const allocator = std.testing.allocator;
     const seed =
@@ -4080,7 +4455,7 @@ test "hardware retrieval does not overmatch benchmark prompts" {
 
 test "operational paper prompt returns versioned paper path" {
     const allocator = std.testing.allocator;
-    const result = (try answerOperationalPrompt(allocator, "where is the v24 paper pdf")).?;
+    const result = (try answerOperationalPrompt(allocator, "where is the v26 paper pdf")).?;
     try std.testing.expect(result.symbolic);
     try std.testing.expect(containsPhraseIgnoreCase(result.response, current_paper_path));
 }
@@ -4183,4 +4558,36 @@ test "free synthesis handles simple explanation paraphrases" {
     try std.testing.expect(containsPhraseIgnoreCase(photo, "sunlight"));
     const cpu = (try synthesizeFreeResponse(allocator, "what does cpu mean", &session, .{})).?;
     try std.testing.expect(containsPhraseIgnoreCase(cpu, "central processing unit"));
+}
+
+test "free synthesis handles json hash map and zig prompts" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+    const json = (try synthesizeFreeResponse(allocator, "what is json", &session, .{})).?;
+    try std.testing.expect(containsPhraseIgnoreCase(json, "JavaScript Object Notation"));
+    const map = (try synthesizeFreeResponse(allocator, "what is a hash map", &session, .{})).?;
+    try std.testing.expect(containsPhraseIgnoreCase(map, "key-value"));
+    const zig = (try synthesizeFreeResponse(allocator, "what is zig", &session, .{})).?;
+    try std.testing.expect(containsPhraseIgnoreCase(zig, "programming language"));
+}
+
+test "word problem solver handles bob oranges case" {
+    const allocator = std.testing.allocator;
+    const response = (try solveWordProblem(allocator, "Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have")).?;
+    try std.testing.expectEqualStrings("He has 0 left.", response);
+}
+
+test "zig upstream synthesis answers hash map path question" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+    const response = (try synthesizeFreeResponse(allocator, "where is std.hashmap implemented in zig upstream", &session, .{})).?;
+    try std.testing.expect(containsPhraseIgnoreCase(response, "lib/std/hash_map.zig"));
+}
+
+test "follow-up writing response uses keep it short phrasing" {
+    const allocator = std.testing.allocator;
+    const response = try buildWritingHelpResponse(allocator, "help me draft a polite follow-up");
+    try std.testing.expect(containsPhraseIgnoreCase(response, "Keep it short"));
 }

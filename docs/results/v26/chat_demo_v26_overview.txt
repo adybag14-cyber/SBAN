@@ -1,0 +1,5 @@
+prompt=what is SBAN v26
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v26
+response=SBAN v26 is the conversational product release after v25. It keeps the numeric engine-health suite stable, preserves the measured CPU and GPU backend stack, and upgrades the shipped chat surface so free mode is broader, less brittle, and more useful for ordinary conversation.

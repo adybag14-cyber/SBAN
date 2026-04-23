@@ -16,9 +16,9 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/run_v25_release.py` for the current packaged benchmark and dialogue suite
-- `scripts/make_v25_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
-- `scripts/package_v25_demo.py` for the newcomer demo bundle
+- `scripts/run_v26_release.py` for the current packaged benchmark and dialogue suite
+- `scripts/make_v26_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v26_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -88,20 +88,28 @@ If you need the release targets or commands, read `references/release_profiles.m
   use a reproducible seed builder plus a curated assistant-safe corpus instead of pretending broad capability came from a single hand-written prompt file,
   validate broader everyday prompts directly with versioned session assets instead of claiming "99 percent" from anecdotes,
   and keep unsupported prompts on an honest uncertainty path even after widening paraphrase coverage and light factual support.
+- The v26 product lessons are the next step after that:
+  keep deterministic free-chat composition ahead of fuzzy open-seed retrieval for the prompts you can answer safely,
+  add a separate broad free-chat scripted battery instead of relying only on one main session asset,
+  treat Zig-upstream operational and file-location prompts as explicit supported product behavior when local source assets are provided,
+  keep team and other natural session facts on the structured memory path rather than letting name extraction swallow them,
+  extend the hardening ladder to 20M before talking about 100M again,
+  and only claim a 100M result if a completed JSON artifact actually exists under `docs/results/`.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
 
-- `python scripts/run_v25_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
+- `python scripts/run_v26_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
+- For the v26 era, prefer a dedicated scripted 100M CI attempt over folding that run into the ordinary release suite, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
 
 ## Deliverables
 
 For a new release:
 
-1. Run `python scripts/run_v25_release.py` or the next-generation equivalent.
-2. Run `python scripts/make_v25_deliverables.py` or the next-generation equivalent.
+1. Run `python scripts/run_v26_release.py` or the next-generation equivalent.
+2. Run `python scripts/make_v26_deliverables.py` or the next-generation equivalent.
 3. Confirm the versioned paper PDF, executive summary, repo zip, and demo bundle exist under `deliverables/`.
 4. Update `README.md` so the current release can be reproduced without extra context.
 5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.

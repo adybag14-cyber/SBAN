@@ -1,0 +1,375 @@
+[1] prompt=what is SBAN v26
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v26
+response=SBAN v26 is the conversational product release after v25. It keeps the numeric engine-health suite stable, preserves the measured CPU and GPU backend stack, and upgrades the shipped chat surface so free mode is broader, less brittle, and more useful for ordinary conversation.
+
+[2] prompt=what changed in v26
+mode=operational-release-change
+backend=cpu
+response=V26 keeps the numeric engine-health suite on the proven CPU baseline, but pushes the chat surface much further: stricter topic-aware retrieval, broader coding and explanation coverage, richer natural memory, a larger open-chat corpus, Zig upstream coding knowledge, and safer handling of unseen prompts that would previously overmatch.
+
+[3] prompt=how is v26 different from v25
+mode=operational-release-change
+backend=cpu
+response=V26 keeps the numeric engine-health suite on the proven CPU baseline, but pushes the chat surface much further: stricter topic-aware retrieval, broader coding and explanation coverage, richer natural memory, a larger open-chat corpus, Zig upstream coding knowledge, and safer handling of unseen prompts that would previously overmatch.
+
+[4] prompt=give me the elevator pitch for SBAN v26
+mode=free-anchor
+backend=cpu
+matched_prompt=give me the elevator pitch for SBAN v26
+response=SBAN v26 is a grounded non-transformer assistant that keeps live session memory, answers operational SBAN questions directly, and now handles a wider set of ordinary conversational prompts without collapsing into stale release blurbs or blanket uncertainty.
+
+[5] prompt=explain sparse bridge-adaptive network architecture
+mode=free-anchor
+backend=cpu
+matched_prompt=explain sparse bridge-adaptive network architecture
+response=Sparse Bridge-Adaptive Network Architecture uses sparse online memories plus bridge memories that carry context across horizons. Instead of dense transformer attention over frozen weights, SBAN routes activity through adaptive memory structures that keep updating while the runtime is operating.
+
+[6] prompt=what is bridge memory
+mode=free-anchor
+backend=cpu
+matched_prompt=what is bridge memory
+response=A bridge memory is the SBAN structure that carries context from one horizon to another when short local evidence alone is not enough. It acts like an adaptive context bridge between recent activity and longer-range state rather than a frozen attention lookup.
+
+[7] prompt=compare SBAN to transformers in detail
+mode=free-anchor
+backend=cpu
+matched_prompt=compare SBAN to transformers in detail
+response=Transformers rely on fixed trained weights and dense attention during inference. SBAN instead updates online state while it runs, keeps sparse memory structures alive across time, and uses adaptive bridge paths to preserve longer context without depending on a giant frozen checkpoint. The tradeoff is that SBAN still has to earn product breadth and reliability in the live runtime rather than inheriting broad capability from huge pretraining.
+
+[8] prompt=what are the main limits of SBAN versus transformers
+mode=free-anchor
+backend=cpu
+matched_prompt=what are the main limits of SBAN versus transformers
+response=The main SBAN limits versus transformers today are broad world knowledge and open-ended generation. SBAN is stronger when you want explicit runtime grounding, live session memory, and operationally controlled behavior, but it is still narrower than large pretrained transformer models on unconstrained open-domain knowledge.
+
+[9] prompt=what should new users try first
+mode=operational-new-user-start
+backend=cpu
+response=New users should start the continuing chat demo, ask what SBAN v26 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact like a name, team, or city, and then try a practical prompt such as a meeting agenda, a simple explanation, or a coding request.
+
+[10] prompt=what is the windows starter file called
+mode=operational-starter
+backend=cpu
+response=The Windows starter file is SBAN_v26_Start.bat. Open the bundle and run that script to start the continuing v26 chat loop.
+
+[11] prompt=how do i launch it on linux
+mode=operational-starter
+backend=cpu
+response=The Linux starter file is ./SBAN_v26_Start.sh. Run it from the bundle directory to start the continuing v26 chat loop.
+
+[12] prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v26 release bundle ships the executive summary at SBAN_v26_EXECUTIVE_SUMMARY.md, the report at SBAN_v26_REPORT.md, the paper PDF at docs/papers/SBAN_v26_follow_up_research_paper.pdf, the repo archive at deliverables/v26/SBAN_v26_repo.zip, and demo bundles at deliverables/v26/demo/SBAN_v26_windows_x86_64_demo.zip and deliverables/v26/demo/SBAN_v26_linux_x86_64_demo.zip.
+
+[13] prompt=where is the v26 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v26 paper PDF is generated at docs/papers/SBAN_v26_follow_up_research_paper.pdf.
+
+[14] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v26.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v26 bench assets.
+
+[15] prompt=how do cpu, cpu_mt, cuda, and opencl compare here
+mode=operational-backends
+backend=cpu
+response=CPU is the numeric baseline and the fallback for smaller retrieval workloads. cpu_mt is the explicit host-threaded option for larger experiments. CUDA is the preferred GPU path on NVIDIA systems and the preferred retrieval path there. OpenCL remains the generic GPU fallback for retrieval on compatible non-CUDA setups. Numeric CUDA stays experimental until it measures faster end to end.
+
+[16] prompt=do you support nvidia rtx gpus
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the preferred retrieval path on NVIDIA, keeps CPU as the safe numeric release baseline, and leaves numeric_backend=cuda as an explicit experiment instead of the automatic default.
+
+[17] prompt=can this run on an rtx 4090
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the preferred retrieval path on NVIDIA, keeps CPU as the safe numeric release baseline, and leaves numeric_backend=cuda as an explicit experiment instead of the automatic default.
+
+[18] prompt=what is numeric accel info
+mode=operational-numeric-accel-info
+backend=cpu
+response=Numeric-accel-info is the probe command that reports whether the numeric runtime can see and use the configured CPU, cpu_mt, or CUDA backend.
+
+[19] prompt=is numeric cuda the default
+mode=free-anchor
+backend=cpu
+matched_prompt=is numeric cuda the default
+response=Not yet. v26 keeps the single-thread CPU numeric profile as the default release fallback until measured CUDA and cpu_mt runs prove a dependable end-to-end win on the shipped suite.
+
+[20] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+[21] prompt=can you remember what team i am on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your team and I will remember it for this session.
+
+[22] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+[23] prompt=what team am i on
+mode=session-recall-miss
+backend=cpu
+response=I do not know your team yet. Tell me with 'our team is ...', 'my team is ...', or 'I am on team ...' and I will remember it for this session.
+
+[24] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+[25] prompt=where am i from
+mode=session-recall-miss
+backend=cpu
+response=I do not know where you live yet. Tell me with 'I live in ...' and I will remember it for this session.
+
+[26] prompt=i work in the sbx lab
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+[27] prompt=what lab do i work in
+mode=session-recall-miss
+backend=cpu
+response=I do not know your lab yet. Tell me with 'our lab is ...' or 'my lab is ...' and I will remember it for this session.
+
+[28] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+[29] prompt=what is my role
+mode=session-recall-miss
+backend=cpu
+response=I do not know your role yet. Tell me with 'my role is ...' or 'I work as ...' and I will remember it for this session.
+
+[30] prompt=what facts can you remember
+mode=operational-memory-facts
+backend=cpu
+response=v26 can remember simple session facts such as your name, where you live or are from, your lab, your team, your role, favorite color, preferences, and similar short scalar facts for the current session.
+
+[31] prompt=how do you remember facts
+mode=operational-memory-mechanism
+backend=cpu
+response=The dialogue runtime extracts simple fact statements from the current conversation, stores them in the structured session state, and answers later recall questions from that session memory only when the key matches confidently.
+
+[32] prompt=how do you avoid transcript corruption
+mode=operational-transcript-safety
+backend=cpu
+response=The session file does not store raw User and Assistant lines directly. It sanitizes turn text and stores encoded fields in a structured session format so newline injection cannot corrupt the transcript state.
+
+[33] prompt=help me write a meeting agenda
+mode=free-composed
+backend=cpu
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners. If you want, give me the meeting type and I will turn that into a tighter draft.
+
+[34] prompt=write a concise linkedin summary for a researcher
+mode=free-composed
+backend=cpu
+response=Here is a compact LinkedIn summary for a researcher:\n\nResearcher focused on turning complex technical questions into measurable results. I work across experiments, analysis, and implementation, with an emphasis on clear reasoning, reproducible evaluation, and building systems that hold up outside the happy path.
+
+[35] prompt=show me a python class for a stack
+mode=free-composed
+backend=cpu
+response=Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: object) -> None:\n        self._items.append(item)\n\n    def pop(self) -> object:\n        if not self._items:\n            raise IndexError('pop from empty stack')\n        return self._items.pop()\n\n    def peek(self) -> object:\n        if not self._items:\n            raise IndexError('peek from empty stack')\n        return self._items[-1]\n\n    def is_empty(self) -> bool:\n        return not self._items\n```\nThis uses a list internally, where `append` and `pop` from the end are the natural stack operations.
+
+[36] prompt=write a python function to reverse a string
+mode=free-composed
+backend=cpu
+response=Yes. A direct Python version is:\n```python\ndef reverse_string(text: str) -> str:\n    return text[::-1]\n```\nIf you want, I can also show the loop version or explain why slicing works.
+
+[37] prompt=explain inflation simply
+mode=free-composed
+backend=cpu
+response=Inflation means prices rise over time, so the same amount of money buys less than it used to. Mild inflation is normal, but high inflation makes planning and everyday costs much harder.
+
+[38] prompt=explain pointers in c simply
+mode=free-composed
+backend=cpu
+response=In C, a pointer is a variable that stores a memory address. Instead of holding the value itself, it points to where the value lives, which is why pointers are useful for arrays, dynamic memory, and passing data by reference.
+
+[39] prompt=what is a black hole
+mode=free-composed
+backend=cpu
+response=A black hole is a region where gravity is so strong that once something crosses the event horizon, it cannot escape. You can think of it as matter packed so densely that spacetime is bent extremely hard around it.
+
+[40] prompt=what does dns do
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+[41] prompt=compare tcp and udp
+mode=free-composed
+backend=cpu
+response=TCP emphasizes reliable ordered delivery: it retries lost data and keeps packets in sequence. UDP is simpler and faster but does not guarantee delivery or order, which is why it fits things like streaming, voice, or games where low latency matters more than perfect reliability.
+
+[42] prompt=how is your day going
+mode=free-composed
+backend=cpu
+response=I am steady and ready to help. We can keep things practical, conversational, and honest about what I know.
+
+[43] prompt=how can i make coffee taste better
+mode=free-composed
+backend=cpu
+response=If coffee tastes flat or harsh, the fastest fixes are usually fresher beans, a cleaner grinder, and adjusting the grind. If it tastes bitter, make the grind a bit coarser or shorten the brew. If it tastes sour or weak, grind a bit finer, use hotter water, or raise the coffee dose slightly.
+
+[44] prompt=help me prepare for an interview
+mode=free-composed
+backend=cpu
+response=A solid interview prep loop is: review the role, pick three stories that show impact, practice a short introduction, prepare a few questions, and rehearse concise answers out loud instead of only in your head.
+
+[45] prompt=i am procrastinating and need help
+mode=free-composed
+backend=cpu
+response=Cut the startup cost down. Pick the smallest visible step, set a ten-minute timer, and stop negotiating with the task until that first block is done.
+
+[46] prompt=how can i stop doomscrolling
+mode=free-composed
+backend=cpu
+response=Make the next action physical and small: put the phone out of reach, stand up, and switch to one deliberate alternative like a short walk, water, or a single focused task.
+
+[47] prompt=can you suggest a workout plan
+mode=free-composed
+backend=cpu
+response=A simple starter workout plan is three full-body sessions each week: one squat or leg movement, one push movement, one pull movement, and a short walk or easy cardio block on the other days.
+
+[48] prompt=give me three birthday ideas
+mode=free-composed
+backend=cpu
+response=Three easy birthday directions are: a small dinner with one signature activity, a low-friction outing like bowling or mini golf, or a relaxed home gathering with one themed game or movie anchor.
+
+[49] prompt=how do i boil eggs
+mode=free-composed
+backend=cpu
+response=For boiled eggs, cover the eggs with cold water, bring the pot just to a boil, turn the heat off, cover it, wait about 10 to 12 minutes, then cool the eggs in cold water before peeling.
+
+[50] prompt=what is json
+mode=free-composed
+backend=cpu
+response=JSON stands for JavaScript Object Notation. It is a text format for structured data built from objects, arrays, strings, numbers, booleans, and null.
+
+[51] prompt=what is a hash map
+mode=free-composed
+backend=cpu
+response=A hash map stores key-value pairs and uses a hash function to decide where keys should live internally, which is why lookups are often close to constant time on average.
+
+[52] prompt=what is big o of binary search
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is big o of binary search
+response=Binary search runs in O(log n) time because each step halves the remaining search space.
+
+[53] prompt=what is http 404
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is http 404
+response=HTTP 404 means Not Found. The server was reached, but it could not find the resource at that path.
+
+[54] prompt=what is sql join
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is sql join
+response=A SQL join combines rows from two tables based on a related key, such as matching users.id with orders.user_id.
+
+[55] prompt=what is photosynthesis in simple terms
+mode=free-composed
+backend=cpu
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+[56] prompt=what is dna in simple words
+mode=free-composed
+backend=cpu
+response=DNA is the molecule that stores the instructions cells use to build and run living things.
+
+[57] prompt=what does cpu mean
+mode=free-composed
+backend=cpu
+response=CPU stands for central processing unit.
+
+[58] prompt=what is ram versus storage
+mode=free-composed
+backend=cpu
+response=RAM is short-term working memory that programs use while they are running. Storage is the longer-term place where files and installed software live when the power is off.
+
+[59] prompt=what is the capital of japan
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is the capital of japan
+response=The capital of Japan is Tokyo.
+
+[60] prompt=who wrote pride and prejudice
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=who wrote pride and prejudice
+response=Pride and Prejudice was written by Jane Austen.
+
+[61] prompt=tell me something cool about octopuses
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=tell me a fun fact about octopuses
+response=A fun fact about octopuses is that they have three hearts and blue blood.
+
+[62] prompt=recommend a comforting movie
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=recommend a movie for tonight
+response=Tell me the mood you want tonight, like funny, tense, comforting, or thoughtful, and I can narrow the movie choice instead of guessing badly.
+
+[63] prompt=what is 12 percent of 85
+mode=symbolic-math
+backend=cpu
+response=12 / 100 * 85 = 10.2.
+
+[64] prompt=if bob has 3 oranges, gives 2 away, and then eats the last one, how many oranges does he have
+mode=free-composed
+backend=cpu
+response=He has 0 left.
+
+[65] prompt=what is zig
+mode=free-composed
+backend=cpu
+response=Zig is a general-purpose programming language and toolchain focused on robust, optimal, and reusable software, with explicit memory management and a strong emphasis on control and clarity.
+
+[66] prompt=what does std.arraylist do in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, lib/std/array_list.zig implements ArrayList and related growable contiguous arrays.
+
+[67] prompt=where is std.hashmap implemented in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.
+
+[68] prompt=what does zig std do
+mode=free-composed
+backend=cpu
+response=The Zig README says `zig std` opens the standard library documentation in a browser tab.
+
+[69] prompt=how do i build zig from source
+mode=free-composed
+backend=cpu
+response=The upstream Zig README describes the standard source build as the normal CMake process: create a build directory, run cmake, and then make install.
+
+[70] prompt=how do you build zig without llvm
+mode=free-composed
+backend=cpu
+response=The upstream Zig README says you can compile bootstrap.c with a C compiler, run the resulting bootstrap executable, and produce a zig2 stage2 compiler without LLVM extensions.
+
+[71] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[72] prompt=thank you
+mode=free-composed
+backend=cpu
+response=You're welcome. If you want to keep going, give me the next question or the next thing you want to sort out.
+
+summary turns=72 anchored=7 retrieved=7 symbolic=26 nonempty=72 uncertain=1

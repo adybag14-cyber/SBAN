@@ -1,168 +1,191 @@
-# SBAN v25
+# SBAN v26
 
-SBAN v25 is the current conversational product release of the Sparse Bridge-Adaptive Network runtime.
+SBAN v26 is the current conversational product release of the Sparse Bridge-Adaptive Network runtime.
 
-This release keeps the established numeric engine-health suite on the proven single-thread CPU profile while materially broadening the shipped free-chat surface. v25 keeps the measured CPU, `cpu_mt`, CUDA, and OpenCL backend stack from the recent backend work, but adds a real v25 grounded seed, a separate v25 open-chat seed, broader operational answers, stronger session-memory behavior, and a wider deterministic free-chat path for ordinary prompts.
+This release keeps the packaged numeric suite on the proven single-thread CPU baseline, extends the hardening ladder to `20M`, and upgrades the user-facing chat runtime so ordinary free-chat prompts, natural fact memory, operational answers, and Zig-upstream questions are much less brittle than earlier releases.
 
 ## Headline goals
 
-- Keep the original packaged prefix, drift, probe, 250k, 1M, and 10M checks stable on the proven numeric fallback profile.
-- Ship a truthful v25 grounded seed plus a separate curated and dataset-enriched v25 open-chat seed.
-- Make the default free-chat loop materially broader for everyday prompts without pretending SBAN is a broad general knowledge model.
-- Preserve CPU fallback automatically and prefer accelerated paths only where they actually help.
-- Keep measuring CUDA and `cpu_mt` explicitly for retrieval and numeric experiments without changing the packaged numeric regression baseline.
+- Keep the established prefix, drift, probe, `250k`, `1M`, and `10M` numeric guardrail stable on the original CPU release profile.
+- Extend the hardening suite with a measured `20M` run.
+- Ship a real v26 grounded seed plus a separate curated and dataset-enriched v26 open-chat seed.
+- Fix the earlier free-chat failure modes where ordinary prompts either fell to uncertainty or overmatched unrelated SBAN answers.
+- Broaden deterministic coverage for everyday explanations, writing help, coding help, natural session memory, and Zig-upstream operational questions.
+- Keep CUDA, `cpu_mt`, and OpenCL measured explicitly instead of promoting them by preference.
 
 ## Main files
 
-- Runtime: `src/network.zig`, `src/dialogue.zig`, `src/main.zig`
-- Numeric profile knobs: `src/config.zig`
+- Runtime:
+  - `src/network.zig`
+  - `src/dialogue.zig`
+  - `src/main.zig`
+- Numeric profile knobs:
+  - `src/config.zig`
 - Dialogue assets:
-  - `data/sban_dialogue_seed_v25.txt`
-  - `data/sban_dialogue_open_seed_v25.txt`
-  - `data/sban_chat_eval_prompts_v25.txt`
-  - `data/sban_session_eval_v25.txt`
-  - `data/sban_open_chat_session_eval_v25.txt`
+  - `data/sban_dialogue_seed_v26.txt`
+  - `data/sban_dialogue_open_seed_v26.txt`
+  - `data/sban_chat_eval_prompts_v26.txt`
+  - `data/sban_session_eval_v26.txt`
+  - `data/sban_open_chat_session_eval_v26.txt`
+  - `data/sban_broad_chat_session_eval_v26.txt`
 - Seed builder:
-  - `scripts/build_v25_open_seed.py`
+  - `scripts/build_v26_open_seed.py`
 - Release scripts:
-  - `scripts/run_v25_release.py`
-  - `scripts/make_v25_deliverables.py`
-  - `scripts/package_v25_demo.py`
-- Release notes and thresholds: `references/release_profiles.md`
+  - `scripts/run_v26_release.py`
+  - `scripts/make_v26_deliverables.py`
+  - `scripts/package_v26_demo.py`
+- Release thresholds and caveats:
+  - `references/release_profiles.md`
 
 ## Build
+
+If `zig` is not on `PATH`, either pass `--zig-exe` to the release script or use the extracted local toolchain path, for example:
+
+```bash
+C:/Users/Ady/Downloads/zig-x86_64-windows-0.17.0-dev.87+9b177a7d2/zig-x86_64-windows-0.17.0-dev.87+9b177a7d2/zig.exe build test
+C:/Users/Ady/Downloads/zig-x86_64-windows-0.17.0-dev.87+9b177a7d2/zig-x86_64-windows-0.17.0-dev.87+9b177a7d2/zig.exe build -Doptimize=ReleaseFast
+```
+
+If `zig` is already configured:
 
 ```bash
 zig build test
 zig build -Doptimize=ReleaseFast
 ```
 
-## Try the v25 runtime from source
+## Try the v26 runtime from source
 
 One-shot free chat:
 
 ```bash
-zig-out/bin/zig_sban chat-demo "what is SBAN v25" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "what is SBAN v26" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt backend=auto mode=free allow_generation=true
 ```
 
 Continuing-session examples:
 
 ```bash
-zig-out/bin/zig_sban chat-demo "hi i am tom and i need help" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt session_path=session_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "can you recall my name" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt session_path=session_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "i am from london" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt session_path=session_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "where am i from" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt session_path=session_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "what files ship in the bundle" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "what command shows cuda support" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "help me write a meeting agenda" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "what is photosynthesis in simple terms" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "write a python function to reverse a string" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt backend=auto mode=free allow_generation=true
-zig-out/bin/zig_sban chat-demo "what is 15% of 240" 180 seed_path=data/sban_dialogue_seed_v25.txt open_seed_path=data/sban_dialogue_open_seed_v25.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "hi i am tom and i need help" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt session_path=session_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "can you recall my name" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt session_path=session_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "our team is atlas" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt session_path=session_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "what team am i on" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt session_path=session_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "i am from london" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt session_path=session_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "where am i from" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt session_path=session_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "what files ship in the bundle" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "what command shows cuda support" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "write a python class for a stack" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "what is json" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt backend=auto mode=free allow_generation=true
+zig-out/bin/zig_sban chat-demo "where is std.hashmap implemented in zig upstream" 180 seed_path=data/sban_dialogue_seed_v26.txt open_seed_path=data/sban_dialogue_open_seed_v26.txt backend=auto mode=free allow_generation=true
 ```
 
-Inspect GPU availability:
+## Inspect accelerator support
 
 ```bash
-zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v25.txt backend=cuda
-zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v25.txt backend=cpu_mt threads=4
+zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v26.txt backend=cuda
+zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v26.txt backend=cpu_mt threads=4
+zig-out/bin/zig_sban numeric-accel-info numeric_backend=cpu
+zig-out/bin/zig_sban numeric-accel-info numeric_backend=cpu_mt score_threads=4 parallel_score_min_predictive_nodes=1
 zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1
 ```
 
-If you want to benchmark raw retrieval throughput directly, use:
+Raw retrieval throughput:
 
 ```bash
-zig-out/bin/zig_sban accel-bench docs/results/v25/accel_prompts_v25_bench.txt backend=cuda seed_path=docs/results/v25/accel_seed_v25_bench.txt iterations=4
+zig-out/bin/zig_sban accel-bench docs/results/v26/accel_prompts_v26_bench.txt backend=cuda seed_path=docs/results/v26/accel_seed_v26_bench.txt iterations=4
 ```
 
-If you want to force the older generic GPU selection path instead of naming CUDA or OpenCL explicitly, add `backend=gpu`.
+## Rebuild the expanded v26 open seed
 
-## Rebuild the expanded v25 open seed
-
-The shipped `data/sban_dialogue_open_seed_v25.txt` is a curated seed built from the earlier open seed, hand-added practical prompts, and optional filtered SQuAD pairs.
+The shipped `data/sban_dialogue_open_seed_v26.txt` is built from the earlier open seed, curated v26 additions, optional filtered SQuAD coverage, and Zig-upstream prompts derived from the local Zig source zip.
 
 ```bash
-python scripts/build_v25_open_seed.py
+python scripts/build_v26_open_seed.py
 ```
 
-To skip the optional `datasets` dependency and network-backed SQuAD load:
+To skip optional dataset loading:
 
 ```bash
-python scripts/build_v25_open_seed.py --no-datasets
+python scripts/build_v26_open_seed.py --no-datasets
 ```
 
-## Run the measured v25 suite
+## Run the measured v26 suite
 
 ```bash
-python scripts/run_v25_release.py
+python scripts/run_v26_release.py
 ```
 
 To reuse an existing `zig-out` binary:
 
 ```bash
-python scripts/run_v25_release.py --skip-build
+python scripts/run_v26_release.py --skip-build
 ```
 
-This writes the measured artifacts to `docs/results/v25/`, including:
-
-- `unified_prefix_v25_release.json`
-- `unified_drift_v25_release.json`
-- `unified_probe_v25_release.json`
-- `longrun_v25_250k.json`
-- `longrun_v25_1m.json`
-- `longrun_v25_10m.json`
-- `chat_eval_v25_hybrid.txt`
-- `chat_eval_v25_free.txt`
-- `chat_session_eval_v25.txt`
-- `open_chat_session_eval_v25.txt`
-- `accel_info_v25_cpu_mt.txt`
-- `accel_info_v25_cuda.txt`
-- `numeric_accel_info_v25_cpu.txt`
-- `numeric_accel_info_v25_cpu_mt.txt`
-- `numeric_accel_info_v25_cuda.txt`
-- `accel_bench_v25.json`
-- `numeric_backend_v25.json`
-
-## Generate the v25 report, summary, paper, demo bundle, and repo zip
+If `zig` is not on `PATH`:
 
 ```bash
-python scripts/make_v25_deliverables.py
+python scripts/run_v26_release.py --zig-exe "C:/Users/Ady/Downloads/zig-x86_64-windows-0.17.0-dev.87+9b177a7d2/zig-x86_64-windows-0.17.0-dev.87+9b177a7d2/zig.exe"
+```
+
+This writes measured artifacts to `docs/results/v26/`, including:
+
+- `unified_prefix_v26_release.json`
+- `unified_drift_v26_release.json`
+- `unified_probe_v26_release.json`
+- `longrun_v26_250k.json`
+- `longrun_v26_1m.json`
+- `longrun_v26_10m.json`
+- `longrun_v26_20m.json`
+- `chat_eval_v26_hybrid.txt`
+- `chat_eval_v26_free.txt`
+- `chat_session_eval_v26.txt`
+- `open_chat_session_eval_v26.txt`
+- `broad_chat_session_eval_v26.txt`
+- `accel_info_v26_cpu_mt.txt`
+- `accel_info_v26_cuda.txt`
+- `numeric_accel_info_v26_cpu.txt`
+- `numeric_accel_info_v26_cpu_mt.txt`
+- `numeric_accel_info_v26_cuda.txt`
+- `accel_bench_v26.json`
+- `numeric_backend_v26.json`
+- `STATUS.md`
+
+## Generate the v26 report, summary, paper, demo bundle, and repo zip
+
+```bash
+python scripts/make_v26_deliverables.py
 ```
 
 Generated outputs include:
 
-- `SBAN_v25_REPORT.md`
-- `SBAN_v25_EXECUTIVE_SUMMARY.md`
-- `docs/papers/SBAN_v25_follow_up_research_paper.pdf`
-- `deliverables/v25/SBAN_v25_repo.zip`
-- `deliverables/v25/demo/SBAN_v25_windows_x86_64_demo.zip` on Windows
+- `SBAN_v26_REPORT.md`
+- `SBAN_v26_EXECUTIVE_SUMMARY.md`
+- `docs/papers/SBAN_v26_follow_up_research_paper.pdf`
+- `deliverables/v26/SBAN_v26_repo.zip`
+- `deliverables/v26/demo/SBAN_v26_windows_x86_64_demo.zip` on Windows
+- `deliverables/v26/demo/SBAN_v26_linux_x86_64_demo.zip` on Linux
 
 ## Package the newcomer demo directly
 
 ```bash
-python scripts/package_v25_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
+python scripts/package_v26_demo.py --binary zig-out/bin/zig_sban.exe --platform windows_x86_64
 ```
 
 Linux example:
 
 ```bash
-python scripts/package_v25_demo.py --binary zig-out/bin/zig_sban --platform linux_x86_64
+python scripts/package_v26_demo.py --binary zig-out/bin/zig_sban --platform linux_x86_64
 ```
 
-The newcomer scripts use `backend=auto` and load both the grounded and open-chat v25 seeds. Small bundled workloads still often resolve to CPU, while larger NVIDIA-backed retrieval workloads can promote themselves to CUDA automatically. Retrieval CUDA and `cpu_mt` experiments remain available through `backend=cuda`, `backend=cpu_mt`, `accel-info`, and `accel-bench`, while the packaged numeric suite stays on `numeric_backend=cpu` and numeric `cpu_mt` or CUDA remain explicit experiments through `numeric-accel-info` plus `eval-variant`.
+The newcomer scripts use `backend=auto` and load both the grounded and open-chat v26 seeds. Small bundled workloads still often stay on CPU, while larger NVIDIA-backed retrieval workloads can promote to CUDA automatically. The packaged numeric suite still stays on `numeric_backend=cpu` until accelerated numeric runs prove a dependable end-to-end win.
 
 ## CI and release automation
 
-- `.github/workflows/ci.yml` builds and tests SBAN on Windows and Ubuntu and runs both the main v25 session smoke checks and the v25 open-chat smoke checks.
-- `.github/workflows/release.yml` packages v25 demo bundles for Windows and Linux and uploads them on `v25*` tags.
+- `.github/workflows/ci.yml` builds and tests SBAN on Windows and Ubuntu and runs the v26 session smoke checks, the v26 open-chat smoke checks, and the v26 broad-chat battery.
+- `.github/workflows/release.yml` packages v26 demo bundles for Windows and Linux and uploads them on `v26*` tags.
 
 ## Important benchmark note
 
-The numeric suite is still an engine-health and hardening profile, not a broad generalization benchmark. v25 intentionally keeps the packaged numeric suite on the single-thread CPU fallback because accelerated numeric backends should only become the default when the measured end-to-end release profile actually wins.
+The numeric suite is still an engine-health and hardening profile, not a broad generalization benchmark. v26 intentionally keeps the packaged numeric suite on the single-thread CPU fallback and extends the hardening ladder to `20M`. A `100M` result is only reported if a completed JSON artifact already exists under `docs/results/`; otherwise it is skipped rather than inferred.
 
 ## Product note
 
-v25 is materially broader and calmer in free chat than v24, but it is still not a broad general knowledge model. It should answer grounded SBAN questions, remembered session facts, short math, and a wider set of ordinary conversational prompts well, while still declining unsupported factual questions honestly.
-
-## Bottom line
-
-v25 is the product release that keeps the proven backend stack and numeric guardrail intact while making SBAN substantially more useful for ordinary continuing chat.
+v26 is materially broader and more dependable in free chat than v25, but it is still not a broad general knowledge model. It should answer grounded SBAN questions, remembered session facts, short math, practical writing and coding prompts, Zig-upstream operational questions, and a wider set of ordinary conversational prompts well, while still declining unsupported questions honestly.

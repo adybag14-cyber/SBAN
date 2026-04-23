@@ -1,0 +1,370 @@
+[1] prompt=what is SBAN v26
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v26
+response=SBAN v26 is the conversational product release after v25. It keeps the numeric engine-health suite stable, preserves the measured CPU and GPU backend stack, and upgrades the shipped chat surface so free mode is broader, less brittle, and more useful for ordinary conversation.
+
+[2] prompt=what changed in v26
+mode=operational-release-change
+backend=cpu
+response=V26 keeps the numeric engine-health suite on the proven CPU baseline, but pushes the chat surface much further: stricter topic-aware retrieval, broader coding and explanation coverage, richer natural memory, a larger open-chat corpus, Zig upstream coding knowledge, and safer handling of unseen prompts that would previously overmatch.
+
+[3] prompt=how is v26 different from v25
+mode=operational-release-change
+backend=cpu
+response=V26 keeps the numeric engine-health suite on the proven CPU baseline, but pushes the chat surface much further: stricter topic-aware retrieval, broader coding and explanation coverage, richer natural memory, a larger open-chat corpus, Zig upstream coding knowledge, and safer handling of unseen prompts that would previously overmatch.
+
+[4] prompt=give me the elevator pitch for SBAN v26
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=give me the elevator pitch for SBAN v26
+response=SBAN v26 is a grounded non-transformer assistant that keeps live session memory, answers operational SBAN questions directly, and now handles a wider set of ordinary conversational prompts without collapsing into stale release blurbs or blanket uncertainty.
+
+[5] prompt=explain sparse bridge-adaptive network architecture
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=explain sparse bridge-adaptive network architecture
+response=Sparse Bridge-Adaptive Network Architecture uses sparse online memories plus bridge memories that carry context across horizons. Instead of dense transformer attention over frozen weights, SBAN routes activity through adaptive memory structures that keep updating while the runtime is operating.
+
+[6] prompt=what is bridge memory
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is bridge memory
+response=A bridge memory is the SBAN structure that carries context from one horizon to another when short local evidence alone is not enough. It acts like an adaptive context bridge between recent activity and longer-range state rather than a frozen attention lookup.
+
+[7] prompt=compare SBAN to transformers in detail
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=compare SBAN to transformers in detail
+response=Transformers rely on fixed trained weights and dense attention during inference. SBAN instead updates online state while it runs, keeps sparse memory structures alive across time, and uses adaptive bridge paths to preserve longer context without depending on a giant frozen checkpoint. The tradeoff is that SBAN still has to earn product breadth and reliability in the live runtime rather than inheriting broad capability from huge pretraining.
+
+[8] prompt=what are the main limits of SBAN versus transformers
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what are the main limits of SBAN versus transformers
+response=The main SBAN limits versus transformers today are broad world knowledge and open-ended generation. SBAN is stronger when you want explicit runtime grounding, live session memory, and operationally controlled behavior, but it is still narrower than large pretrained transformer models on unconstrained open-domain knowledge.
+
+[9] prompt=what should new users try first
+mode=operational-new-user-start
+backend=cpu
+response=New users should start the continuing chat demo, ask what SBAN v26 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact like a name, team, or city, and then try a practical prompt such as a meeting agenda, a simple explanation, or a coding request.
+
+[10] prompt=what is the windows starter file called
+mode=operational-starter
+backend=cpu
+response=The Windows starter file is SBAN_v26_Start.bat. Open the bundle and run that script to start the continuing v26 chat loop.
+
+[11] prompt=how do i launch it on linux
+mode=operational-starter
+backend=cpu
+response=The Linux starter file is ./SBAN_v26_Start.sh. Run it from the bundle directory to start the continuing v26 chat loop.
+
+[12] prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v26 release bundle ships the executive summary at SBAN_v26_EXECUTIVE_SUMMARY.md, the report at SBAN_v26_REPORT.md, the paper PDF at docs/papers/SBAN_v26_follow_up_research_paper.pdf, the repo archive at deliverables/v26/SBAN_v26_repo.zip, and demo bundles at deliverables/v26/demo/SBAN_v26_windows_x86_64_demo.zip and deliverables/v26/demo/SBAN_v26_linux_x86_64_demo.zip.
+
+[13] prompt=where is the v26 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v26 paper PDF is generated at docs/papers/SBAN_v26_follow_up_research_paper.pdf.
+
+[14] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v26.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v26 bench assets.
+
+[15] prompt=how do cpu, cpu_mt, cuda, and opencl compare here
+mode=operational-backends
+backend=cpu
+response=CPU is the numeric baseline and the fallback for smaller retrieval workloads. cpu_mt is the explicit host-threaded option for larger experiments. CUDA is the preferred GPU path on NVIDIA systems and the preferred retrieval path there. OpenCL remains the generic GPU fallback for retrieval on compatible non-CUDA setups. Numeric CUDA stays experimental until it measures faster end to end.
+
+[16] prompt=do you support nvidia rtx gpus
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the preferred retrieval path on NVIDIA, keeps CPU as the safe numeric release baseline, and leaves numeric_backend=cuda as an explicit experiment instead of the automatic default.
+
+[17] prompt=can this run on an rtx 4090
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the preferred retrieval path on NVIDIA, keeps CPU as the safe numeric release baseline, and leaves numeric_backend=cuda as an explicit experiment instead of the automatic default.
+
+[18] prompt=what is numeric accel info
+mode=operational-numeric-accel-info
+backend=cpu
+response=Numeric-accel-info is the probe command that reports whether the numeric runtime can see and use the configured CPU, cpu_mt, or CUDA backend.
+
+[19] prompt=is numeric cuda the default
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is numeric cuda the default
+response=Not yet. v26 keeps the single-thread CPU numeric profile as the default release fallback until measured CUDA and cpu_mt runs prove a dependable end-to-end win on the shipped suite.
+
+[20] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+[21] prompt=can you remember what team i am on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your team and I will remember it for this session.
+
+[22] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+[23] prompt=what team am i on
+mode=session-recall-miss
+backend=cpu
+response=I do not know your team yet. Tell me with 'our team is ...', 'my team is ...', or 'I am on team ...' and I will remember it for this session.
+
+[24] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+[25] prompt=where am i from
+mode=session-recall-miss
+backend=cpu
+response=I do not know where you live yet. Tell me with 'I live in ...' and I will remember it for this session.
+
+[26] prompt=i work in the sbx lab
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+[27] prompt=what lab do i work in
+mode=session-recall-miss
+backend=cpu
+response=I do not know your lab yet. Tell me with 'our lab is ...' or 'my lab is ...' and I will remember it for this session.
+
+[28] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+[29] prompt=what is my role
+mode=session-recall-miss
+backend=cpu
+response=I do not know your role yet. Tell me with 'my role is ...' or 'I work as ...' and I will remember it for this session.
+
+[30] prompt=what facts can you remember
+mode=operational-memory-facts
+backend=cpu
+response=v26 can remember simple session facts such as your name, where you live or are from, your lab, your team, your role, favorite color, preferences, and similar short scalar facts for the current session.
+
+[31] prompt=how do you remember facts
+mode=operational-memory-mechanism
+backend=cpu
+response=The dialogue runtime extracts simple fact statements from the current conversation, stores them in the structured session state, and answers later recall questions from that session memory only when the key matches confidently.
+
+[32] prompt=how do you avoid transcript corruption
+mode=operational-transcript-safety
+backend=cpu
+response=The session file does not store raw User and Assistant lines directly. It sanitizes turn text and stores encoded fields in a structured session format so newline injection cannot corrupt the transcript state.
+
+[33] prompt=help me write a meeting agenda
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[34] prompt=write a concise linkedin summary for a researcher
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[35] prompt=show me a python class for a stack
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[36] prompt=write a python function to reverse a string
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[37] prompt=explain inflation simply
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[38] prompt=explain pointers in c simply
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[39] prompt=what is a black hole
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[40] prompt=what does dns do
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[41] prompt=compare tcp and udp
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[42] prompt=how is your day going
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[43] prompt=how can i make coffee taste better
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[44] prompt=help me prepare for an interview
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[45] prompt=i am procrastinating and need help
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[46] prompt=how can i stop doomscrolling
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[47] prompt=can you suggest a workout plan
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[48] prompt=give me three birthday ideas
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[49] prompt=how do i boil eggs
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[50] prompt=what is json
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[51] prompt=what is a hash map
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[52] prompt=what is big o of binary search
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[53] prompt=what is http 404
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[54] prompt=what is sql join
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[55] prompt=what is photosynthesis in simple terms
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[56] prompt=what is dna in simple words
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[57] prompt=what does cpu mean
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[58] prompt=what is ram versus storage
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=what are the main limits of SBAN versus transformers
+response=The main SBAN limits versus transformers today are broad world knowledge and open-ended generation. SBAN is stronger when you want explicit runtime grounding, live session memory, and operationally controlled behavior, but it is still narrower than large pretrained transformer models on unconstrained open-domain knowledge.
+
+[59] prompt=what is the capital of japan
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[60] prompt=who wrote pride and prejudice
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[61] prompt=tell me something cool about octopuses
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[62] prompt=recommend a comforting movie
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[63] prompt=what is 12 percent of 85
+mode=symbolic-math
+backend=cpu
+response=12 / 100 * 85 = 10.2.
+
+[64] prompt=if bob has 3 oranges, gives 2 away, and then eats the last one, how many oranges does he have
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[65] prompt=what is zig
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[66] prompt=what does std.arraylist do in zig upstream
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[67] prompt=where is std.hashmap implemented in zig upstream
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[68] prompt=what does zig std do
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[69] prompt=how do i build zig from source
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[70] prompt=how do you build zig without llvm
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[71] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[72] prompt=thank you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=thank you
+response=You're welcome. I am ready for the next SBAN v26 check.
+
+summary turns=72 anchored=8 retrieved=1 symbolic=26 nonempty=72 uncertain=37

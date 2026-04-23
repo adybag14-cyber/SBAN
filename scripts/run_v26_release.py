@@ -211,6 +211,28 @@ def run_capture(cmd: list[str], output_path: Path) -> str:
     return text
 
 
+def run_subprocess_with_heartbeat(cmd: list[str], label: str, heartbeat_seconds: int = 30) -> float:
+    started = time.perf_counter()
+    last_report = started
+    print(f"{label}: started", flush=True)
+    proc = subprocess.Popen(cmd, cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    while True:
+        code = proc.poll()
+        if code is not None:
+            if code != 0:
+                print(f"{label}: failed with exit code {code}", flush=True)
+                raise subprocess.CalledProcessError(code, cmd)
+            break
+        now = time.perf_counter()
+        if now - last_report >= heartbeat_seconds:
+            print(f"{label}: still running after {now - started:.1f}s", flush=True)
+            last_report = now
+        time.sleep(5)
+    elapsed = time.perf_counter() - started
+    print(f"{label}: completed in {elapsed:.1f}s", flush=True)
+    return elapsed
+
+
 def run_eval(spec: dict[str, object], resume: bool = False) -> dict[str, float | int]:
     out_json = RESULTS / str(spec["output"])
     if resume and out_json.exists():
@@ -238,9 +260,7 @@ def run_eval(spec: dict[str, object], resume: bool = False) -> dict[str, float |
         *COMMON_PROFILE,
         *list(spec["extras"]),
     ]
-    started = time.perf_counter()
-    subprocess.run(cmd, cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
-    elapsed = time.perf_counter() - started
+    elapsed = run_subprocess_with_heartbeat(cmd, f"eval {spec['key']}")
     data = json.loads(out_json.read_text(encoding="utf-8"))
     model = data["models"][0]
     acc = 100.0 * model["total_correct"] / model["total_predictions"]
@@ -303,9 +323,7 @@ def run_numeric_backend_probe(spec: dict[str, object], extra_overrides: list[str
         *extra_overrides,
         *list(spec["extras"]),
     ]
-    started = time.perf_counter()
-    subprocess.run(cmd, cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
-    elapsed = time.perf_counter() - started
+    elapsed = run_subprocess_with_heartbeat(cmd, f"numeric-probe {suffix} {spec['key']}")
     data = json.loads(out_json.read_text(encoding="utf-8"))
     model = data["models"][0]
     acc = 100.0 * model["total_correct"] / model["total_predictions"]
@@ -334,6 +352,10 @@ def capture_nvidia_smi(output_path: Path) -> None:
     output_path.write_text(text, encoding="utf-8")
 
 
+def write_placeholder_text(path: Path, text: str) -> None:
+    path.write_text(text, encoding="utf-8")
+
+
 def find_completed_100m_json() -> Path | None:
     candidates = sorted((ROOT / "docs" / "results").rglob("longrun*_100m*.json"))
     return candidates[-1] if candidates else None
@@ -344,6 +366,7 @@ def main() -> None:
     parser.add_argument("--zig-exe", help="Path to zig or zig.exe used for the build step.")
     parser.add_argument("--skip-build", action="store_true", help="Reuse the existing zig-out binary.")
     parser.add_argument("--resume", action="store_true", help="Reuse existing benchmark JSON files and continue from missing outputs.")
+    parser.add_argument("--skip-cuda", action="store_true", help="Skip CUDA-specific accelerator checks when running on hosted CPU-only CI.")
     args = parser.parse_args()
 
     RESULTS.mkdir(parents=True, exist_ok=True)
@@ -393,20 +416,33 @@ def main() -> None:
     run_capture([str(BIN), "chat-session-eval", OPEN_SESSION_PATH, "mode=free", "allow_generation=true", "backend=cpu", f"seed_path={SEED_PATH}", f"open_seed_path={OPEN_SEED_PATH}"], RESULTS / "open_chat_session_eval_v26.txt")
     run_capture([str(BIN), "chat-session-eval", BROAD_SESSION_PATH, "mode=free", "allow_generation=true", "backend=cpu", f"seed_path={SEED_PATH}", f"open_seed_path={OPEN_SEED_PATH}"], RESULTS / "broad_chat_session_eval_v26.txt")
 
+    cuda_available = (not args.skip_cuda) and shutil.which("nvidia-smi") is not None
+    if not cuda_available:
+        print("CUDA-specific checks skipped because no NVIDIA runtime is available on this runner.", flush=True)
+
     run_capture([str(BIN), "accel-info", f"seed_path={SEED_PATH}", "backend=cpu_mt", "threads=4"], RESULTS / "accel_info_v26_cpu_mt.txt")
-    run_capture([str(BIN), "accel-info", f"seed_path={SEED_PATH}", "backend=cuda"], RESULTS / "accel_info_v26_cuda.txt")
     run_numeric_accel_info(["numeric_backend=cpu"], "numeric_accel_info_v26_cpu.txt")
     run_numeric_accel_info(["numeric_backend=cpu_mt", "score_threads=4", "parallel_score_min_predictive_nodes=1"], "numeric_accel_info_v26_cpu_mt.txt")
-    run_numeric_accel_info(["numeric_backend=cuda", "cuda_min_scoring_edges=1"], "numeric_accel_info_v26_cuda.txt")
-    capture_nvidia_smi(RESULTS / "nvidia_smi_v26.txt")
+    if cuda_available:
+        run_capture([str(BIN), "accel-info", f"seed_path={SEED_PATH}", "backend=cuda"], RESULTS / "accel_info_v26_cuda.txt")
+        run_numeric_accel_info(["numeric_backend=cuda", "cuda_min_scoring_edges=1"], "numeric_accel_info_v26_cuda.txt")
+        capture_nvidia_smi(RESULTS / "nvidia_smi_v26.txt")
+    else:
+        write_placeholder_text(RESULTS / "accel_info_v26_cuda.txt", "backend=skipped\nreason=no_cuda_runtime\n")
+        write_placeholder_text(RESULTS / "numeric_accel_info_v26_cuda.txt", "configured_backend=cuda\nbackend_used=skipped\ncuda_enabled=false\nreason=no_cuda_runtime\n")
+        write_placeholder_text(RESULTS / "nvidia_smi_v26.txt", "not captured\n")
 
     bench_seed, bench_prompts = write_accel_bench_assets()
     accel_results = {
         "cpu": measure_accel_backend(bench_seed, bench_prompts, ["backend=cpu"]),
         "cpu_mt": measure_accel_backend(bench_seed, bench_prompts, ["backend=cpu_mt", "threads=4"]),
-        "cuda": measure_accel_backend(bench_seed, bench_prompts, ["backend=cuda"]),
     }
-    accel_results["speedup_cuda_vs_cpu"] = round(float(accel_results["cpu"]["elapsed_seconds"]) / float(accel_results["cuda"]["elapsed_seconds"]), 4)
+    if cuda_available:
+        accel_results["cuda"] = measure_accel_backend(bench_seed, bench_prompts, ["backend=cuda"])
+        accel_results["speedup_cuda_vs_cpu"] = round(float(accel_results["cpu"]["elapsed_seconds"]) / float(accel_results["cuda"]["elapsed_seconds"]), 4)
+    else:
+        accel_results["cuda"] = {"backend": "skipped", "reason": "no_cuda_runtime"}
+        accel_results["speedup_cuda_vs_cpu"] = None
     accel_results["speedup_cpu_mt_vs_cpu"] = round(float(accel_results["cpu"]["elapsed_seconds"]) / float(accel_results["cpu_mt"]["elapsed_seconds"]), 4)
     (RESULTS / "accel_bench_v26.json").write_text(json.dumps(accel_results, indent=2), encoding="utf-8")
 
@@ -415,13 +451,19 @@ def main() -> None:
         "release_cpu_1m": run_numeric_backend_probe(next(spec for spec in BENCHMARKS if spec["key"] == "long_1m"), [], "cpu"),
         "release_cpu_mt4_250k": run_numeric_backend_probe(next(spec for spec in BENCHMARKS if spec["key"] == "long_250k"), ["numeric_backend=cpu_mt", "score_threads=4", "parallel_score_min_predictive_nodes=128"], "cpu_mt4"),
         "release_cpu_mt4_1m": run_numeric_backend_probe(next(spec for spec in BENCHMARKS if spec["key"] == "long_1m"), ["numeric_backend=cpu_mt", "score_threads=4", "parallel_score_min_predictive_nodes=128"], "cpu_mt4"),
-        "release_cuda_250k": run_numeric_backend_probe(next(spec for spec in BENCHMARKS if spec["key"] == "long_250k"), ["numeric_backend=cuda", "cuda_min_scoring_edges=1"], "cuda"),
-        "release_cuda_1m": run_numeric_backend_probe(next(spec for spec in BENCHMARKS if spec["key"] == "long_1m"), ["numeric_backend=cuda", "cuda_min_scoring_edges=1"], "cuda"),
     }
     numeric_backend["speedup_cpu_mt_vs_cpu_250k"] = round(float(numeric_backend["release_cpu_250k"]["elapsed_seconds"]) / float(numeric_backend["release_cpu_mt4_250k"]["elapsed_seconds"]), 4)
-    numeric_backend["speedup_cuda_vs_cpu_250k"] = round(float(numeric_backend["release_cpu_250k"]["elapsed_seconds"]) / float(numeric_backend["release_cuda_250k"]["elapsed_seconds"]), 4)
     numeric_backend["speedup_cpu_mt_vs_cpu_1m"] = round(float(numeric_backend["release_cpu_1m"]["elapsed_seconds"]) / float(numeric_backend["release_cpu_mt4_1m"]["elapsed_seconds"]), 4)
-    numeric_backend["speedup_cuda_vs_cpu_1m"] = round(float(numeric_backend["release_cpu_1m"]["elapsed_seconds"]) / float(numeric_backend["release_cuda_1m"]["elapsed_seconds"]), 4)
+    if cuda_available:
+        numeric_backend["release_cuda_250k"] = run_numeric_backend_probe(next(spec for spec in BENCHMARKS if spec["key"] == "long_250k"), ["numeric_backend=cuda", "cuda_min_scoring_edges=1"], "cuda")
+        numeric_backend["release_cuda_1m"] = run_numeric_backend_probe(next(spec for spec in BENCHMARKS if spec["key"] == "long_1m"), ["numeric_backend=cuda", "cuda_min_scoring_edges=1"], "cuda")
+        numeric_backend["speedup_cuda_vs_cpu_250k"] = round(float(numeric_backend["release_cpu_250k"]["elapsed_seconds"]) / float(numeric_backend["release_cuda_250k"]["elapsed_seconds"]), 4)
+        numeric_backend["speedup_cuda_vs_cpu_1m"] = round(float(numeric_backend["release_cpu_1m"]["elapsed_seconds"]) / float(numeric_backend["release_cuda_1m"]["elapsed_seconds"]), 4)
+    else:
+        numeric_backend["release_cuda_250k"] = {"accuracy": None, "elapsed_seconds": None, "total_predictions": 0, "reason": "no_cuda_runtime"}
+        numeric_backend["release_cuda_1m"] = {"accuracy": None, "elapsed_seconds": None, "total_predictions": 0, "reason": "no_cuda_runtime"}
+        numeric_backend["speedup_cuda_vs_cpu_250k"] = None
+        numeric_backend["speedup_cuda_vs_cpu_1m"] = None
     (RESULTS / "numeric_backend_v26.json").write_text(json.dumps(numeric_backend, indent=2), encoding="utf-8")
 
     completed_100m = find_completed_100m_json()

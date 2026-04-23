@@ -65,6 +65,28 @@ def build_binary(zig_exe: str | None) -> None:
     subprocess.run([resolve_zig_exe(zig_exe), "build", "-Doptimize=ReleaseFast"], cwd=ROOT, check=True)
 
 
+def run_subprocess_with_heartbeat(cmd: list[str], label: str, heartbeat_seconds: int = 30) -> float:
+    started = time.perf_counter()
+    last_report = started
+    print(f"{label}: started", flush=True)
+    proc = subprocess.Popen(cmd, cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    while True:
+        code = proc.poll()
+        if code is not None:
+            if code != 0:
+                print(f"{label}: failed with exit code {code}", flush=True)
+                raise subprocess.CalledProcessError(code, cmd)
+            break
+        now = time.perf_counter()
+        if now - last_report >= heartbeat_seconds:
+            print(f"{label}: still running after {now - started:.1f}s", flush=True)
+            last_report = now
+        time.sleep(5)
+    elapsed = time.perf_counter() - started
+    print(f"{label}: completed in {elapsed:.1f}s", flush=True)
+    return elapsed
+
+
 def run_eval(output_name: str, extra_overrides: list[str]) -> dict[str, float | int | str]:
     out_json = RESULTS / output_name
     cmd = [
@@ -91,9 +113,7 @@ def run_eval(output_name: str, extra_overrides: list[str]) -> dict[str, float | 
         "sequence_seed_offset=0",
         "sequence_seed_length=8000000",
     ]
-    started = time.perf_counter()
-    subprocess.run(cmd, cwd=ROOT, check=True, stdout=subprocess.DEVNULL)
-    elapsed = time.perf_counter() - started
+    elapsed = run_subprocess_with_heartbeat(cmd, "v26 100m ci")
     data = json.loads(out_json.read_text(encoding="utf-8"))
     model = data["models"][0]
     acc = 100.0 * model["total_correct"] / model["total_predictions"]

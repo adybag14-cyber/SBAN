@@ -34,26 +34,12 @@ jobs:
           zig build test
           python -m py_compile scripts/build_v26_open_seed.py scripts/run_v26_release.py scripts/make_v26_deliverables.py scripts/package_v26_demo.py scripts/run_v26_100m_ci.py
 
-      - name: Run full v26 release suite
-        run: python scripts/run_v26_release.py
-
-      - name: Generate v26 deliverables
-        run: python scripts/make_v26_deliverables.py
+      - name: Run hosted-compatible v26 release suite
+        run: python scripts/run_v26_release.py --skip-cuda
 
       - name: Upload v26 release results
         uses: actions/upload-artifact@v4
         with:
           name: v26-release-results
           path: docs/results/v26
-          if-no-files-found: error
-
-      - name: Upload v26 deliverables
-        uses: actions/upload-artifact@v4
-        with:
-          name: v26-deliverables
-          path: |
-            deliverables/v26
-            SBAN_v26_EXECUTIVE_SUMMARY.md
-            SBAN_v26_REPORT.md
-            docs/papers/SBAN_v26_follow_up_research_paper.pdf
           if-no-files-found: error

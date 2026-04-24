@@ -5,7 +5,7 @@ const dialogue = sban.dialogue;
 
 fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
-        \\SBAN v26 - broader conversational product release with 20M hardening
+        \\SBAN v28 - stress-report repair release with strict evals and clearer backend reporting
         \\Usage:
         \\  zig build run -- eval-enwik [dataset_path] [json_output_path] [prefix|drift] [segment_len] [checkpoint_interval] [rolling_window]
         \\  zig build run -- eval-ablations [dataset_path] [json_output_path] [prefix|drift] [bits] [segment_len] [checkpoint_interval] [rolling_window]
@@ -44,7 +44,7 @@ fn buildCustomLabel(allocator: std.mem.Allocator, base: []const u8, label_overri
 }
 
 fn printExperimentSummary(writer: *Io.Writer, data: *const sban.experiment.ExperimentData) !void {
-    try writer.print("SBAN v26 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
+    try writer.print("SBAN v28 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
     for (data.reports.items) |report| {
         const accuracy = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.total_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
         const top5 = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.top5_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));

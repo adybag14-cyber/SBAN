@@ -1,0 +1,5 @@
+prompt=what is SBAN v28
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v28
+response=SBAN v28 is the conversational product release and free-chat follow-up after v27. It keeps the measured CPU and GPU backend stack, upgrades the release CPU numeric profile, and broadens the shipped chat surface so free mode is less brittle and more useful for ordinary conversation.

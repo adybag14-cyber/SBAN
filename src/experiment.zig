@@ -131,14 +131,14 @@ fn makeMeta(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, da
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v22_prefix_bit_sweep",
-                'a' => "enwik8_v22_prefix_ablation",
-                else => "enwik8_v22_prefix_custom",
+                'b' => "enwik8_v28_prefix_bit_sweep",
+                'a' => "enwik8_v28_prefix_ablation",
+                else => "enwik8_v28_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v22_drift_bit_sweep",
-                'a' => "enwik8_v22_drift_ablation",
-                else => "enwik8_v22_drift_custom",
+                'b' => "enwik8_v28_drift_bit_sweep",
+                'a' => "enwik8_v28_drift_ablation",
+                else => "enwik8_v28_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),
@@ -160,14 +160,14 @@ fn makeMetaFromLayout(corpus_cfg: cfg.CorpusConfig, layout: SegmentLayout, datas
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v22_prefix_bit_sweep",
-                'a' => "enwik8_v22_prefix_ablation",
-                else => "enwik8_v22_prefix_custom",
+                'b' => "enwik8_v28_prefix_bit_sweep",
+                'a' => "enwik8_v28_prefix_ablation",
+                else => "enwik8_v28_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v22_drift_bit_sweep",
-                'a' => "enwik8_v22_drift_ablation",
-                else => "enwik8_v22_drift_custom",
+                'b' => "enwik8_v28_drift_bit_sweep",
+                'a' => "enwik8_v28_drift_ablation",
+                else => "enwik8_v28_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),
@@ -691,7 +691,7 @@ test "single variant streamed no-baseline path matches bundled SBAN report" {
     defer allocator.free(corpus);
     for (corpus, 0..) |*byte, idx| byte.* = @intCast(idx % 256);
 
-    const tmp_path = "/tmp/sban_v22_stream_test_enwik8.bin";
+    const tmp_path = "/tmp/sban_v28_stream_test_enwik8.bin";
     try std.fs.cwd().writeFile(.{ .sub_path = tmp_path, .data = corpus });
     defer std.fs.cwd().deleteFile(tmp_path) catch {};
 

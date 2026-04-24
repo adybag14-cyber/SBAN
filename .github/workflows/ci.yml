@@ -34,11 +34,10 @@ jobs:
       - name: Run unit tests
         run: |
           zig build test
-          python -m py_compile scripts/ci_smoke_v27.py
+          python -m py_compile scripts/ci_smoke_v28.py
 
       - name: Build release binary
         run: zig build -Doptimize=ReleaseFast
 
       - name: Smoke demo
-        run: python scripts/ci_smoke_v27.py
-
+        run: python scripts/ci_smoke_v28.py

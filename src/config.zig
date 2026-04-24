@@ -49,15 +49,15 @@ pub const NetworkVariant = enum {
 
 pub fn sbanBitLabel(bits: u8) []const u8 {
     return switch (bits) {
-        1 => "sban_v21_1bit",
-        2 => "sban_v21_2bit",
-        3 => "sban_v21_3bit",
-        4 => "sban_v21_4bit",
-        5 => "sban_v21_5bit",
-        6 => "sban_v21_6bit",
-        7 => "sban_v21_7bit",
-        8 => "sban_v21_8bit",
-        else => "sban_v21_custom",
+        1 => "sban_v28_1bit",
+        2 => "sban_v28_2bit",
+        3 => "sban_v28_3bit",
+        4 => "sban_v28_4bit",
+        5 => "sban_v28_5bit",
+        6 => "sban_v28_6bit",
+        7 => "sban_v28_7bit",
+        8 => "sban_v28_8bit",
+        else => "sban_v28_custom",
     };
 }
 
@@ -66,61 +66,61 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
     return switch (bits) {
         1 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_1bit_no_bridge",
-            .fixed_capacity => "sban_v21_1bit_fixed_capacity",
-            .single_region => "sban_v21_1bit_single_region",
-            .no_reputation => "sban_v21_1bit_no_reputation",
+            .no_bridge => "sban_v28_1bit_no_bridge",
+            .fixed_capacity => "sban_v28_1bit_fixed_capacity",
+            .single_region => "sban_v28_1bit_single_region",
+            .no_reputation => "sban_v28_1bit_no_reputation",
         },
         2 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_2bit_no_bridge",
-            .fixed_capacity => "sban_v21_2bit_fixed_capacity",
-            .single_region => "sban_v21_2bit_single_region",
-            .no_reputation => "sban_v21_2bit_no_reputation",
+            .no_bridge => "sban_v28_2bit_no_bridge",
+            .fixed_capacity => "sban_v28_2bit_fixed_capacity",
+            .single_region => "sban_v28_2bit_single_region",
+            .no_reputation => "sban_v28_2bit_no_reputation",
         },
         3 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_3bit_no_bridge",
-            .fixed_capacity => "sban_v21_3bit_fixed_capacity",
-            .single_region => "sban_v21_3bit_single_region",
-            .no_reputation => "sban_v21_3bit_no_reputation",
+            .no_bridge => "sban_v28_3bit_no_bridge",
+            .fixed_capacity => "sban_v28_3bit_fixed_capacity",
+            .single_region => "sban_v28_3bit_single_region",
+            .no_reputation => "sban_v28_3bit_no_reputation",
         },
         4 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_4bit_no_bridge",
-            .fixed_capacity => "sban_v21_4bit_fixed_capacity",
-            .single_region => "sban_v21_4bit_single_region",
-            .no_reputation => "sban_v21_4bit_no_reputation",
+            .no_bridge => "sban_v28_4bit_no_bridge",
+            .fixed_capacity => "sban_v28_4bit_fixed_capacity",
+            .single_region => "sban_v28_4bit_single_region",
+            .no_reputation => "sban_v28_4bit_no_reputation",
         },
         5 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_5bit_no_bridge",
-            .fixed_capacity => "sban_v21_5bit_fixed_capacity",
-            .single_region => "sban_v21_5bit_single_region",
-            .no_reputation => "sban_v21_5bit_no_reputation",
+            .no_bridge => "sban_v28_5bit_no_bridge",
+            .fixed_capacity => "sban_v28_5bit_fixed_capacity",
+            .single_region => "sban_v28_5bit_single_region",
+            .no_reputation => "sban_v28_5bit_no_reputation",
         },
         6 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_6bit_no_bridge",
-            .fixed_capacity => "sban_v21_6bit_fixed_capacity",
-            .single_region => "sban_v21_6bit_single_region",
-            .no_reputation => "sban_v21_6bit_no_reputation",
+            .no_bridge => "sban_v28_6bit_no_bridge",
+            .fixed_capacity => "sban_v28_6bit_fixed_capacity",
+            .single_region => "sban_v28_6bit_single_region",
+            .no_reputation => "sban_v28_6bit_no_reputation",
         },
         7 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_7bit_no_bridge",
-            .fixed_capacity => "sban_v21_7bit_fixed_capacity",
-            .single_region => "sban_v21_7bit_single_region",
-            .no_reputation => "sban_v21_7bit_no_reputation",
+            .no_bridge => "sban_v28_7bit_no_bridge",
+            .fixed_capacity => "sban_v28_7bit_fixed_capacity",
+            .single_region => "sban_v28_7bit_single_region",
+            .no_reputation => "sban_v28_7bit_no_reputation",
         },
         8 => switch (variant) {
             .default => unreachable,
-            .no_bridge => "sban_v21_8bit_no_bridge",
-            .fixed_capacity => "sban_v21_8bit_fixed_capacity",
-            .single_region => "sban_v21_8bit_single_region",
-            .no_reputation => "sban_v21_8bit_no_reputation",
+            .no_bridge => "sban_v28_8bit_no_bridge",
+            .fixed_capacity => "sban_v28_8bit_fixed_capacity",
+            .single_region => "sban_v28_8bit_single_region",
+            .no_reputation => "sban_v28_8bit_no_reputation",
         },
-        else => "sban_v21_custom_variant",
+        else => "sban_v28_custom_variant",
     };
 }
 
@@ -612,7 +612,7 @@ pub const CorpusConfig = struct {
 
 test "bit labels cover default bit widths" {
     for (default_bit_widths) |bits| {
-        try std.testing.expect(std.mem.startsWith(u8, sbanBitLabel(bits), "sban_v21_"));
+        try std.testing.expect(std.mem.startsWith(u8, sbanBitLabel(bits), "sban_v28_"));
         var cfg_local = configForVariant(bits, .default);
         try applyOverride(&cfg_local, "history_lags", "9");
         try std.testing.expectEqual(@as(u8, 9), cfg_local.history_lags);

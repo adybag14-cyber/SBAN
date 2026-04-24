@@ -1,0 +1,573 @@
+[1] prompt=hello
+mode=free-composed
+backend=cpu
+response=Hello. I am SBAN v28, ready for grounded SBAN questions and broader free chat.
+
+expect_match=Hello.
+expect_pass=true
+
+[2] prompt=how is your day going
+mode=free-composed
+backend=cpu
+response=I am steady and ready to help. We can keep things practical, conversational, and honest about what I know.
+
+expect_match=ready to help
+expect_pass=true
+
+[3] prompt=can you help me plan tomorrow
+mode=free-composed
+backend=cpu
+response=Yes. Start with the fixed commitments, then pick the top few outcomes that matter most, and block time for those before the smaller tasks spread everywhere.
+
+expect_match=fixed commitments
+expect_pass=true
+
+[4] prompt=help me organize my week
+mode=free-composed
+backend=cpu
+response=Yes. Put deadlines and appointments down first, then pick one major result for each day instead of making one giant undifferentiated list.
+
+expect_match=one major result for each day
+expect_pass=true
+
+[5] prompt=how can i stay focused
+mode=free-composed
+backend=cpu
+response=Reduce the surface area. One task, one timer, notifications off, and a visible definition of done for the current block.
+
+expect_match=One task
+expect_pass=true
+
+[6] prompt=help me draft a polite follow-up
+mode=free-composed
+backend=cpu
+response=Keep it short: restate the thread in one line, ask the direct question, and make the next action easy for the other person.
+
+expect_match=Keep it short
+expect_pass=true
+
+[7] prompt=help me write a meeting agenda
+mode=free-composed
+backend=cpu
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners. If you want, give me the meeting type and I will turn that into a tighter draft.
+
+expect_match=purpose
+expect_pass=true
+
+[8] prompt=draft a short apology to my manager
+mode=free-composed
+backend=cpu
+response=A good apology draft is brief and direct: say what happened, apologize plainly, state the fix or next step, and avoid turning the message into a defense.
+
+expect_match=apologize plainly
+expect_pass=true
+
+[9] prompt=write a concise linkedin summary for a researcher
+mode=free-composed
+backend=cpu
+response=Here is a compact LinkedIn summary for a researcher:\n\nResearcher focused on turning complex technical questions into measurable results. I work across experiments, analysis, and implementation, with an emphasis on clear reasoning, reproducible evaluation, and building systems that hold up outside the happy path.
+
+expect_match=measurable results
+expect_pass=true
+
+[10] prompt=help me prepare for an interview
+mode=free-composed
+backend=cpu
+response=A solid interview prep loop is: review the role, pick three stories that show impact, practice a short introduction, prepare a few questions, and rehearse concise answers out loud instead of only in your head.
+
+expect_match=three stories
+expect_pass=true
+
+[11] prompt=i am procrastinating and need help
+mode=free-composed
+backend=cpu
+response=Cut the startup cost down. Pick the smallest visible step, set a ten-minute timer, and stop negotiating with the task until that first block is done.
+
+expect_match=ten-minute timer
+expect_pass=true
+
+[12] prompt=how can i stop doomscrolling
+mode=free-composed
+backend=cpu
+response=Make the next action physical and small: put the phone out of reach, stand up, and switch to one deliberate alternative like a short walk, water, or a single focused task.
+
+expect_match=phone out of reach
+expect_pass=true
+
+[13] prompt=can you suggest a workout plan
+mode=free-composed
+backend=cpu
+response=A simple starter workout plan is three full-body sessions each week: one squat or leg movement, one push movement, one pull movement, and a short walk or easy cardio block on the other days.
+
+expect_match=three full-body sessions
+expect_pass=true
+
+[14] prompt=give me three birthday ideas
+mode=free-composed
+backend=cpu
+response=Three easy birthday directions are: a small dinner with one signature activity, a low-friction outing like bowling or mini golf, or a relaxed home gathering with one themed game or movie anchor.
+
+expect_match=bowling
+expect_pass=true
+
+[15] prompt=how do i boil eggs
+mode=free-composed
+backend=cpu
+response=For boiled eggs, cover the eggs with cold water, bring the pot just to a boil, turn the heat off, cover it, wait about 10 to 12 minutes, then cool the eggs in cold water before peeling.
+
+expect_match=10 to 12 minutes
+expect_pass=true
+
+[16] prompt=how can i make coffee taste better
+mode=free-composed
+backend=cpu
+response=If coffee tastes flat or harsh, the fastest fixes are usually fresher beans, a cleaner grinder, and adjusting the grind. If it tastes bitter, make the grind a bit coarser or shorten the brew. If it tastes sour or weak, grind a bit finer, use hotter water, or raise the coffee dose slightly.
+
+expect_match=fresher beans
+expect_pass=true
+
+[17] prompt=show me a python class for a stack
+mode=free-composed
+backend=cpu
+response=Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: object) -> None:\n        self._items.append(item)\n\n    def pop(self) -> object:\n        if not self._items:\n            raise IndexError('pop from empty stack')\n        return self._items.pop()\n\n    def peek(self) -> object:\n        if not self._items:\n            raise IndexError('peek from empty stack')\n        return self._items[-1]\n\n    def is_empty(self) -> bool:\n        return not self._items\n```\nThis uses a list internally, where `append` and `pop` from the end are the natural stack operations.
+
+expect_match=class Stack
+expect_pass=true
+
+[18] prompt=how do i reverse a list in python
+mode=free-composed
+backend=cpu
+response=Yes. In Python you can reverse a list in place with:\n```python\nitems = [1, 2, 3]\nitems.reverse()\n```\nIf you want a reversed copy instead, use:\n```python\nreversed_items = items[::-1]\n```
+
+expect_match=items.reverse
+expect_pass=true
+
+[19] prompt=write javascript debounce function
+mode=free-composed
+backend=cpu
+response=A compact JavaScript debounce function is:\n```javascript\nfunction debounce(fn, delay) {\n  let timer = null;\n  return (...args) => {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn(...args), delay);\n  };\n}\n```\nThis resets the timer on each call, so `fn` only runs after calls stop for the given delay.
+
+expect_match=function debounce
+expect_pass=true
+
+[20] prompt=write sql to count users per country
+mode=free-composed
+backend=cpu
+response=A simple SQL version is:\n```sql\nSELECT country, COUNT(*) AS user_count\nFROM users\nGROUP BY country\nORDER BY user_count DESC;\n```\nThat groups rows by `country` and counts how many users fall into each group.
+
+expect_match=GROUP BY country
+expect_pass=true
+
+[21] prompt=explain recursion simply
+mode=free-composed
+backend=cpu
+response=Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.
+
+expect_match=base case
+expect_pass=true
+
+[22] prompt=can you explain inflation in plain language
+mode=free-composed
+backend=cpu
+response=Inflation means prices rise over time, so the same amount of money buys less than it used to. Mild inflation is normal, but high inflation makes planning and everyday costs much harder.
+
+expect_match=prices rise over time
+expect_pass=true
+
+[23] prompt=explain c pointers simply
+mode=free-composed
+backend=cpu
+response=In C, a pointer is a variable that stores a memory address. Instead of holding the value itself, it points to where the value lives, which is why pointers are useful for arrays, dynamic memory, and passing data by reference.
+
+expect_match=memory address
+expect_pass=true
+
+[24] prompt=explain compound interest simply
+mode=free-composed
+backend=cpu
+response=Compound interest means you earn interest not just on the original amount, but also on the interest that has already been added. Over time that snowball effect is why growth speeds up.
+
+expect_match=snowball
+expect_pass=true
+
+[25] prompt=what is a black hole in simple terms
+mode=free-composed
+backend=cpu
+response=A black hole is a region where gravity is so strong that once something crosses the event horizon, it cannot escape. You can think of it as matter packed so densely that spacetime is bent extremely hard around it.
+
+expect_match=event horizon
+expect_pass=true
+
+[26] prompt=what does dns do
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+expect_match=Domain Name System
+expect_pass=true
+
+[27] prompt=compare tcp and udp
+mode=free-composed
+backend=cpu
+response=TCP emphasizes reliable ordered delivery: it retries lost data and keeps packets in sequence. UDP is simpler and faster but does not guarantee delivery or order, which is why it fits things like streaming, voice, or games where low latency matters more than perfect reliability.
+
+expect_match=reliable ordered delivery
+expect_pass=true
+
+[28] prompt=what is photosynthesis in simple terms
+mode=free-composed
+backend=cpu
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+expect_match=sunlight
+expect_pass=true
+
+[29] prompt=what is dna in simple words
+mode=free-composed
+backend=cpu
+response=DNA is the molecule that stores the instructions cells use to build and run living things.
+
+expect_match=instructions
+expect_pass=true
+
+[30] prompt=what does cpu mean
+mode=free-composed
+backend=cpu
+response=CPU stands for central processing unit.
+
+expect_match=central processing unit
+expect_pass=true
+
+[31] prompt=what is kubernetes in plain english
+mode=free-composed
+backend=cpu
+response=Kubernetes is a system for running and managing containers across multiple machines. In plain English, it helps deploy applications, keep them running, and scale them without handling each server by hand.
+
+expect_match=containers
+expect_pass=true
+
+[32] prompt=what is garbage collection in programming
+mode=free-composed
+backend=cpu
+response=Garbage collection is a runtime system that automatically finds memory the program no longer uses and reclaims it, so developers do not have to free every object manually.
+
+expect_match=automatically
+expect_pass=true
+
+[33] prompt=difference between stack and heap memory
+mode=free-composed
+backend=cpu
+response=Stack memory usually holds short-lived call-frame data such as local variables, while heap memory is the larger pool used for data that needs to live beyond one function call. The stack is usually simpler and faster; the heap is more flexible but needs more careful management.
+
+expect_match=Stack memory
+expect_pass=true
+
+[34] prompt=what is oauth
+mode=free-composed
+backend=cpu
+response=OAuth is a way to let one application access another service on your behalf without handing over your password directly. In practice, it is the pattern behind many 'Sign in with ...' flows and delegated API access tokens.
+
+expect_match=password directly
+expect_pass=true
+
+[35] prompt=what is mutex in programming
+mode=free-composed
+backend=cpu
+response=A mutex is a mutual-exclusion lock. It lets one thread enter a critical section at a time so shared data does not get modified concurrently in unsafe ways.
+
+expect_match=critical section
+expect_pass=true
+
+[36] prompt=what is ram versus storage
+mode=free-composed
+backend=cpu
+response=RAM is short-term working memory that programs use while they are running. Storage is the longer-term place where files and installed software live when the power is off.
+
+expect_match=short-term working memory
+expect_pass=true
+
+[37] prompt=what is json
+mode=free-composed
+backend=cpu
+response=JSON stands for JavaScript Object Notation. It is a text format for structured data built from objects, arrays, strings, numbers, booleans, and null.
+
+expect_match=JavaScript Object Notation
+expect_pass=true
+
+[38] prompt=what is a hash map
+mode=free-composed
+backend=cpu
+response=A hash map stores key-value pairs and uses a hash function to decide where keys should live internally, which is why lookups are often close to constant time on average.
+
+expect_match=key-value pairs
+expect_pass=true
+
+[39] prompt=what is big o of binary search
+mode=free-composed
+backend=cpu
+response=Binary search runs in O(log n) time because each step halves the remaining search space.
+
+expect_match=O(log n)
+expect_pass=true
+
+[40] prompt=what is http 404
+mode=free-composed
+backend=cpu
+response=HTTP 404 means Not Found. The server was reached, but it could not find the resource at that path.
+
+expect_match=Not Found
+expect_pass=true
+
+[41] prompt=what is sql join
+mode=free-composed
+backend=cpu
+response=A SQL join combines rows from two tables based on a related key, such as matching users.id with orders.user_id.
+
+expect_match=combines rows
+expect_pass=true
+
+[42] prompt=what is the capital of japan
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=what is the capital of japan
+response=The capital of Japan is Tokyo.
+
+expect_match=Tokyo
+expect_pass=true
+
+[43] prompt=who wrote pride and prejudice
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=who wrote pride and prejudice
+response=Pride and Prejudice was written by Jane Austen.
+
+expect_match=Jane Austen
+expect_pass=true
+
+[44] prompt=tell me something cool about octopuses
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=tell me a fun fact about octopuses
+response=A fun fact about octopuses is that they have three hearts and blue blood.
+
+expect_match=three hearts
+expect_pass=true
+
+[45] prompt=recommend a comforting movie
+mode=free-open-retrieved
+backend=cpu
+matched_prompt=recommend a movie for tonight
+response=Tell me the mood you want tonight, like funny, tense, comforting, or thoughtful, and I can narrow the movie choice instead of guessing badly.
+
+expect_match=comforting
+expect_pass=true
+
+[46] prompt=give me three easy lunch ideas
+mode=free-composed
+backend=cpu
+response=Three easy lunch ideas are: a chicken or chickpea wrap with salad and yogurt sauce, rice with roasted vegetables and a fried egg, or tomato soup with a grilled cheese or tuna melt on the side.
+
+expect_match=wrap
+expect_pass=true
+
+[47] prompt=rewrite this professionally: sorry i was late
+mode=free-composed
+backend=cpu
+response=A more professional version is: I apologize for arriving late. Thank you for your patience.
+
+expect_match=I apologize for arriving late
+expect_pass=true
+
+[48] prompt=make a haiku about rain
+mode=free-composed
+backend=cpu
+response=Rain taps at the glass\nCity lights blur into mist\nEvening slows its pace
+
+expect_match=Rain taps
+expect_pass=true
+
+[49] prompt=plan a relaxed weekend in london
+mode=free-composed
+backend=cpu
+response=A relaxed weekend in London could be: a slow morning walk and coffee, one museum or gallery, lunch in a neighborhood you actually enjoy wandering, a park break in the afternoon, and one easy evening anchor like a pub meal, a film, or a quiet dinner instead of overpacking the schedule.
+
+expect_match=museum
+expect_pass=true
+
+[50] prompt=what causes the seasons on earth
+mode=free-composed
+backend=cpu
+response=The seasons are caused mainly by Earth's axial tilt, not by Earth simply being closer to or farther from the Sun. As Earth orbits the Sun, the tilt changes how directly sunlight hits each hemisphere over the year.
+
+expect_match=axial tilt
+expect_pass=true
+
+[51] prompt=who painted starry night
+mode=free-composed
+backend=cpu
+response=Vincent van Gogh painted The Starry Night.
+
+expect_match=Vincent van Gogh
+expect_pass=true
+
+[52] prompt=tell me a joke about databases
+mode=free-composed
+backend=cpu
+response=Why did the database admin leave the party early? Too many bad joins and not enough committed relationships.
+
+expect_match=bad joins
+expect_pass=true
+
+[53] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+expect_match=team is atlas
+expect_pass=true
+
+[54] prompt=what team am i on
+mode=session-recall
+backend=cpu
+response=Your team is atlas.
+
+expect_match=atlas
+expect_pass=true
+
+[55] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_match=London
+expect_pass=true
+
+[56] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_match=London
+expect_pass=true
+
+[57] prompt=what is 12 percent of 85
+mode=symbolic-math
+backend=cpu
+response=12 / 100 * 85 = 10.2.
+
+expect_match== 10.2.
+expect_pass=true
+
+[58] prompt=if bob has 3 oranges, gives 2 away, and then eats the last one, how many oranges does he have
+mode=free-composed
+backend=cpu
+response=He has 0 left.
+
+expect_match=0 left
+expect_pass=true
+
+[59] prompt=what is zig
+mode=free-composed
+backend=cpu
+response=Zig is a general-purpose programming language and toolchain focused on robust, optimal, and reusable software, with explicit memory management and a strong emphasis on control and clarity.
+
+expect_match=programming language and toolchain
+expect_pass=true
+
+[60] prompt=what does std.arraylist do in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, lib/std/array_list.zig implements ArrayList and related growable contiguous arrays.
+
+expect_match=growable contiguous arrays
+expect_pass=true
+
+[61] prompt=where is std.hashmap implemented in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.
+
+expect_match=lib/std/hash_map.zig
+expect_pass=true
+
+[62] prompt=what does zig std do
+mode=free-composed
+backend=cpu
+response=The Zig README says `zig std` opens the standard library documentation in a browser tab.
+
+expect_match=standard library documentation
+expect_pass=true
+
+[63] prompt=how do i build zig from source
+mode=free-composed
+backend=cpu
+response=The upstream Zig README describes the standard source build as the normal CMake process: create a build directory, run cmake, and then make install.
+
+expect_match=CMake
+expect_pass=true
+
+[64] prompt=how do you build zig without llvm
+mode=free-composed
+backend=cpu
+response=The upstream Zig README says you can compile bootstrap.c with a C compiler, run the resulting bootstrap executable, and produce a zig2 stage2 compiler without LLVM extensions.
+
+expect_match=bootstrap.c
+expect_pass=true
+
+[65] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+expect_match=not sure
+expect_pass=true
+
+[66] prompt=thank you
+mode=free-composed
+backend=cpu
+response=You're welcome. If you want to keep going, give me the next question or the next thing you want to sort out.
+
+expect_match=welcome
+expect_pass=true
+
+[67] prompt=explain recursion like i am five
+mode=free-composed
+backend=cpu
+response=Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.
+
+expect_match=base case
+expect_pass=true
+
+[68] prompt=calculate 2^10
+mode=symbolic-math
+backend=cpu
+response=2^10 = 1024.
+
+expect_match=1024
+expect_pass=true
+
+[69] prompt=translate hello to spanish
+mode=free-composed
+backend=cpu
+response=Hello in Spanish is hola.
+
+expect_match=hola
+expect_pass=true
+
+[70] prompt=summarize: SBAN v28 keeps the static boundary honest and reports actual backend use.
+mode=free-composed
+backend=cpu
+response=Summary: SBAN v28 keeps the static boundary honest and reports actual backend use
+
+expect_match=Summary: SBAN v28 keeps the static boundary honest
+expect_pass=true
+
+[71] prompt=write a python function to check if a number is prime
+mode=free-composed
+backend=cpu
+response=A compact Python prime checker is:\n```python\ndef is_prime(n: int) -> bool:\n    if n < 2:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    factor = 3\n    while factor * factor <= n:\n        if n % factor == 0:\n            return False\n        factor += 2\n    return True\n```\nIt rejects small and even cases first, then tests odd factors up to the square root.
+
+expect_match=def is_prime
+expect_pass=true
+
+summary turns=71 anchored=0 retrieved=4 symbolic=6 nonempty=71 uncertain=1 expectations=71 passed=71

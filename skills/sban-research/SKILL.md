@@ -16,9 +16,9 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/run_v27_release.py` for the current packaged benchmark and dialogue suite
-- `scripts/make_v27_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
-- `scripts/package_v27_demo.py` for the newcomer demo bundle
+- `scripts/run_v28_release.py` for the current packaged benchmark and dialogue suite
+- `scripts/make_v28_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v28_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -32,6 +32,7 @@ If you need the release targets or commands, read `references/release_profiles.m
 5. When the release focus is usability, validate the versioned chat-eval and chat-session-eval assets directly against the failure modes being fixed.
 6. Regenerate deliverables only after the measured suite and packaged demo behavior are stable.
 7. If the user asks for a product demo or release packaging, validate the newcomer demo bundle and GitHub workflow files before finishing.
+8. For every new SBAN generation, update this skill with the generation-specific lessons, commit and push the finished release changes, monitor the GitHub CI suite, and if CI fails, debug, fix, re-commit, re-push, and monitor again until the suite is green or a concrete external blocker is documented.
 
 ## Guardrails
 
@@ -101,26 +102,33 @@ If you need the release targets or commands, read `references/release_profiles.m
   keep dog, project, and tomorrow-style session facts on the structured memory path so broader memory claims stay true in runtime behavior,
   treat the stronger short-suite continuation profile and the 20M hardening profile as separate release-tier configurations when the stronger profile hits `OutOfMemory` on the longer horizon,
   and upgrade the CI and release smoke path together with the runtime so the tagged automation cannot quietly keep shipping the previous generation.
+- The v28 product lessons are the stress-report repair step:
+  preserve the v27 numeric profile while fixing stale release identity strings,
+  make session-eval matching boundary-aware so short values cannot false-pass inside unrelated words,
+  keep cat, dog, launch-date, generic `our X is Y`, project, and tomorrow-style session facts on the structured memory path,
+  add explicit bounded behavior for current facts, translation, summarization, exponent math, speed/rate word problems, and reported coding prompts,
+  truncate long prompt display in eval output,
+  and assert actual backend use in CI smoke checks instead of trusting configured backend strings.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
 
-- `python scripts/run_v27_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
+- `python scripts/run_v28_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
-- For the v27 era, keep the core hosted release suite split from the independent 10M, 20M, and 100M workflows, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
+- For the v28 era, keep the core hosted release suite split from the independent 10M, 20M, and 100M workflows, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
 
 ## Deliverables
 
 For a new release:
 
-1. Run `python scripts/run_v27_release.py` or the next-generation equivalent.
-2. Run `python scripts/make_v27_deliverables.py` or the next-generation equivalent.
+1. Run `python scripts/run_v28_release.py` or the next-generation equivalent.
+2. Run `python scripts/make_v28_deliverables.py` or the next-generation equivalent.
 3. Confirm the versioned paper PDF, executive summary, repo zip, and demo bundle exist under `deliverables/`.
 4. Update `README.md` so the current release can be reproduced without extra context.
 5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.
+6. Commit and push the release after local validation, then verify the pushed GitHub checks complete successfully.
 
 ## When to read references
 
 - Read `references/release_profiles.md` when you need the current benchmark thresholds, release profile, exact result filenames, or the release caveat wording.
-

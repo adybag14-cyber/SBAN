@@ -1,0 +1,459 @@
+[1] prompt=what is SBAN v28
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v28
+response=SBAN v28 is the conversational product release and free-chat follow-up after v27. It keeps the measured CPU and GPU backend stack, upgrades the release CPU numeric profile, and broadens the shipped chat surface so free mode is less brittle and more useful for ordinary conversation.
+
+expect_match=conversational product release
+expect_pass=true
+
+[2] prompt=what is the windows starter file called
+mode=operational-starter
+backend=cpu
+response=The Windows starter file is SBAN_v28_Start.bat. Open the bundle and run that script to start the continuing v28 chat loop.
+
+expect_match=SBAN_v28_Start.bat
+expect_pass=true
+
+[3] prompt=where is the v28 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v28 paper PDF is generated at docs/papers/SBAN_v28_follow_up_research_paper.pdf.
+
+expect_match=docs/papers/SBAN_v28_follow_up_research_paper.pdf
+expect_pass=true
+
+[4] prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v28 release bundle ships the executive summary at SBAN_v28_EXECUTIVE_SUMMARY.md, the report at SBAN_v28_REPORT.md, the paper PDF at docs/papers/SBAN_v28_follow_up_research_paper.pdf, the repo archive at deliverables/v28/SBAN_v28_repo.zip, and demo bundles at deliverables/v28/demo/SBAN_v28_windows_x86_64_demo.zip and deliverables/v28/demo/SBAN_v28_linux_x86_64_demo.zip.
+
+expect_match=deliverables/v28/SBAN_v28_repo.zip
+expect_pass=true
+
+[5] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v28.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v28 bench assets.
+
+expect_match=accel-info
+expect_pass=true
+
+[6] prompt=what command shows numeric cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v28.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric-accel-info numeric_backend=cuda cuda_min_scoring_edges=1. If you want raw retrieval throughput after that, run accel-bench with backend=cuda against the versioned v28 bench assets.
+
+expect_match=numeric-accel-info
+expect_pass=true
+
+[7] prompt=how do cpu, cpu_mt, cuda, and opencl compare here
+mode=operational-backends
+backend=cpu
+response=CPU is the numeric baseline and the fallback for smaller retrieval workloads. cpu_mt is the explicit host-threaded option for larger experiments. CUDA is the preferred GPU path on NVIDIA systems and the preferred retrieval path there. OpenCL remains the generic GPU fallback for retrieval on compatible non-CUDA setups. Numeric CUDA stays experimental until it measures faster end to end.
+
+expect_match=preferred GPU path on NVIDIA systems
+expect_pass=true
+
+[8] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU runtime behavior, grounded uncertainty, and short math.
+
+expect_match=remember your name
+expect_pass=true
+
+[9] prompt=can you recall my name
+mode=session-recall
+backend=cpu
+response=Your name is Tom.
+
+expect_match=Tom
+expect_pass=true
+
+[10] prompt=can you remember what team i am on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your team and I will remember it for this session.
+
+expect_match=remember it for this session
+expect_pass=true
+
+[11] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+expect_match=team is atlas
+expect_pass=true
+
+[12] prompt=what team am i on
+mode=session-recall
+backend=cpu
+response=Your team is atlas.
+
+expect_match=atlas
+expect_pass=true
+
+[13] prompt=can you remember where i am from
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me where you live or where you are from, and I will remember it for this session.
+
+expect_match=remember it for this session
+expect_pass=true
+
+[14] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_match=London
+expect_pass=true
+
+[15] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_match=London
+expect_pass=true
+
+[16] prompt=i work in the sbx lab
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+expect_match=lab
+expect_pass=true
+
+[17] prompt=what lab do i work in
+mode=session-recall
+backend=cpu
+response=Your lab is sbx.
+
+expect_match=sbx
+expect_pass=true
+
+[18] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+expect_match=role
+expect_pass=true
+
+[19] prompt=what is my role
+mode=session-recall
+backend=cpu
+response=Your role is researcher.
+
+expect_match=researcher
+expect_pass=true
+
+[20] prompt=my dog is luna
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Luna, and I will remember that for this session.
+
+expect_match=dog's name is Luna
+expect_pass=true
+
+[21] prompt=what is my dog name
+mode=session-recall
+backend=cpu
+response=Your dog's name is Luna.
+
+expect_match=Luna
+expect_pass=true
+
+[22] prompt=our project is nebula
+mode=session-fact-store
+backend=cpu
+response=Noted. Your project is nebula, and I will remember that for this session.
+
+expect_match=project is nebula
+expect_pass=true
+
+[23] prompt=what project are we on
+mode=session-recall
+backend=cpu
+response=Your project is nebula.
+
+expect_match=nebula
+expect_pass=true
+
+[24] prompt=tomorrow i have a dentist appointment
+mode=session-fact-store
+backend=cpu
+response=Noted. Tomorrow you have a dentist appointment, and I will remember that for this session.
+
+expect_match=dentist appointment
+expect_pass=true
+
+[25] prompt=what do i have tomorrow
+mode=session-recall
+backend=cpu
+response=Tomorrow you have a dentist appointment.
+
+expect_match=dentist appointment
+expect_pass=true
+
+[26] prompt=what is session memory
+mode=free-anchor
+backend=cpu
+matched_prompt=what is session memory
+response=Session memory in v28 is not just names. The runtime can store and recall simple user facts such as names, where you are from, where you live, labs, roles, projects, pet names, tomorrow-style notes, favorite colors, preferences, and recent turns for the current session.
+
+expect_match=simple user facts
+expect_pass=true
+
+[27] prompt=what facts can you remember
+mode=operational-memory-facts
+backend=cpu
+response=v28 can remember simple session facts such as your name, where you live or are from, your lab, your team, your role, your project, pet names, favorite color, preferences, and short calendar notes like tomorrow's appointment for the current session.
+
+expect_match=team
+expect_pass=true
+
+[28] prompt=help me write a meeting agenda
+mode=free-composed
+backend=cpu
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners. If you want, give me the meeting type and I will turn that into a tighter draft.
+
+expect_match=key updates
+expect_pass=true
+
+[29] prompt=write a short linkedin summary for a researcher
+mode=free-composed
+backend=cpu
+response=Here is a compact LinkedIn summary for a researcher:\n\nResearcher focused on turning complex technical questions into measurable results. I work across experiments, analysis, and implementation, with an emphasis on clear reasoning, reproducible evaluation, and building systems that hold up outside the happy path.
+
+expect_match=measurable results
+expect_pass=true
+
+[30] prompt=write a python class for a stack
+mode=free-composed
+backend=cpu
+response=Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: object) -> None:\n        self._items.append(item)\n\n    def pop(self) -> object:\n        if not self._items:\n            raise IndexError('pop from empty stack')\n        return self._items.pop()\n\n    def peek(self) -> object:\n        if not self._items:\n            raise IndexError('peek from empty stack')\n        return self._items[-1]\n\n    def is_empty(self) -> bool:\n        return not self._items\n```\nThis uses a list internally, where `append` and `pop` from the end are the natural stack operations.
+
+expect_match=class Stack
+expect_pass=true
+
+[31] prompt=explain inflation simply
+mode=free-composed
+backend=cpu
+response=Inflation means prices rise over time, so the same amount of money buys less than it used to. Mild inflation is normal, but high inflation makes planning and everyday costs much harder.
+
+expect_match=prices rise over time
+expect_pass=true
+
+[32] prompt=explain pointers in c simply
+mode=free-composed
+backend=cpu
+response=In C, a pointer is a variable that stores a memory address. Instead of holding the value itself, it points to where the value lives, which is why pointers are useful for arrays, dynamic memory, and passing data by reference.
+
+expect_match=memory address
+expect_pass=true
+
+[33] prompt=what is dns
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+expect_match=Domain Name System
+expect_pass=true
+
+[34] prompt=tcp vs udp
+mode=free-composed
+backend=cpu
+response=TCP emphasizes reliable ordered delivery: it retries lost data and keeps packets in sequence. UDP is simpler and faster but does not guarantee delivery or order, which is why it fits things like streaming, voice, or games where low latency matters more than perfect reliability.
+
+expect_match=reliable ordered delivery
+expect_pass=true
+
+[35] prompt=what is 2 + 2
+mode=symbolic-math
+backend=cpu
+response=2 + 2 = 4.
+
+expect_match== 4.
+expect_pass=true
+
+[36] prompt=Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have
+mode=free-composed
+backend=cpu
+response=He has 0 left.
+
+expect_match=0 left
+expect_pass=true
+
+[37] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+expect_match=undefined
+expect_pass=true
+
+[38] prompt=who are you
+mode=free-composed
+backend=cpu
+response=I am SBAN v28, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, broader free-chat support, practical coding help, and the measured CPU or GPU backend stack.
+
+expect_match=SBAN v28
+expect_pass=true
+
+[39] prompt=tell me a joke
+mode=free-composed
+backend=cpu
+response=Why did the sparse network stay calm? It only activated the paths that actually had support.
+
+expect_match=sparse
+expect_pass=true
+
+[40] prompt=what does std.arraylist do in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, lib/std/array_list.zig implements ArrayList and related growable contiguous arrays.
+
+expect_match=growable contiguous arrays
+expect_pass=true
+
+[41] prompt=how do i build zig from source
+mode=free-composed
+backend=cpu
+response=The upstream Zig README describes the standard source build as the normal CMake process: create a build directory, run cmake, and then make install.
+
+expect_match=CMake
+expect_pass=true
+
+[42] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+expect_match=not sure
+expect_pass=true
+
+[43] prompt=thank you
+mode=free-composed
+backend=cpu
+response=You're welcome. If you want to keep going, give me the next question or the next thing you want to sort out.
+
+expect_match=welcome
+expect_pass=true
+
+[44] prompt=my cat is io
+mode=session-fact-store
+backend=cpu
+response=Noted. Your cat's name is Io, and I will remember that for this session.
+
+expect_match=cat's name is Io
+expect_pass=true
+
+[45] prompt=what is my cat name
+mode=session-recall
+backend=cpu
+response=Your cat's name is Io.
+
+expect_match=Io
+expect_pass=true
+
+[46] prompt=remember that my launch date is tuesday
+mode=session-fact-store
+backend=cpu
+response=Noted. Your launch date is tuesday, and I will remember that for this session.
+
+expect_match=launch date is tuesday
+expect_pass=true
+
+[47] prompt=when is my launch date
+mode=session-recall
+backend=cpu
+response=Your launch date is tuesday.
+
+expect_match=tuesday
+expect_pass=true
+
+[48] prompt=our secret code word is lantern
+mode=session-fact-store
+backend=cpu
+response=Noted. Your secret code word is lantern, and I will remember that for this session.
+
+expect_match=secret code word is lantern
+expect_pass=true
+
+[49] prompt=what is my secret code word
+mode=session-recall
+backend=cpu
+response=Your secret code word is lantern.
+
+expect_match=lantern
+expect_pass=true
+
+[50] prompt=explain recursion like i am five
+mode=free-composed
+backend=cpu
+response=Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.
+
+expect_match=base case
+expect_pass=true
+
+[51] prompt=calculate 2^10
+mode=symbolic-math
+backend=cpu
+response=2^10 = 1024.
+
+expect_match=1024
+expect_pass=true
+
+[52] prompt=Alice has 4 apples and gets 3 more, how many apples does Alice have
+mode=free-composed
+backend=cpu
+response=She has 7 left.
+
+expect_match=She has 7 left
+expect_pass=true
+
+[53] prompt=A train travels 60 miles per hour for 2 hours, how far does it go
+mode=free-composed
+backend=cpu
+response=It travels 120 miles.
+
+expect_match=120 miles
+expect_pass=true
+
+[54] prompt=translate hello to spanish
+mode=free-composed
+backend=cpu
+response=Hello in Spanish is hola.
+
+expect_match=hola
+expect_pass=true
+
+[55] prompt=summarize: SBAN v28 fixes stale labels, strict eval matching, memory aliases, and backend reporting.
+mode=free-composed
+backend=cpu
+response=Summary: SBAN v28 fixes stale labels, strict eval matching, memory aliases, and backend reporting
+
+expect_match=Summary: SBAN v28 fixes stale labels
+expect_pass=true
+
+[56] prompt=who is the current UK prime minister
+mode=free-composed
+backend=cpu
+response=I do not have live current facts. This SBAN release uses static bundled knowledge, so current news, office holders, prices, and today's facts need an external lookup.
+
+expect_match=live current facts
+expect_pass=true
+
+[57] prompt=write a python function to check if a number is prime
+mode=free-composed
+backend=cpu
+response=A compact Python prime checker is:\n```python\ndef is_prime(n: int) -> bool:\n    if n < 2:\n        return False\n    if n == 2:\n        return True\n    if n % 2 == 0:\n        return False\n    factor = 3\n    while factor * factor <= n:\n        if n % factor == 0:\n            return False\n        factor += 2\n    return True\n```\nIt rejects small and even cases first, then tests odd factors up to the square root.
+
+expect_match=def is_prime
+expect_pass=true
+
+summary turns=57 anchored=2 retrieved=0 symbolic=34 nonempty=57 uncertain=1 expectations=57 passed=57

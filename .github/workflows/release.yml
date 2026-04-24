@@ -3,7 +3,7 @@ name: Release Demo Bundles
 on:
   push:
     tags:
-      - "v27*"
+      - "v28*"
   workflow_dispatch:
 
 env:
@@ -41,21 +41,21 @@ jobs:
       - name: Build and test
         run: |
           zig build test
-          python -m py_compile scripts/ci_smoke_v27.py
+          python -m py_compile scripts/ci_smoke_v28.py
           zig build -Doptimize=ReleaseFast
 
       - name: Smoke demo
-        run: python scripts/ci_smoke_v27.py
+        run: python scripts/ci_smoke_v28.py
 
       - name: Package demo bundle
         run: |
-          python scripts/package_v27_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
+          python scripts/package_v28_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-demo
-          path: deliverables/v27/demo/SBAN_v27_${{ matrix.platform }}_demo.zip
+          path: deliverables/v28/demo/SBAN_v28_${{ matrix.platform }}_demo.zip
 
       - name: Ensure release exists
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,5 +74,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.ref_name }}" "deliverables/v27/demo/SBAN_v27_${{ matrix.platform }}_demo.zip" --clobber
-
+          gh release upload "${{ github.ref_name }}" "deliverables/v28/demo/SBAN_v28_${{ matrix.platform }}_demo.zip" --clobber

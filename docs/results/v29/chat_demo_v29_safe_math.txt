@@ -1,0 +1,4 @@
+prompt=calculate 2^1000
+mode=symbolic-math-error
+backend=cpu
+response=The result for 2^1000 is outside SBAN v29's safe exact-number range, so I will not cast it to a fixed integer.

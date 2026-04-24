@@ -1046,11 +1046,10 @@ pub const Network = struct {
     }
 
     fn shouldAttemptCudaScore(self: *const Network, edge_count: usize) bool {
-        _ = edge_count;
         if (self.numeric_cuda_runtime == null) return false;
         return switch (self.config.numeric_backend) {
             .cuda => true,
-            .auto => false,
+            .auto => edge_count >= self.config.cuda_min_scoring_edges,
             else => false,
         };
     }

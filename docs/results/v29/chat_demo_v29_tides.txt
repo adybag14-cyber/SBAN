@@ -1,0 +1,5 @@
+prompt=what causes tides
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=what causes tides
+response=Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through those tidal bulges, which is why many places see high and low tides each ... [truncated 4 of 224 bytes]

@@ -1,0 +1,442 @@
+[1] prompt=what is SBAN v29
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v29
+response=SBAN v29 is the synthetic knowledge and runtime hardening release after v28. It keeps the measured CPU and GPU backend stack stable, adds a generated knowledge ... [truncated 133 of 293 bytes]
+
+[2] prompt=what changed in v29
+mode=operational-release-change
+backend=cpu
+response=V29 closes the v27 stress-report issues: stale release labels are removed, session-eval matching is stricter, natural fact aliases are broader, long prompt echo... [truncated 189 of 349 bytes]
+
+[3] prompt=how is v29 different from v25
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=how is v29 different from v24
+response=V28 repaired stress-report issues, and v29 pushes the runtime toward generated knowledge and task support. It keeps the measured CPU, cpu_mt, CUDA, and OpenCL s... [truncated 142 of 302 bytes]
+
+[4] prompt=give me the elevator pitch for SBAN v29
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=give me the elevator pitch for SBAN v29
+response=SBAN v29 is a grounded non-transformer assistant that keeps live session memory, answers operational SBAN questions directly, and now handles a wider set of ord... [truncated 97 of 257 bytes]
+
+[5] prompt=explain sparse bridge-adaptive network architecture
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=explain sparse bridge-adaptive network architecture
+response=Sparse Bridge-Adaptive Network Architecture uses sparse online memories plus bridge memories that carry context across horizons. Instead of dense transformer at... [truncated 135 of 295 bytes]
+
+[6] prompt=what is bridge memory
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is bridge memory
+response=A bridge memory is the SBAN structure that carries context from one horizon to another when short local evidence alone is not enough. It acts like an adaptive c... [truncated 99 of 259 bytes]
+
+[7] prompt=compare SBAN to transformers in detail
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=compare SBAN to transformers in detail
+response=Transformers rely on fixed trained weights and dense attention during inference. SBAN instead updates online state while it runs, keeps sparse memory structures... [truncated 284 of 444 bytes]
+
+[8] prompt=what are the main limits of SBAN versus transformers
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what are the main limits of SBAN versus transformers
+response=The main SBAN limits versus transformers today are broad world knowledge and open-ended generation. SBAN is stronger when you want explicit runtime grounding, l... [truncated 164 of 324 bytes]
+
+[9] prompt=what should new users try first
+mode=operational-new-user-start
+backend=cpu
+response=New users should start the continuing chat demo, ask what SBAN v29 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact l... [truncated 184 of 344 bytes]
+
+[10] prompt=what is the windows starter file called
+mode=operational-starter
+backend=cpu
+response=The Windows starter file is SBAN_v29_Start.bat. Open the bundle and run that script to start the continuing v29 chat loop.
+
+[11] prompt=how do i launch it on linux
+mode=operational-starter
+backend=cpu
+response=The Linux starter file is ./SBAN_v29_Start.sh. Run it from the bundle directory to start the continuing v29 chat loop.
+
+[12] prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v29 release bundle ships the executive summary at SBAN_v29_EXECUTIVE_SUMMARY.md, the report at SBAN_v29_REPORT.md, the paper PDF at docs/papers/SBAN_v29_fol... [truncated 215 of 375 bytes]
+
+[13] prompt=where is the v29 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v29 paper PDF is generated at docs/papers/SBAN_v29_follow_up_research_paper.pdf.
+
+[14] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v29.txt backend=cuda. To confirm t... [truncated 239 of 399 bytes]
+
+[15] prompt=how do cpu, cpu_mt, cuda, and opencl compare here
+mode=operational-backends
+backend=cpu
+response=CPU is the numeric baseline and the fallback for smaller retrieval workloads. cpu_mt is the explicit host-threaded option for larger experiments. CUDA is the pr... [truncated 228 of 388 bytes]
+
+[16] prompt=do you support nvidia rtx gpus
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the pref... [truncated 171 of 331 bytes]
+
+[17] prompt=can this run on an rtx 4090
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the pref... [truncated 171 of 331 bytes]
+
+[18] prompt=what is numeric accel info
+mode=operational-numeric-accel-info
+backend=cpu
+response=Numeric-accel-info is the probe command that reports whether the numeric runtime can see and use the configured CPU, cpu_mt, or CUDA backend.
+
+[19] prompt=is numeric cuda the default
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is numeric cuda the default
+response=Not yet. v29 keeps the single-thread CPU numeric profile as the default release fallback until measured CUDA and cpu_mt runs prove a dependable end-to-end win o... [truncated 20 of 180 bytes]
+
+[20] prompt=hi i am tom and i need help
+mode=session-fact-help
+backend=cpu
+response=Hi Tom. I will remember your name for this session. I can help with SBAN architecture, transformer comparisons, release artifacts, session memory, CPU or GPU ru... [truncated 53 of 213 bytes]
+
+[21] prompt=can you remember what team i am on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your team and I will remember it for this session.
+
+[22] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+[23] prompt=what team am i on
+mode=session-recall-miss
+backend=cpu
+response=I do not know your team yet. Tell me with 'our team is ...', 'my team is ...', or 'I am on team ...' and I will remember it for this session.
+
+[24] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+[25] prompt=where am i from
+mode=session-recall-miss
+backend=cpu
+response=I do not know where you live yet. Tell me with 'I live in ...' and I will remember it for this session.
+
+[26] prompt=i work in the sbx lab
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+[27] prompt=what lab do i work in
+mode=session-recall-miss
+backend=cpu
+response=I do not know your lab yet. Tell me with 'our lab is ...' or 'my lab is ...' and I will remember it for this session.
+
+[28] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+[29] prompt=what is my role
+mode=session-recall-miss
+backend=cpu
+response=I do not know your role yet. Tell me with 'my role is ...' or 'I work as ...' and I will remember it for this session.
+
+[30] prompt=what facts can you remember
+mode=operational-memory-facts
+backend=cpu
+response=v29 can remember simple session facts such as your name, where you live or are from, your lab, your team, your role, your project, pet names, favorite color, pr... [truncated 88 of 248 bytes]
+
+[31] prompt=how do you remember facts
+mode=operational-memory-mechanism
+backend=cpu
+response=The dialogue runtime extracts short fact statements and small dated notes from the current conversation, stores them in the structured session state, and answer... [truncated 88 of 248 bytes]
+
+[32] prompt=how do you avoid transcript corruption
+mode=operational-transcript-safety
+backend=cpu
+response=The session file does not store raw User and Assistant lines directly. It sanitizes turn text and stores encoded fields in a structured session format so newlin... [truncated 48 of 208 bytes]
+
+[33] prompt=help me write a meeting agenda
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[34] prompt=write a concise linkedin summary for a researcher
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[35] prompt=show me a python class for a stack
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[36] prompt=write a python function to reverse a string
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[37] prompt=explain inflation simply
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[38] prompt=explain pointers in c simply
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[39] prompt=what is a black hole
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[40] prompt=what does dns do
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[41] prompt=compare tcp and udp
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[42] prompt=how is your day going
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[43] prompt=how can i make coffee taste better
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[44] prompt=help me prepare for an interview
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[45] prompt=i am procrastinating and need help
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[46] prompt=how can i stop doomscrolling
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[47] prompt=can you suggest a workout plan
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[48] prompt=give me three birthday ideas
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[49] prompt=how do i boil eggs
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[50] prompt=what is json
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[51] prompt=what is a hash map
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[52] prompt=what is big o of binary search
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[53] prompt=what is http 404
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[54] prompt=what is sql join
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[55] prompt=what is photosynthesis in simple terms
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[56] prompt=what is dna in simple words
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[57] prompt=what does cpu mean
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[58] prompt=what is ram versus storage
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=what are the main limits of SBAN versus transformers
+response=The main SBAN limits versus transformers today are broad world knowledge and open-ended generation. SBAN is stronger when you want explicit runtime grounding, l... [truncated 164 of 324 bytes]
+
+[59] prompt=what is the capital of japan
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[60] prompt=who wrote pride and prejudice
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[61] prompt=tell me something cool about octopuses
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[62] prompt=recommend a comforting movie
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[63] prompt=what is 12 percent of 85
+mode=symbolic-math
+backend=cpu
+response=12 / 100 * 85 = 10.2.
+
+[64] prompt=if bob has 3 oranges, gives 2 away, and then eats the last one, how many oranges does he have
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[65] prompt=what is zig
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[66] prompt=what does std.arraylist do in zig upstream
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[67] prompt=where is std.hashmap implemented in zig upstream
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[68] prompt=what does zig std do
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[69] prompt=how do i build zig from source
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[70] prompt=how do you build zig without llvm
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[71] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[72] prompt=thank you
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=thank you
+response=You're welcome. I am ready for the next SBAN v29 check.
+
+[73] prompt=my cat is io
+mode=session-fact-store
+backend=cpu
+response=Noted. Your cat's name is Io, and I will remember that for this session.
+
+[74] prompt=what is my cat name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your cat's name yet. Tell me with 'my cat is ...' and I will remember it for this session.
+
+[75] prompt=remember that my launch date is tuesday
+mode=session-fact-store
+backend=cpu
+response=Noted. Your launch date is tuesday, and I will remember that for this session.
+
+[76] prompt=when is my launch date
+mode=session-recall-miss
+backend=cpu
+response=I do not know your launch date yet. Tell me and I will remember it for this session.
+
+[77] prompt=our secret code word is lantern
+mode=session-secret-rejected
+backend=cpu
+response=I will not store secrets such as API keys, tokens, passwords, or private credentials in session memory.
+
+[78] prompt=what is my secret code word
+mode=session-recall-miss
+backend=cpu
+response=I do not know your secret code word yet. Tell me and I will remember it for this session.
+
+[79] prompt=explain recursion like i am five
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[80] prompt=calculate 2^10
+mode=symbolic-math
+backend=cpu
+response=2^10 = 1024.
+
+[81] prompt=Alice has 4 apples and gets 3 more, how many apples does Alice have
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[82] prompt=A train travels 60 miles per hour for 2 hours, how far does it go
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[83] prompt=translate hello to spanish
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[84] prompt=summarize: SBAN v29 fixes stale labels, strict eval matching, memory aliases, and backend reporting.
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=give me the elevator pitch for SBAN v29
+response=SBAN v29 is a grounded non-transformer assistant that keeps live session memory, answers operational SBAN questions directly, and now handles a wider set of ord... [truncated 97 of 257 bytes]
+
+[85] prompt=who is the current UK prime minister
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+[86] prompt=write a python function to check if a number is prime
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+summary turns=86 anchored=8 retrieved=3 symbolic=32 nonempty=86 uncertain=43

@@ -16,9 +16,11 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/run_v28_release.py` for the current packaged benchmark and dialogue suite
-- `scripts/make_v28_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
-- `scripts/package_v28_demo.py` for the newcomer demo bundle
+- `scripts/run_v29_release.py` for the current packaged benchmark, dialogue suite, generated knowledge eval, and vocabulary probe
+- `scripts/make_v29_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v29_demo.py` for the newcomer demo bundle
+- `scripts/build_v29_synthetic_knowledge.py` for the generated offline knowledge pack and expanded open-chat seed
+- `scripts/vocab_size_probe_v29.py` for larger-vocabulary collision and dense-memory estimates
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -33,7 +35,8 @@ If you need the release targets or commands, read `references/release_profiles.m
 6. Regenerate deliverables only after the measured suite and packaged demo behavior are stable.
 7. If the user asks for a product demo or release packaging, validate the newcomer demo bundle and GitHub workflow files before finishing.
 8. For every new SBAN generation, update this skill with the generation-specific lessons, commit and push the finished release changes, monitor the GitHub CI suite, and if CI fails, debug, fix, re-commit, re-push, and monitor again until the suite is green or a concrete external blocker is documented.
-9. A version upgrade is not complete after push CI alone. Trigger the versioned GitHub full release suite workflow, push the matching release tag such as `v28.0.0` so the release bundle workflow publishes GitHub Release assets, monitor both workflows, and verify the GitHub Release contains the expected demo assets before calling the generation shipped.
+9. A version upgrade is not complete after push CI alone. Trigger the versioned GitHub full release suite workflow, push the matching release tag such as `v29.0.0` so the release bundle workflow publishes GitHub Release assets, monitor both workflows, and verify the GitHub Release contains the expected demo assets before calling the generation shipped.
+10. For v29 and later, verify generated knowledge assets, vocab probe JSON, GitHub Release demo assets, and any manually uploaded report/summary/PDF/repo assets before calling a full release complete.
 
 ## Guardrails
 
@@ -110,27 +113,37 @@ If you need the release targets or commands, read `references/release_profiles.m
   add explicit bounded behavior for current facts, translation, summarization, exponent math, speed/rate word problems, and reported coding prompts,
   truncate long prompt display in eval output,
   and assert actual backend use in CI smoke checks instead of trusting configured backend strings.
+- The v29 product lessons are the synthetic-knowledge and runtime-hardening step:
+  generate the broader knowledge asset with deterministic scripts instead of manual conversation transcripts,
+  load that asset through an explicit `knowledge_path` separate from grounded and open-chat seeds,
+  validate general knowledge, Zig code, JSON, algebra, huge-math bounds, source-boundary behavior, and secret rejection with a versioned generated-knowledge session eval,
+  probe larger vocab sizes before changing the dense byte-vocab core because collision reductions come with steep order-table memory cost,
+  cap session files, retained facts, retained turns, and printed output so evaluation and demos cannot bypass safety limits,
+  keep unindexed source-location and live-current prompts on an honest uncertainty path,
+  and update both the repo skill and installed Codex skill before committing every new generation.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
 
-- `python scripts/run_v28_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
+- `python scripts/run_v29_release.py --skip-build --resume` should be the default recovery path after an interrupted long hardening run.
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
-- For the v28 era, keep the core hosted release suite split from the independent 10M, 20M, and 100M workflows, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
+- For the v29 era, keep the core hosted release suite split from the independent 10M, 20M, and 100M workflows, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
 
 ## Deliverables
 
 For a new release:
 
-1. Run `python scripts/run_v28_release.py` or the next-generation equivalent.
-2. Run `python scripts/make_v28_deliverables.py` or the next-generation equivalent.
-3. Confirm the versioned paper PDF, executive summary, repo zip, and demo bundle exist under `deliverables/`.
-4. Update `README.md` so the current release can be reproduced without extra context.
-5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.
-6. Commit and push the release after local validation, then verify the pushed GitHub checks complete successfully.
-7. Trigger the versioned full release suite workflow on GitHub and monitor it.
-8. Create and push the release tag for the generation so `Release Demo Bundles` runs, then verify the GitHub Release exists and has the expected Windows and Linux demo zip assets.
+1. Run `python scripts/build_v29_synthetic_knowledge.py` and `python scripts/vocab_size_probe_v29.py` or the next-generation equivalents.
+2. Run `python scripts/run_v29_release.py` or the next-generation equivalent.
+3. Run `python scripts/make_v29_deliverables.py` or the next-generation equivalent.
+4. Confirm the versioned paper PDF, executive summary, repo zip, demo bundle, generated knowledge JSON, and vocab probe JSON exist under `deliverables/` or `docs/results/`.
+5. Update `README.md` and `references/release_profiles.md` so the current release can be reproduced without extra context.
+6. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.
+7. Commit and push the release after local validation, then verify the pushed GitHub checks complete successfully.
+8. Trigger the versioned full release suite workflow on GitHub and monitor it.
+9. Create and push the release tag for the generation so `Release Demo Bundles` runs, then verify the GitHub Release exists and has the expected Windows and Linux demo zip assets.
+10. If previous generations uploaded report/summary/PDF/repo zip assets manually, upload the current generation equivalents and verify the GitHub Release asset list.
 
 ## When to read references
 

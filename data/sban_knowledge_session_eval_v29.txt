@@ -1,0 +1,46 @@
+# SBAN v29 generated-knowledge and report-regression session checks.
+
+User: what causes tides
+Expect: Moon's gravity
+
+User: what is mitosis
+Expect: chromosomes
+
+User: who wrote pride and prejudice
+Expect: Jane Austen
+
+User: what is the capital of france
+Expect: Paris
+
+User: what is conservation of energy
+Expect: not created or destroyed
+
+User: how do i debug a failing ci job
+Expect: reproduce the command locally
+
+User: how do zig errors work
+Expect: error unions
+
+User: write a zig function to reverse a slice
+Expect: pub fn reverse
+
+User: generate JSON with name and age
+Expect: "name"
+
+User: solve 3x + 5 = 20
+Expect: x = 5
+
+User: calculate (2+3)*4^2 - 7
+Expect: 73
+
+User: calculate 2^1000
+Expect: safe exact-number range
+
+User: where is HashMap in the Linux kernel source
+Expect: should not invent
+
+User: remember that my api key is SECRET123
+Expect: will not store secrets
+
+User: what is my api key
+Expect: do not know

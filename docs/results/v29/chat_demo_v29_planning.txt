@@ -1,0 +1,4 @@
+prompt=can you help me plan tomorrow
+mode=free-composed
+backend=cpu
+response=Yes. Start with the fixed commitments, then pick the top few outcomes that matter most, and block time for those before the smaller tasks spread everywhere.

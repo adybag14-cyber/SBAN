@@ -1,0 +1,128 @@
+[1] prompt=what causes tides
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=what causes tides
+response=Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through those tidal b... [truncated 64 of 224 bytes]
+
+expect_match=Moon's gravity
+expect_pass=true
+
+[2] prompt=what is mitosis
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=what is mitosis
+response=Mitosis is the process where one cell divides its copied chromosomes into two matching sets, then splits into two genetically similar daughter cells.
+
+expect_match=chromosomes
+expect_pass=true
+
+[3] prompt=who wrote pride and prejudice
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=who wrote pride and prejudice
+response=Jane Austen wrote Pride and Prejudice.
+
+expect_match=Jane Austen
+expect_pass=true
+
+[4] prompt=what is the capital of france
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=what is the capital of france
+response=Paris is the capital of France.
+
+expect_match=Paris
+expect_pass=true
+
+[5] prompt=what is conservation of energy
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=what is conservation of energy
+response=Conservation of energy means energy is not created or destroyed in a closed system; it changes form or moves between objects.
+
+expect_match=not created or destroyed
+expect_pass=true
+
+[6] prompt=how do i debug a failing ci job
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=how do i debug a failing ci job
+response=For a failing CI job, read the first real error, reproduce the command locally, isolate whether it is environment or code, make the smallest fix, then rerun the... [truncated 36 of 196 bytes]
+
+expect_match=reproduce the command locally
+expect_pass=true
+
+[7] prompt=how do zig errors work
+mode=synthetic-knowledge
+backend=cpu
+matched_prompt=how do zig errors work
+response=Zig error unions carry either a value or an error. `try` returns early on an error and unwraps the value otherwise, making error paths explicit.
+
+expect_match=error unions
+expect_pass=true
+
+[8] prompt=write a zig function to reverse a slice
+mode=free-composed
+backend=cpu
+response=A compact Zig in-place slice reverse is:\n```zig\npub fn reverse(comptime T: type, items: []T) void {\n    var left: usize = 0;\n    var right: usize = items.len;\n ... [truncated 259 of 419 bytes]
+
+expect_match=pub fn reverse
+expect_pass=true
+
+[9] prompt=generate JSON with name and age
+mode=free-composed
+backend=cpu
+response=```json\n{"name":"Ada","age":42}\n```\nThis is valid JSON: quoted object keys, a string value for `name`, and a numeric value for `age`.
+
+expect_match="name"
+expect_pass=true
+
+[10] prompt=solve 3x + 5 = 20
+mode=symbolic-math
+backend=cpu
+response=x = 5.
+
+expect_match=x = 5
+expect_pass=true
+
+[11] prompt=calculate (2+3)*4^2 - 7
+mode=symbolic-math
+backend=cpu
+response=(2+3)*4^2 - 7 = 73.
+
+expect_match=73
+expect_pass=true
+
+[12] prompt=calculate 2^1000
+mode=symbolic-math-error
+backend=cpu
+response=The result for 2^1000 is outside SBAN v29's safe exact-number range, so I will not cast it to a fixed integer.
+
+expect_match=safe exact-number range
+expect_pass=true
+
+[13] prompt=where is HashMap in the Linux kernel source
+mode=source-boundary
+backend=cpu
+response=I do not know that source-tree location from the bundled v29 knowledge. I should not invent a Linux kernel file path without a supplied source tree or index.
+
+expect_match=should not invent
+expect_pass=true
+
+[14] prompt=remember that my api key is SECRET123
+mode=session-secret-rejected
+backend=cpu
+response=I will not store secrets such as API keys, tokens, passwords, or private credentials in session memory.
+
+expect_match=will not store secrets
+expect_pass=true
+
+[15] prompt=what is my api key
+mode=session-recall-miss
+backend=cpu
+response=I do not know your api key yet. Tell me and I will remember it for this session.
+
+expect_match=do not know
+expect_pass=true
+
+summary turns=15 anchored=0 retrieved=7 symbolic=6 nonempty=15 uncertain=0 expectations=15 passed=15

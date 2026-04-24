@@ -1,0 +1,29 @@
+{
+  "release": "v29",
+  "method": "generated from structured facts and coding templates, not handwritten conversation transcripts",
+  "knowledge_pairs": 124,
+  "open_seed_pairs": 2099,
+  "categories": {
+    "science": 4,
+    "biology": 12,
+    "physics": 8,
+    "earth science": 8,
+    "geography": 8,
+    "literature": 8,
+    "economics": 8,
+    "civics": 4,
+    "reasoning": 4,
+    "computing": 16,
+    "software": 4,
+    "zig": 16,
+    "real-world task": 20,
+    "zig reverse slice": 1,
+    "zig arraylist": 1,
+    "zig error union": 1,
+    "json object": 1
+  },
+  "outputs": {
+    "knowledge": "data\\sban_synthetic_knowledge_v29.txt",
+    "open_seed": "data\\sban_dialogue_open_seed_v29.txt"
+  }
+}

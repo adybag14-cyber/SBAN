@@ -1,0 +1,75 @@
+{
+  "release": "v29",
+  "core_byte_vocab_size": 256,
+  "probe": "hashed wordpiece bucket collision and dense-table cost probe for larger vocabularies",
+  "recommendation": "Use a sparse external knowledge index for 4096+ token buckets; keep the core byte-level numeric runtime at 256 unless the dense tables are redesigned.",
+  "inputs": [
+    "data\\sban_synthetic_knowledge_v29.txt",
+    "data\\sban_dialogue_open_seed_v29.txt"
+  ],
+  "rows": [
+    {
+      "vocab_size": 256,
+      "unique_tokens": 5176,
+      "used_buckets": 256,
+      "collisions": 4920,
+      "collision_rate": 0.9505409582689336,
+      "estimated_dense_order2_bytes": 4194304,
+      "estimated_dense_order2_mib": 4.0
+    },
+    {
+      "vocab_size": 512,
+      "unique_tokens": 5176,
+      "used_buckets": 512,
+      "collisions": 4664,
+      "collision_rate": 0.9010819165378671,
+      "estimated_dense_order2_bytes": 16777216,
+      "estimated_dense_order2_mib": 16.0
+    },
+    {
+      "vocab_size": 1024,
+      "unique_tokens": 5176,
+      "used_buckets": 1019,
+      "collisions": 4157,
+      "collision_rate": 0.8031298299845441,
+      "estimated_dense_order2_bytes": 67108864,
+      "estimated_dense_order2_mib": 64.0
+    },
+    {
+      "vocab_size": 2048,
+      "unique_tokens": 5176,
+      "used_buckets": 1894,
+      "collisions": 3282,
+      "collision_rate": 0.634080370942813,
+      "estimated_dense_order2_bytes": 268435456,
+      "estimated_dense_order2_mib": 256.0
+    },
+    {
+      "vocab_size": 4096,
+      "unique_tokens": 5176,
+      "used_buckets": 2974,
+      "collisions": 2202,
+      "collision_rate": 0.42542503863987635,
+      "estimated_dense_order2_bytes": 1073741824,
+      "estimated_dense_order2_mib": 1024.0
+    },
+    {
+      "vocab_size": 8192,
+      "unique_tokens": 5176,
+      "used_buckets": 3831,
+      "collisions": 1345,
+      "collision_rate": 0.2598531684698609,
+      "estimated_dense_order2_bytes": 4294967296,
+      "estimated_dense_order2_mib": 4096.0
+    },
+    {
+      "vocab_size": 16384,
+      "unique_tokens": 5176,
+      "used_buckets": 4411,
+      "collisions": 765,
+      "collision_rate": 0.14779752704791344,
+      "estimated_dense_order2_bytes": 17179869184,
+      "estimated_dense_order2_mib": 16384.0
+    }
+  ]
+}

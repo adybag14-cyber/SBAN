@@ -1,0 +1,32 @@
+{
+  "cpu": {
+    "backend": "cpu",
+    "worker_threads": "1",
+    "examples": "14600",
+    "prompts": "27520",
+    "iterations": "4",
+    "total_queries": "110080",
+    "total_scores": "1607168000",
+    "elapsed_seconds": 102.799493,
+    "queries_per_second": 1070.82,
+    "scores_per_second": 15634007.02
+  },
+  "cpu_mt": {
+    "backend": "cpu_mt",
+    "worker_threads": "4",
+    "examples": "14600",
+    "prompts": "27520",
+    "iterations": "4",
+    "total_queries": "110080",
+    "total_scores": "1607168000",
+    "elapsed_seconds": 142.938307,
+    "queries_per_second": 770.12,
+    "scores_per_second": 11243787.87
+  },
+  "cuda": {
+    "backend": "skipped",
+    "reason": "no_cuda_runtime"
+  },
+  "speedup_cuda_vs_cpu": null,
+  "speedup_cpu_mt_vs_cpu": 0.7192
+}

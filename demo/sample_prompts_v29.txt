@@ -1,0 +1,42 @@
+what is SBAN v28
+what files ship in the bundle
+where is the v28 paper pdf
+what command shows cuda support
+can this run on an rtx 4090
+hi i am tom and i need help
+can you recall my name
+our team is atlas
+what team am i on
+i am from london
+where am i from
+my dog is luna
+what is my dog name
+our project is nebula
+what project are we on
+help me write a meeting agenda
+help me draft a polite follow-up
+write a short linkedin summary for a researcher
+write a python class for a stack
+how do i reverse a list in python
+write javascript debounce function
+what is sql join
+what is json
+what is a hash map
+what does std.arraylist do in zig upstream
+where is std.hashmap implemented in zig upstream
+my cat is io
+what is my cat name
+remember that my launch date is tuesday
+when is my launch date
+calculate 2^10
+translate hello to spanish
+summarize: SBAN v28 fixes stale labels and tightens eval matching
+blorple zint protocol
+
+what causes tides
+what is mitosis
+who wrote pride and prejudice
+write a zig function to reverse a slice
+generate JSON with name and age
+solve 3x + 5 = 20
+calculate 2^1000

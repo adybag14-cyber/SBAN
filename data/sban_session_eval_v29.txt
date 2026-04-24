@@ -1,0 +1,171 @@
+# SBAN v29 scripted session evaluation
+User: what is SBAN v29
+Expect: synthetic knowledge
+
+User: what is the windows starter file called
+Expect: SBAN_v29_Start.bat
+
+User: where is the v29 paper pdf
+Expect: docs/papers/SBAN_v29_follow_up_research_paper.pdf
+
+User: what files ship in the bundle
+Expect: deliverables/v29/SBAN_v29_repo.zip
+
+User: what command shows cuda support
+Expect: accel-info
+
+User: what command shows numeric cuda support
+Expect: numeric-accel-info
+
+User: how do cpu, cpu_mt, cuda, and opencl compare here
+Expect: preferred GPU path on NVIDIA systems
+
+User: hi i am tom and i need help
+Expect: remember your name
+
+User: can you recall my name
+Expect: Tom
+
+User: can you remember what team i am on
+Expect: remember it for this session
+
+User: our team is atlas
+Expect: team is atlas
+
+User: what team am i on
+Expect: atlas
+
+User: can you remember where i am from
+Expect: remember it for this session
+
+User: i am from london
+Expect: London
+
+User: where am i from
+Expect: London
+
+User: i work in the sbx lab
+Expect: lab
+
+User: what lab do i work in
+Expect: sbx
+
+User: my role is researcher
+Expect: role
+
+User: what is my role
+Expect: researcher
+
+User: my dog is luna
+Expect: dog's name is Luna
+
+User: what is my dog name
+Expect: Luna
+
+User: our project is nebula
+Expect: project is nebula
+
+User: what project are we on
+Expect: nebula
+
+User: tomorrow i have a dentist appointment
+Expect: dentist appointment
+
+User: what do i have tomorrow
+Expect: dentist appointment
+
+User: what is session memory
+Expect: simple user facts
+
+User: what facts can you remember
+Expect: team
+
+User: help me write a meeting agenda
+Expect: key updates
+
+User: write a short linkedin summary for a researcher
+Expect: measurable results
+
+User: write a python class for a stack
+Expect: class Stack
+
+User: explain inflation simply
+Expect: prices rise over time
+
+User: explain pointers in c simply
+Expect: memory address
+
+User: what is dns
+Expect: Domain Name System
+
+User: tcp vs udp
+Expect: reliable ordered delivery
+
+User: what is 2 + 2
+Expect: = 4.
+
+User: Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have
+Expect: 0 left
+
+User: what is 3 / 0
+Expect: undefined
+
+User: who are you
+Expect: SBAN v29
+
+User: tell me a joke
+Expect: sparse
+
+User: what does std.arraylist do in zig upstream
+Expect: growable contiguous arrays
+
+User: how do i build zig from source
+Expect: CMake
+
+User: blorple zint protocol
+Expect: not sure
+
+User: thank you
+Expect: welcome
+
+User: my cat is io
+Expect: cat's name is Io
+
+User: what is my cat name
+Expect: Io
+
+User: remember that my launch date is tuesday
+Expect: launch date is tuesday
+
+User: when is my launch date
+Expect: tuesday
+
+User: our secret code word is lantern
+Expect: will not store secrets
+
+User: what is my secret code word
+Expect: do not know
+
+User: explain recursion like i am five
+Expect: base case
+
+User: calculate 2^10
+Expect: 1024
+
+User: Alice has 4 apples and gets 3 more, how many apples does Alice have
+Expect: She has 7 left
+
+User: A train travels 60 miles per hour for 2 hours, how far does it go
+Expect: 120 miles
+
+User: translate hello to spanish
+Expect: hola
+
+User: summarize: SBAN v29 fixes stale labels, strict eval matching, memory aliases, and backend reporting.
+Expect: Summary: SBAN v29 fixes stale labels
+
+User: who is the current UK prime minister
+Expect: live current facts
+
+User: write a python function to check if a number is prime
+Expect: def is_prime

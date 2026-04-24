@@ -1,0 +1,585 @@
+[1] prompt=how is your day going
+mode=free-composed
+backend=cpu
+response=I am steady and ready to help. We can keep things practical, conversational, and honest about what I know.
+
+expect_match=steady and ready to help
+expect_pass=true
+
+[2] prompt=how do i make coffee taste better
+mode=free-composed
+backend=cpu
+response=If coffee tastes flat or harsh, the fastest fixes are usually fresher beans, a cleaner grinder, and adjusting the grind. If it tastes bitter, make the grind a b... [truncated 130 of 290 bytes]
+
+expect_match=fresher beans
+expect_pass=true
+
+[3] prompt=explain inflation simply
+mode=free-composed
+backend=cpu
+response=Inflation means prices rise over time, so the same amount of money buys less than it used to. Mild inflation is normal, but high inflation makes planning and ev... [truncated 25 of 185 bytes]
+
+expect_match=prices rise over time
+expect_pass=true
+
+[4] prompt=explain pointers in c simply
+mode=free-composed
+backend=cpu
+response=In C, a pointer is a variable that stores a memory address. Instead of holding the value itself, it points to where the value lives, which is why pointers are u... [truncated 64 of 224 bytes]
+
+expect_match=memory address
+expect_pass=true
+
+[5] prompt=what is a black hole
+mode=free-composed
+backend=cpu
+response=A black hole is a region where gravity is so strong that once something crosses the event horizon, it cannot escape. You can think of it as matter packed so den... [truncated 53 of 213 bytes]
+
+expect_match=event horizon
+expect_pass=true
+
+[6] prompt=what is dns
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+expect_match=Domain Name System
+expect_pass=true
+
+[7] prompt=compare tcp and udp
+mode=free-composed
+backend=cpu
+response=TCP emphasizes reliable ordered delivery: it retries lost data and keeps packets in sequence. UDP is simpler and faster but does not guarantee delivery or order... [truncated 118 of 278 bytes]
+
+expect_match=reliable ordered delivery
+expect_pass=true
+
+[8] prompt=what is json
+mode=free-composed
+backend=cpu
+response=JSON stands for JavaScript Object Notation. It is a text format for structured data built from objects, arrays, strings, numbers, booleans, and null.
+
+expect_match=JavaScript Object Notation
+expect_pass=true
+
+[9] prompt=what is a hash map
+mode=free-composed
+backend=cpu
+response=A hash map stores key-value pairs and uses a hash function to decide where keys should live internally, which is why lookups are often close to constant time on... [truncated 9 of 169 bytes]
+
+expect_match=key-value pairs
+expect_pass=true
+
+[10] prompt=what is zig
+mode=free-composed
+backend=cpu
+response=Zig is a general-purpose programming language and toolchain focused on robust, optimal, and reusable software, with explicit memory management and a strong emph... [truncated 28 of 188 bytes]
+
+expect_match=programming language and toolchain
+expect_pass=true
+
+[11] prompt=write a short linkedin summary for a researcher
+mode=free-composed
+backend=cpu
+response=Here is a compact LinkedIn summary for a researcher:\n\nResearcher focused on turning complex technical questions into measurable results. I work across experimen... [truncated 153 of 313 bytes]
+
+expect_match=measurable results
+expect_pass=true
+
+[12] prompt=write a python class for a stack
+mode=free-composed
+backend=cpu
+response=Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: obj... [truncated 503 of 663 bytes]
+
+expect_match=class Stack
+expect_pass=true
+
+[13] prompt=what is 15% of 240
+mode=symbolic-math
+backend=cpu
+response=15 / 100 * 240 = 36.
+
+expect_match=36
+expect_pass=true
+
+[14] prompt=Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have
+mode=free-composed
+backend=cpu
+response=He has 0 left.
+
+expect_match=0 left
+expect_pass=true
+
+[15] prompt=what is 3 / 0
+mode=symbolic-math-error
+backend=cpu
+response=Division by zero is undefined, so I cannot evaluate 3 / 0.
+
+expect_match=Division by zero is undefined
+expect_pass=true
+
+[16] prompt=tell me a joke
+mode=free-composed
+backend=cpu
+response=Why did the sparse network stay calm? It only activated the paths that actually had support.
+
+expect_match=sparse network stay calm
+expect_pass=true
+
+[17] prompt=help me write a meeting agenda
+mode=free-composed
+backend=cpu
+response=A simple meeting agenda is: purpose, the two or three decisions that matter, key updates, blockers, and the next actions with owners. If you want, give me the m... [truncated 54 of 214 bytes]
+
+expect_match=purpose
+expect_pass=true
+
+[18] prompt=help me draft a polite follow-up
+mode=free-composed
+backend=cpu
+response=Keep it short: restate the thread in one line, ask the direct question, and make the next action easy for the other person.
+
+expect_match=Keep it short
+expect_pass=true
+
+[19] prompt=what is photosynthesis in simple terms
+mode=free-composed
+backend=cpu
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+expect_match=sunlight
+expect_pass=true
+
+[20] prompt=how do i reverse a list in python
+mode=free-composed
+backend=cpu
+response=Yes. In Python you can reverse a list in place with:\n```python\nitems = [1, 2, 3]\nitems.reverse()\n```\nIf you want a reversed copy instead, use:\n```python\nreverse... [truncated 25 of 185 bytes]
+
+expect_match=items.reverse
+expect_pass=true
+
+[21] prompt=write javascript debounce function
+mode=free-composed
+backend=cpu
+response=A compact JavaScript debounce function is:\n```javascript\nfunction debounce(fn, delay) {\n  let timer = null;\n  return (...args) => {\n    clearTimeout(timer);\n   ... [truncated 149 of 309 bytes]
+
+expect_match=function debounce
+expect_pass=true
+
+[22] prompt=write sql to count users per country
+mode=free-composed
+backend=cpu
+response=A simple SQL version is:\n```sql\nSELECT country, COUNT(*) AS user_count\nFROM users\nGROUP BY country\nORDER BY user_count DESC;\n```\nThat groups rows by `country` a... [truncated 46 of 206 bytes]
+
+expect_match=GROUP BY country
+expect_pass=true
+
+[23] prompt=explain compound interest simply
+mode=free-composed
+backend=cpu
+response=Compound interest means you earn interest not just on the original amount, but also on the interest that has already been added. Over time that snowball effect ... [truncated 24 of 184 bytes]
+
+expect_match=snowball
+expect_pass=true
+
+[24] prompt=what is kubernetes in plain english
+mode=free-composed
+backend=cpu
+response=Kubernetes is a system for running and managing containers across multiple machines. In plain English, it helps deploy applications, keep them running, and scal... [truncated 44 of 204 bytes]
+
+expect_match=containers
+expect_pass=true
+
+[25] prompt=what is garbage collection in programming
+mode=free-composed
+backend=cpu
+response=Garbage collection is a runtime system that automatically finds memory the program no longer uses and reclaims it, so developers do not have to free every objec... [truncated 11 of 171 bytes]
+
+expect_match=automatically
+expect_pass=true
+
+[26] prompt=difference between stack and heap memory
+mode=free-composed
+backend=cpu
+response=Stack memory usually holds short-lived call-frame data such as local variables, while heap memory is the larger pool used for data that needs to live beyond one... [truncated 117 of 277 bytes]
+
+expect_match=Stack memory
+expect_pass=true
+
+[27] prompt=what is oauth
+mode=free-composed
+backend=cpu
+response=OAuth is a way to let one application access another service on your behalf without handing over your password directly. In practice, it is the pattern behind m... [truncated 61 of 221 bytes]
+
+expect_match=password directly
+expect_pass=true
+
+[28] prompt=what is mutex in programming
+mode=free-composed
+backend=cpu
+response=A mutex is a mutual-exclusion lock. It lets one thread enter a critical section at a time so shared data does not get modified concurrently in unsafe ways.
+
+expect_match=critical section
+expect_pass=true
+
+[29] prompt=give me three easy lunch ideas
+mode=free-composed
+backend=cpu
+response=Three easy lunch ideas are: a chicken or chickpea wrap with salad and yogurt sauce, rice with roasted vegetables and a fried egg, or tomato soup with a grilled ... [truncated 32 of 192 bytes]
+
+expect_match=wrap
+expect_pass=true
+
+[30] prompt=rewrite this professionally: sorry i was late
+mode=free-composed
+backend=cpu
+response=A more professional version is: I apologize for arriving late. Thank you for your patience.
+
+expect_match=I apologize for arriving late
+expect_pass=true
+
+[31] prompt=make a haiku about rain
+mode=free-composed
+backend=cpu
+response=Rain taps at the glass\nCity lights blur into mist\nEvening slows its pace
+
+expect_match=Rain taps
+expect_pass=true
+
+[32] prompt=plan a relaxed weekend in london
+mode=free-composed
+backend=cpu
+response=A relaxed weekend in London could be: a slow morning walk and coffee, one museum or gallery, lunch in a neighborhood you actually enjoy wandering, a park break ... [truncated 125 of 285 bytes]
+
+expect_match=museum
+expect_pass=true
+
+[33] prompt=what causes the seasons on earth
+mode=free-composed
+backend=cpu
+response=The seasons are caused mainly by Earth's axial tilt, not by Earth simply being closer to or farther from the Sun. As Earth orbits the Sun, the tilt changes how ... [truncated 53 of 213 bytes]
+
+expect_match=axial tilt
+expect_pass=true
+
+[34] prompt=who painted starry night
+mode=free-composed
+backend=cpu
+response=Vincent van Gogh painted The Starry Night.
+
+expect_match=Vincent van Gogh
+expect_pass=true
+
+[35] prompt=tell me a joke about databases
+mode=free-composed
+backend=cpu
+response=Why did the database admin leave the party early? Too many bad joins and not enough committed relationships.
+
+expect_match=bad joins
+expect_pass=true
+
+[36] prompt=our team is atlas
+mode=session-fact-store
+backend=cpu
+response=Noted. Your team is atlas, and I will remember that for this session.
+
+expect_match=team is atlas
+expect_pass=true
+
+[37] prompt=what team am i on
+mode=session-recall
+backend=cpu
+response=Your team is atlas.
+
+expect_match=team is atlas
+expect_pass=true
+
+[38] prompt=i am from london
+mode=session-fact-store
+backend=cpu
+response=Noted. You live in London, and I will remember that for this session.
+
+expect_match=live in London
+expect_pass=true
+
+[39] prompt=where am i from
+mode=session-recall
+backend=cpu
+response=You live in London.
+
+expect_match=live in London
+expect_pass=true
+
+[40] prompt=our lab is sbx
+mode=session-fact-store
+backend=cpu
+response=Noted. Your lab is sbx, and I will remember that for this session.
+
+expect_match=lab is sbx
+expect_pass=true
+
+[41] prompt=what is our lab
+mode=session-recall
+backend=cpu
+response=Your lab is sbx.
+
+expect_match=lab is sbx
+expect_pass=true
+
+[42] prompt=my role is researcher
+mode=session-fact-store
+backend=cpu
+response=Noted. Your role is researcher, and I will remember that for this session.
+
+expect_match=role is researcher
+expect_pass=true
+
+[43] prompt=what is my role
+mode=session-recall
+backend=cpu
+response=Your role is researcher.
+
+expect_match=role is researcher
+expect_pass=true
+
+[44] prompt=my dog is luna
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Luna, and I will remember that for this session.
+
+expect_match=dog's name is Luna
+expect_pass=true
+
+[45] prompt=what is my dog name
+mode=session-recall
+backend=cpu
+response=Your dog's name is Luna.
+
+expect_match=Luna
+expect_pass=true
+
+[46] prompt=our project is nebula
+mode=session-fact-store
+backend=cpu
+response=Noted. Your project is nebula, and I will remember that for this session.
+
+expect_match=project is nebula
+expect_pass=true
+
+[47] prompt=what project are we on
+mode=session-recall
+backend=cpu
+response=Your project is nebula.
+
+expect_match=project is nebula
+expect_pass=true
+
+[48] prompt=tomorrow i have a dentist appointment
+mode=session-fact-store
+backend=cpu
+response=Noted. Tomorrow you have a dentist appointment, and I will remember that for this session.
+
+expect_match=dentist appointment
+expect_pass=true
+
+[49] prompt=what do i have tomorrow
+mode=session-recall
+backend=cpu
+response=Tomorrow you have a dentist appointment.
+
+expect_match=dentist appointment
+expect_pass=true
+
+[50] prompt=can you remember what project we are on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your project and I will remember it for this session.
+
+expect_match=Tell me your project
+expect_pass=true
+
+[51] prompt=can you remember what team i am on
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me your team and I will remember it for this session.
+
+expect_match=Tell me your team
+expect_pass=true
+
+[52] prompt=can you remember where i am from
+mode=session-memory-capability
+backend=cpu
+response=Yes. Tell me where you live or where you are from, and I will remember it for this session.
+
+expect_match=where you live or where you are from
+expect_pass=true
+
+[53] prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v29 release bundle ships the executive summary at SBAN_v29_EXECUTIVE_SUMMARY.md, the report at SBAN_v29_REPORT.md, the paper PDF at docs/papers/SBAN_v29_fol... [truncated 215 of 375 bytes]
+
+expect_match=SBAN_v29_repo.zip
+expect_pass=true
+
+[54] prompt=where is the v29 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v29 paper PDF is generated at docs/papers/SBAN_v29_follow_up_research_paper.pdf.
+
+expect_match=docs/papers/SBAN_v29_follow_up_research_paper.pdf
+expect_pass=true
+
+[55] prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_dialogue_seed_v29.txt backend=cuda. To confirm t... [truncated 239 of 399 bytes]
+
+expect_match=numeric-accel-info
+expect_pass=true
+
+[56] prompt=can this run on an rtx 4090
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the pref... [truncated 171 of 331 bytes]
+
+expect_match=RTX 4090
+expect_pass=true
+
+[57] prompt=what does std.arraylist do in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, lib/std/array_list.zig implements ArrayList and related growable contiguous arrays.
+
+expect_match=lib/std/array_list.zig
+expect_pass=true
+
+[58] prompt=where is std.hashmap implemented in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.
+
+expect_match=lib/std/hash_map.zig
+expect_pass=true
+
+[59] prompt=what does zig std do
+mode=free-composed
+backend=cpu
+response=The Zig README says `zig std` opens the standard library documentation in a browser tab.
+
+expect_match=browser tab
+expect_pass=true
+
+[60] prompt=how do i build zig from source
+mode=free-composed
+backend=cpu
+response=The upstream Zig README describes the standard source build as the normal CMake process: create a build directory, run cmake, and then make install.
+
+expect_match=cmake
+expect_pass=true
+
+[61] prompt=how do you build zig without llvm
+mode=free-composed
+backend=cpu
+response=The upstream Zig README says you can compile bootstrap.c with a C compiler, run the resulting bootstrap executable, and produce a zig2 stage2 compiler without L... [truncated 15 of 175 bytes]
+
+expect_match=bootstrap.c
+expect_pass=true
+
+[62] prompt=what can you do
+mode=symbolic-help
+backend=cpu
+response=I can help with SBAN v29, release artifacts, starter files, CPU versus cpu_mt versus CUDA versus OpenCL behavior, session memory, short math, everyday planning,... [truncated 152 of 312 bytes]
+
+expect_match=Zig upstream questions
+expect_pass=true
+
+[63] prompt=blorple zint protocol
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanat... [truncated 86 of 246 bytes]
+
+expect_match=not sure yet
+expect_pass=true
+
+[64] prompt=my cat is io
+mode=session-fact-store
+backend=cpu
+response=Noted. Your cat's name is Io, and I will remember that for this session.
+
+expect_match=cat's name is Io
+expect_pass=true
+
+[65] prompt=what is my cat name
+mode=session-recall
+backend=cpu
+response=Your cat's name is Io.
+
+expect_match=Io
+expect_pass=true
+
+[66] prompt=remember that my launch date is tuesday
+mode=session-fact-store
+backend=cpu
+response=Noted. Your launch date is tuesday, and I will remember that for this session.
+
+expect_match=launch date is tuesday
+expect_pass=true
+
+[67] prompt=when is my launch date
+mode=session-recall
+backend=cpu
+response=Your launch date is tuesday.
+
+expect_match=tuesday
+expect_pass=true
+
+[68] prompt=our secret code word is lantern
+mode=session-secret-rejected
+backend=cpu
+response=I will not store secrets such as API keys, tokens, passwords, or private credentials in session memory.
+
+expect_match=will not store secrets
+expect_pass=true
+
+[69] prompt=what is my secret code word
+mode=session-recall-miss
+backend=cpu
+response=I do not know your secret code word yet. Tell me and I will remember it for this session.
+
+expect_match=do not know
+expect_pass=true
+
+[70] prompt=explain recursion like i am five
+mode=free-composed
+backend=cpu
+response=Recursion is when a function solves a problem by calling a smaller version of itself until it reaches a simple base case that stops the chain.
+
+expect_match=base case
+expect_pass=true
+
+[71] prompt=calculate 2^10
+mode=symbolic-math
+backend=cpu
+response=2^10 = 1024.
+
+expect_match=1024
+expect_pass=true
+
+[72] prompt=A train travels 60 miles per hour for 2 hours, how far does it go
+mode=free-composed
+backend=cpu
+response=It travels 120 miles.
+
+expect_match=120 miles
+expect_pass=true
+
+[73] prompt=who is the current UK prime minister
+mode=free-composed
+backend=cpu
+response=I do not have live current facts. This SBAN release uses static bundled knowledge, so current news, office holders, prices, and today's facts need an external l... [truncated 6 of 166 bytes]
+
+expect_match=live current facts
+expect_pass=true
+
+summary turns=73 anchored=0 retrieved=0 symbolic=31 nonempty=73 uncertain=1 expectations=73 passed=73

@@ -1,0 +1,213 @@
+# SBAN v29 open-chat scripted session evaluation
+User: hello
+Expect: Hello.
+
+User: how is your day going
+Expect: ready to help
+
+User: can you help me plan tomorrow
+Expect: fixed commitments
+
+User: help me organize my week
+Expect: one major result for each day
+
+User: how can i stay focused
+Expect: One task
+
+User: help me draft a polite follow-up
+Expect: Keep it short
+
+User: help me write a meeting agenda
+Expect: purpose
+
+User: draft a short apology to my manager
+Expect: apologize plainly
+
+User: write a concise linkedin summary for a researcher
+Expect: measurable results
+
+User: help me prepare for an interview
+Expect: three stories
+
+User: i am procrastinating and need help
+Expect: ten-minute timer
+
+User: how can i stop doomscrolling
+Expect: phone out of reach
+
+User: can you suggest a workout plan
+Expect: three full-body sessions
+
+User: give me three birthday ideas
+Expect: bowling
+
+User: how do i boil eggs
+Expect: 10 to 12 minutes
+
+User: how can i make coffee taste better
+Expect: fresher beans
+
+User: show me a python class for a stack
+Expect: class Stack
+
+User: how do i reverse a list in python
+Expect: items.reverse
+
+User: write javascript debounce function
+Expect: function debounce
+
+User: write sql to count users per country
+Expect: GROUP BY country
+
+User: explain recursion simply
+Expect: base case
+
+User: can you explain inflation in plain language
+Expect: prices rise over time
+
+User: explain c pointers simply
+Expect: memory address
+
+User: explain compound interest simply
+Expect: snowball
+
+User: what is a black hole in simple terms
+Expect: event horizon
+
+User: what does dns do
+Expect: Domain Name System
+
+User: compare tcp and udp
+Expect: reliable ordered delivery
+
+User: what is photosynthesis in simple terms
+Expect: sunlight
+
+User: what is dna in simple words
+Expect: instructions
+
+User: what does cpu mean
+Expect: central processing unit
+
+User: what is kubernetes in plain english
+Expect: containers
+
+User: what is garbage collection in programming
+Expect: automatically
+
+User: difference between stack and heap memory
+Expect: Stack memory
+
+User: what is oauth
+Expect: password directly
+
+User: what is mutex in programming
+Expect: critical section
+
+User: what is ram versus storage
+Expect: short-term working memory
+
+User: what is json
+Expect: JavaScript Object Notation
+
+User: what is a hash map
+Expect: key-value pairs
+
+User: what is big o of binary search
+Expect: O(log n)
+
+User: what is http 404
+Expect: Not Found
+
+User: what is sql join
+Expect: combines rows
+
+User: what is the capital of japan
+Expect: Tokyo
+
+User: who wrote pride and prejudice
+Expect: Jane Austen
+
+User: tell me something cool about octopuses
+Expect: three hearts
+
+User: recommend a comforting movie
+Expect: comforting
+
+User: give me three easy lunch ideas
+Expect: wrap
+
+User: rewrite this professionally: sorry i was late
+Expect: I apologize for arriving late
+
+User: make a haiku about rain
+Expect: Rain taps
+
+User: plan a relaxed weekend in london
+Expect: museum
+
+User: what causes the seasons on earth
+Expect: axial tilt
+
+User: who painted starry night
+Expect: Vincent van Gogh
+
+User: tell me a joke about databases
+Expect: bad joins
+
+User: our team is atlas
+Expect: team is atlas
+
+User: what team am i on
+Expect: atlas
+
+User: i am from london
+Expect: London
+
+User: where am i from
+Expect: London
+
+User: what is 12 percent of 85
+Expect: = 10.2.
+
+User: if bob has 3 oranges, gives 2 away, and then eats the last one, how many oranges does he have
+Expect: 0 left
+
+User: what is zig
+Expect: programming language and toolchain
+
+User: what does std.arraylist do in zig upstream
+Expect: growable contiguous arrays
+
+User: where is std.hashmap implemented in zig upstream
+Expect: lib/std/hash_map.zig
+
+User: what does zig std do
+Expect: standard library documentation
+
+User: how do i build zig from source
+Expect: CMake
+
+User: how do you build zig without llvm
+Expect: bootstrap.c
+
+User: blorple zint protocol
+Expect: not sure
+
+User: thank you
+Expect: welcome
+
+User: explain recursion like i am five
+Expect: base case
+
+User: calculate 2^10
+Expect: 1024
+
+User: translate hello to spanish
+Expect: hola
+
+User: summarize: SBAN v29 keeps the static boundary honest and reports actual backend use.
+Expect: Summary: SBAN v29 keeps the static boundary honest
+
+User: write a python function to check if a number is prime
+Expect: def is_prime

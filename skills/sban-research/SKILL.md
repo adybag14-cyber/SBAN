@@ -33,6 +33,7 @@ If you need the release targets or commands, read `references/release_profiles.m
 6. Regenerate deliverables only after the measured suite and packaged demo behavior are stable.
 7. If the user asks for a product demo or release packaging, validate the newcomer demo bundle and GitHub workflow files before finishing.
 8. For every new SBAN generation, update this skill with the generation-specific lessons, commit and push the finished release changes, monitor the GitHub CI suite, and if CI fails, debug, fix, re-commit, re-push, and monitor again until the suite is green or a concrete external blocker is documented.
+9. A version upgrade is not complete after push CI alone. Trigger the versioned GitHub full release suite workflow, push the matching release tag such as `v28.0.0` so the release bundle workflow publishes GitHub Release assets, monitor both workflows, and verify the GitHub Release contains the expected demo assets before calling the generation shipped.
 
 ## Guardrails
 
@@ -128,6 +129,8 @@ For a new release:
 4. Update `README.md` so the current release can be reproduced without extra context.
 5. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.
 6. Commit and push the release after local validation, then verify the pushed GitHub checks complete successfully.
+7. Trigger the versioned full release suite workflow on GitHub and monitor it.
+8. Create and push the release tag for the generation so `Release Demo Bundles` runs, then verify the GitHub Release exists and has the expected Windows and Linux demo zip assets.
 
 ## When to read references
 

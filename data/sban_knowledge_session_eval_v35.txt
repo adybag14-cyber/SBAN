@@ -1,0 +1,8 @@
+User: what changed in v35
+Expect: auto-learned
+
+User: what changed about session forget in v35
+Expect: structured forget
+
+User: why did the JSON prompt with age 37 fail before v35
+Expect: slot

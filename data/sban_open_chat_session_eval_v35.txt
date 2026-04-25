@@ -1,0 +1,8 @@
+User: hello
+Expect: SBAN v35
+
+User: what should new users try first
+Expect: learned reasoning
+
+User: how does SBAN v35 learn without editing dialogue.zig
+Expect: sban_learned_reasoning_v35.txt

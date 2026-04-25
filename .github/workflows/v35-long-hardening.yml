@@ -1,0 +1,140 @@
+name: v35 Long Hardening
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner_label:
+        description: Runner label for the independent long hardening jobs
+        required: false
+        default: ubuntu-latest
+        type: string
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  run-long-hardening:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - benchmark_key: long_10m
+            artifact_name: v35-long-10m-results
+            result_json: longrun_v35_10m.json
+            timeout_minutes: 180
+          - benchmark_key: long_20m
+            artifact_name: v35-long-20m-results
+            result_json: longrun_v35_20m.json
+            timeout_minutes: 240
+
+    runs-on: ${{ inputs.runner_label || 'ubuntu-latest' }}
+    timeout-minutes: ${{ matrix.timeout_minutes }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Zig
+        run: python scripts/install_zig_ci.py --version master --output-dir .ci-tools/zig
+
+      - name: Build release binary
+        run: |
+          zig build test
+          zig build -Doptimize=ReleaseFast
+          python -m py_compile scripts/host_monitor.py scripts/run_v35_release.py
+
+      - name: Capture runner baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/results/v35
+          {
+            echo "timestamp_utc=$(date -u --iso-8601=seconds)"
+            echo "runner_name=${RUNNER_NAME:-unknown}"
+            echo "runner_os=${RUNNER_OS:-unknown}"
+            echo "runner_arch=${RUNNER_ARCH:-unknown}"
+            echo "runner_label=${{ inputs.runner_label || 'ubuntu-latest' }}"
+            echo "benchmark_key=${{ matrix.benchmark_key }}"
+            echo
+            echo "== uname =="
+            uname -a
+            echo
+            echo "== cpu =="
+            nproc
+            lscpu || true
+            echo
+            echo "== memory =="
+            free -h || true
+            echo
+            echo "== disk =="
+            df -h || true
+            echo
+            echo "== ulimit =="
+            ulimit -a || true
+            echo
+            for path in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -f "$path" ]]; then
+                echo "== $path =="
+                cat "$path"
+                echo
+              fi
+            done
+          } | tee "docs/results/v35/_runner_baseline_${{ matrix.benchmark_key }}.txt"
+
+      - name: Run independent long hardening benchmark
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/results/v35
+          extra_args=()
+          if [[ "${{ matrix.benchmark_key }}" == "long_20m" ]]; then
+            extra_args+=(--hosted-long-20m-guardrail)
+          fi
+          python scripts/run_v35_release.py --skip-cuda --benchmarks "${{ matrix.benchmark_key }}" --skip-dialogue --skip-accel --skip-numeric-backend-probes --skip-status "${extra_args[@]}" 2>&1 | tee "docs/results/v35/_run_v35_${{ matrix.benchmark_key }}_ci.log"
+
+      - name: Capture runner postmortem
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p docs/results/v35
+          {
+            echo "timestamp_utc=$(date -u --iso-8601=seconds)"
+            echo "job_status=${{ job.status }}"
+            echo "benchmark_key=${{ matrix.benchmark_key }}"
+            echo
+            echo "== memory =="
+            free -h || true
+            echo
+            echo "== disk =="
+            df -h || true
+            echo
+            echo "== top resident processes =="
+            ps -eo pid,ppid,pcpu,pmem,rss,vsz,etimes,cmd --sort=-rss | head -n 40 || true
+            echo
+            for path in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -f "$path" ]]; then
+                echo "== $path =="
+                cat "$path"
+                echo
+              fi
+            done
+          } | tee "docs/results/v35/_runner_postmortem_${{ matrix.benchmark_key }}.txt"
+
+      - name: Upload long hardening results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: |
+            docs/results/v35/${{ matrix.result_json }}
+            docs/results/v35/_run_v35_${{ matrix.benchmark_key }}_ci.log
+            docs/results/v35/_run_v35_release_heartbeat.jsonl
+            docs/results/v35/_runner_baseline_${{ matrix.benchmark_key }}.txt
+            docs/results/v35/_runner_postmortem_${{ matrix.benchmark_key }}.txt
+          if-no-files-found: warn

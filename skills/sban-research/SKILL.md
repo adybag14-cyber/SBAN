@@ -16,12 +16,12 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/build_v34_runtime_prewarm.py` for the generated runtime prewarm pack, compatibility seed/open/knowledge files, eval assets, and stats
-- `scripts/vocab_size_probe_v34.py` for larger-vocabulary collision and dense-memory estimates through 65,536 buckets
-- `scripts/ci_smoke_v34.py` for the current product smoke gate and default-prewarm checks
-- `scripts/run_v34_release.py` for the current packaged benchmark, dialogue suite, runtime-prewarm eval, and vocabulary probe
-- `scripts/make_v34_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
-- `scripts/package_v34_demo.py` for the newcomer demo bundle
+- `scripts/build_v35_runtime_prewarm.py` for the generated runtime prewarm pack, learned reasoning corpus, cold seed, compatibility seed/open/knowledge files, eval assets, and stats
+- `scripts/vocab_size_probe_v35.py` for larger-vocabulary collision and dense-memory estimates through 65,536 buckets
+- `scripts/ci_smoke_v35.py` for the current product smoke gate, learned-corpus manifest checks, default-prewarm checks, exact JSON, and forget/delete checks
+- `scripts/run_v35_release.py` for the current packaged benchmark, dialogue suite, runtime-prewarm eval, learned-reasoning eval, and vocabulary probe
+- `scripts/make_v35_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v35_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -132,6 +132,10 @@ If you need the release targets or commands, read `references/release_profiles.m
   extend vocab probes through 65,536 buckets while keeping the dense byte-vocab core unchanged,
   keep live-current or unsupported source-location claims behind explicit external-lookup boundaries,
   and guardrail hosted 20M hardening with `--hosted-long-20m-guardrail` after the full GitHub-hosted 20M attempt was terminated under memory pressure before artifact upload.
+- The v35 product lessons are the auto-learned runtime step:
+  keep the v34 default prewarm contract, add `data/sban_learned_reasoning_v35.txt` as a separately generated learned corpus, load it by default in free-mode chat, validate that the release manifest includes online examples from dataset adapters, and use `prewarm_path=none learned_path=none` as the cold-mode proof that learned answers come from data assets rather than hidden prompt branches.
+  Future reply-quality work should regenerate or extend the builder and dataset adapters instead of expanding `src/dialogue.zig` with more canned conversations; code changes should stay focused on routing, safety, and symbolic/runtime semantics such as exact JSON slots and structured session forget/delete.
+  The v35 release gate must include `data/sban_learned_session_eval_v35.txt`, `docs/results/v35/autolearn_manifest_v35.json`, exact JSON age/name checks, forget/delete recall-miss checks, and the existing live-current/source-boundary checks.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
@@ -140,16 +144,16 @@ If you need the release targets or commands, read `references/release_profiles.m
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
 - For the v31 era, keep the core hosted release suite split from the independent 10M, 20M, and 100M workflows, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
-- For v34 hosted long hardening, run the 10M job fresh and let the 20M job emit the carried-forward guardrail explicitly on GitHub-hosted runners; only attempt a fresh 20M on a larger runner with enough memory.
+- For v35 hosted long hardening, run the 10M job fresh and let the 20M job emit the carried-forward guardrail explicitly on GitHub-hosted runners; only attempt a fresh 20M on a larger runner with enough memory.
 
 ## Deliverables
 
 For a new release:
 
-1. Run `python scripts/build_v34_runtime_prewarm.py` and `python scripts/vocab_size_probe_v34.py` or the next-generation equivalents.
-2. Run `python scripts/run_v34_release.py` or the next-generation equivalent.
-3. Run `python scripts/make_v34_deliverables.py` or the next-generation equivalent.
-4. Confirm the versioned paper PDF, executive summary, repo zip, demo bundle, runtime prewarm JSON, generated knowledge compatibility JSON, and vocab probe JSON exist under `deliverables/` or `docs/results/`.
+1. Run `python scripts/build_v35_runtime_prewarm.py --force-refresh` when network is available and `python scripts/vocab_size_probe_v35.py` or the next-generation equivalents.
+2. Run `python scripts/run_v35_release.py` or the next-generation equivalent.
+3. Run `python scripts/make_v35_deliverables.py` or the next-generation equivalent.
+4. Confirm the versioned paper PDF, executive summary, repo zip, demo bundle, runtime prewarm JSON, autolearn manifest JSON, generated knowledge compatibility JSON, learned session eval result, and vocab probe JSON exist under `deliverables/` or `docs/results/`.
 5. Update `README.md` and `references/release_profiles.md` so the current release can be reproduced without extra context.
 6. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.
 7. Commit and push the release after local validation, then verify the pushed GitHub checks complete successfully.

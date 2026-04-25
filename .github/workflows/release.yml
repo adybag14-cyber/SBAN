@@ -3,7 +3,7 @@ name: Release Demo Bundles
 on:
   push:
     tags:
-      - "v34*"
+      - "v35*"
   workflow_dispatch:
 
 env:
@@ -41,23 +41,23 @@ jobs:
       - name: Build and test
         run: |
           zig build test
-          python -m py_compile scripts/build_v34_runtime_prewarm.py scripts/vocab_size_probe_v34.py scripts/ci_smoke_v34.py scripts/package_v34_demo.py
-          python scripts/build_v34_runtime_prewarm.py
-          python scripts/vocab_size_probe_v34.py
+          python -m py_compile scripts/build_v35_runtime_prewarm.py scripts/vocab_size_probe_v35.py scripts/ci_smoke_v35.py scripts/package_v35_demo.py
+          python scripts/build_v35_runtime_prewarm.py
+          python scripts/vocab_size_probe_v35.py
           zig build -Doptimize=ReleaseFast
 
       - name: Smoke demo
-        run: python scripts/ci_smoke_v34.py
+        run: python scripts/ci_smoke_v35.py
 
       - name: Package demo bundle
         run: |
-          python scripts/package_v34_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
+          python scripts/package_v35_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-demo
-          path: deliverables/v34/demo/SBAN_v34_${{ matrix.platform }}_demo.zip
+          path: deliverables/v35/demo/SBAN_v35_${{ matrix.platform }}_demo.zip
 
       - name: Ensure release exists
         if: startsWith(github.ref, 'refs/tags/')
@@ -76,4 +76,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.ref_name }}" "deliverables/v34/demo/SBAN_v34_${{ matrix.platform }}_demo.zip" --clobber
+          gh release upload "${{ github.ref_name }}" "deliverables/v35/demo/SBAN_v35_${{ matrix.platform }}_demo.zip" --clobber

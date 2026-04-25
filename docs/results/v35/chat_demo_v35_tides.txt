@@ -1,0 +1,4 @@
+prompt=what causes tides
+mode=free-composed
+backend=cpu
+response=Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing.

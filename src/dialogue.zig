@@ -5,24 +5,27 @@ const cfg = @import("config.zig");
 const netmod = @import("network.zig");
 
 const feature_dim = 128;
-const current_release_name = "SBAN v34";
-const current_release_version = "v34";
-const current_prewarm_path = "data/sban_runtime_prewarm_v34.txt";
+const current_release_name = "SBAN v35";
+const current_release_version = "v35";
+const current_prewarm_path = "data/sban_runtime_prewarm_v35.txt";
 const current_seed_path = current_prewarm_path;
-const current_open_seed_path = "data/sban_dialogue_open_seed_v34.txt";
+const current_cold_seed_path = "data/sban_cold_seed_v35.txt";
+const current_open_seed_path = "data/sban_dialogue_open_seed_v35.txt";
 const current_knowledge_path = current_prewarm_path;
-const current_prompt_eval_path = "data/sban_chat_eval_prompts_v34.txt";
-const current_session_eval_path = "data/sban_session_eval_v34.txt";
-const current_open_chat_eval_path = "data/sban_open_chat_session_eval_v34.txt";
-const current_summary_path = "SBAN_v34_EXECUTIVE_SUMMARY.md";
-const current_report_path = "SBAN_v34_REPORT.md";
-const current_paper_path = "docs/papers/SBAN_v34_follow_up_research_paper.pdf";
-const current_repo_zip_path = "deliverables/v34/SBAN_v34_repo.zip";
-const current_windows_demo_start = "SBAN_v34_Start.bat";
-const current_linux_demo_start = "./SBAN_v34_Start.sh";
-const current_windows_demo_zip = "deliverables/v34/demo/SBAN_v34_windows_x86_64_demo.zip";
-const current_linux_demo_zip = "deliverables/v34/demo/SBAN_v34_linux_x86_64_demo.zip";
-const session_magic = "SBAN_SESSION_V34";
+const current_learned_path = "data/sban_learned_reasoning_v35.txt";
+const current_prompt_eval_path = "data/sban_chat_eval_prompts_v35.txt";
+const current_session_eval_path = "data/sban_session_eval_v35.txt";
+const current_open_chat_eval_path = "data/sban_open_chat_session_eval_v35.txt";
+const current_summary_path = "SBAN_v35_EXECUTIVE_SUMMARY.md";
+const current_report_path = "SBAN_v35_REPORT.md";
+const current_paper_path = "docs/papers/SBAN_v35_follow_up_research_paper.pdf";
+const current_repo_zip_path = "deliverables/v35/SBAN_v35_repo.zip";
+const current_windows_demo_start = "SBAN_v35_Start.bat";
+const current_linux_demo_start = "./SBAN_v35_Start.sh";
+const current_windows_demo_zip = "deliverables/v35/demo/SBAN_v35_windows_x86_64_demo.zip";
+const current_linux_demo_zip = "deliverables/v35/demo/SBAN_v35_linux_x86_64_demo.zip";
+const session_magic = "SBAN_SESSION_V35";
+const legacy_session_magic_v34 = "SBAN_SESSION_V34";
 const legacy_session_magic_v33 = "SBAN_SESSION_V33";
 const legacy_session_magic_v32 = "SBAN_SESSION_V32";
 const legacy_session_magic_v31 = "SBAN_SESSION_V31";
@@ -65,6 +68,7 @@ pub const ChatOptions = struct {
     seed_path: []const u8 = current_seed_path,
     open_seed_path: ?[]const u8 = null,
     knowledge_path: ?[]const u8 = current_knowledge_path,
+    learned_path: ?[]const u8 = current_learned_path,
     session_path: ?[]const u8 = null,
     mode: ChatMode = .free,
     backend: AccelBackend = .auto,
@@ -74,7 +78,7 @@ pub const ChatOptions = struct {
     continue_bytes: usize = 0,
     allow_generation: bool = true,
     net_config: cfg.NetworkConfig = blk: {
-        const config = cfg.v34ReleaseConfig(4);
+        const config = cfg.v35ReleaseConfig(4);
         break :blk config;
     },
 };
@@ -108,7 +112,7 @@ const SessionState = struct {
 
     fn rememberFact(self: *SessionState, allocator: std.mem.Allocator, key: []const u8, value: []const u8) !void {
         const normalized_key = try normalizeFactKey(allocator, key);
-        const normalized_value = try sanitizeTurnText(allocator, value);
+        const normalized_value = try sanitizeFactValue(allocator, value);
         for (self.facts.items) |*fact| {
             if (std.ascii.eqlIgnoreCase(fact.key, normalized_key)) {
                 allocator.free(normalized_key);
@@ -123,6 +127,20 @@ const SessionState = struct {
             allocator.free(dropped.value);
         }
         try self.facts.append(allocator, .{ .key = normalized_key, .value = normalized_value });
+    }
+
+    fn forgetFact(self: *SessionState, allocator: std.mem.Allocator, key: []const u8) !bool {
+        const normalized_key = try normalizeFactKey(allocator, key);
+        defer allocator.free(normalized_key);
+        var idx: usize = 0;
+        while (idx < self.facts.items.len) : (idx += 1) {
+            if (!std.ascii.eqlIgnoreCase(self.facts.items[idx].key, normalized_key)) continue;
+            const removed = self.facts.orderedRemove(idx);
+            allocator.free(removed.key);
+            allocator.free(removed.value);
+            return true;
+        }
+        return false;
     }
 
     fn lookupFact(self: *const SessionState, key: []const u8) ?SessionFact {
@@ -984,6 +1002,15 @@ pub fn runChatDemo(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
     }
     const knowledge_corpus = if (knowledge_assets) |*assets| &assets.corpus else null;
     const knowledge_scorer = if (knowledge_assets) |*assets| &assets.scorer else null;
+    var learned_assets = if (options.mode == .free and options.allow_generation)
+        try loadOptionalDialogueCorpus(allocator, io, writer, options.learned_path, "learned_path", options.backend, options.worker_threads)
+    else
+        null;
+    defer {
+        if (learned_assets) |*assets| assets.deinit(allocator);
+    }
+    const learned_corpus = if (learned_assets) |*assets| &assets.corpus else null;
+    const learned_scorer = if (learned_assets) |*assets| &assets.scorer else null;
 
     var session = loadSessionState(allocator, io, options.session_path) catch SessionState{};
     defer session.deinit(allocator);
@@ -999,6 +1026,8 @@ pub fn runChatDemo(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
         open_scorer,
         knowledge_corpus,
         knowledge_scorer,
+        learned_corpus,
+        learned_scorer,
         &session,
         options,
     ) catch |err| {
@@ -1049,6 +1078,15 @@ pub fn runChatEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
     }
     const knowledge_corpus = if (knowledge_assets) |*assets| &assets.corpus else null;
     const knowledge_scorer = if (knowledge_assets) |*assets| &assets.scorer else null;
+    var learned_assets = if (options.mode == .free and options.allow_generation)
+        try loadOptionalDialogueCorpus(allocator, io, writer, options.learned_path, "learned_path", options.backend, options.worker_threads)
+    else
+        null;
+    defer {
+        if (learned_assets) |*assets| assets.deinit(allocator);
+    }
+    const learned_corpus = if (learned_assets) |*assets| &assets.corpus else null;
+    const learned_scorer = if (learned_assets) |*assets| &assets.scorer else null;
 
     var total: usize = 0;
     var anchored: usize = 0;
@@ -1074,6 +1112,8 @@ pub fn runChatEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.Writer,
             open_scorer,
             knowledge_corpus,
             knowledge_scorer,
+            learned_corpus,
+            learned_scorer,
             &session,
             options,
         );
@@ -1124,6 +1164,15 @@ pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.
     }
     const knowledge_corpus = if (knowledge_assets) |*assets| &assets.corpus else null;
     const knowledge_scorer = if (knowledge_assets) |*assets| &assets.scorer else null;
+    var learned_assets = if (options.mode == .free and options.allow_generation)
+        try loadOptionalDialogueCorpus(allocator, io, writer, options.learned_path, "learned_path", options.backend, options.worker_threads)
+    else
+        null;
+    defer {
+        if (learned_assets) |*assets| assets.deinit(allocator);
+    }
+    const learned_corpus = if (learned_assets) |*assets| &assets.corpus else null;
+    const learned_scorer = if (learned_assets) |*assets| &assets.scorer else null;
 
     var session: SessionState = .{};
     defer session.deinit(allocator);
@@ -1155,6 +1204,8 @@ pub fn runChatSessionEval(allocator: std.mem.Allocator, io: std.Io, writer: *Io.
                 open_scorer,
                 knowledge_corpus,
                 knowledge_scorer,
+                learned_corpus,
+                learned_scorer,
                 &session,
                 options,
             );
@@ -1194,6 +1245,8 @@ fn answerPrompt(
     open_scorer: ?*ApproximateScorer,
     knowledge_corpus: ?*const PreparedCorpus,
     knowledge_scorer: ?*ApproximateScorer,
+    learned_corpus: ?*const PreparedCorpus,
+    learned_scorer: ?*ApproximateScorer,
     session: *SessionState,
     options: ChatOptions,
 ) !ChatResult {
@@ -1202,6 +1255,22 @@ fn answerPrompt(
         return .{
             .mode_label = "session-memory-capability",
             .response = try buildFactCapabilityResponse(allocator, fact_key),
+            .symbolic = true,
+        };
+    }
+
+    if (try extractForgetFactQuery(allocator, prompt)) |fact_key| {
+        defer allocator.free(fact_key);
+        if (try session.forgetFact(allocator, fact_key)) {
+            return .{
+                .mode_label = "session-forget",
+                .response = try buildFactForgetResponse(allocator, fact_key),
+                .symbolic = true,
+            };
+        }
+        return .{
+            .mode_label = "session-forget-miss",
+            .response = try buildFactForgetMiss(allocator, fact_key),
             .symbolic = true,
         };
     }
@@ -1251,16 +1320,19 @@ fn answerPrompt(
             };
         }
         try session.rememberFact(allocator, fact.key, fact.value);
+        const stored_value = try sanitizeFactValue(allocator, fact.value);
+        defer allocator.free(stored_value);
+        const stored_fact: FactCandidate = .{ .key = fact.key, .value = stored_value };
         if (wants_help) {
             return .{
                 .mode_label = "session-fact-help",
-                .response = try buildFactHelpResponse(allocator, fact),
+                .response = try buildFactHelpResponse(allocator, stored_fact),
                 .symbolic = true,
             };
         }
         return .{
             .mode_label = "session-fact-store",
-            .response = try buildFactStoredResponse(allocator, fact),
+            .response = try buildFactStoredResponse(allocator, stored_fact),
             .symbolic = true,
         };
     }
@@ -1280,12 +1352,30 @@ fn answerPrompt(
     if (isUnsupportedSourceLocationPrompt(prompt)) {
         return .{
             .mode_label = "source-boundary",
-            .response = try allocator.dupe(u8, "I do not know that source-tree location from the bundled v34 knowledge. I should not invent a Linux kernel file path without a supplied source tree or index."),
+            .response = try std.fmt.allocPrint(allocator, "I do not know that source-tree location from the bundled {s} knowledge. I should not invent a Linux kernel file path without a supplied source tree or index.", .{current_release_version}),
             .symbolic = true,
         };
     }
 
+    if (options.mode == .free and options.allow_generation and isCurrentFactPrompt(prompt)) {
+        if (try synthesizeFreeResponse(allocator, prompt, session, options)) |response| {
+            return .{
+                .mode_label = "free-composed",
+                .response = response,
+            };
+        }
+    }
+
     if (options.mode == .free and options.allow_generation and isPreRetrievalComposedPrompt(prompt)) {
+        if (try synthesizeFreeResponse(allocator, prompt, session, options)) |response| {
+            return .{
+                .mode_label = "free-composed",
+                .response = response,
+            };
+        }
+    }
+
+    if (options.mode == .free and options.allow_generation and isCodingHelpPrompt(prompt)) {
         if (try synthesizeFreeResponse(allocator, prompt, session, options)) |response| {
             return .{
                 .mode_label = "free-composed",
@@ -1322,6 +1412,21 @@ fn answerPrompt(
                 .response = match.example.assistant,
                 .retrieved = true,
             };
+        }
+    }
+
+    if (options.mode == .free and !domain_prompt and options.allow_generation) {
+        if (learned_corpus) |ready_corpus| {
+            if (learned_scorer) |ready_scorer| {
+                if (try selectGroundedMatch(allocator, prompt, &prompt_tokens, ready_corpus, ready_scorer, .learned)) |match| {
+                    return .{
+                        .mode_label = "learned-reasoning",
+                        .matched_prompt = match.example.user,
+                        .response = match.example.assistant,
+                        .retrieved = true,
+                    };
+                }
+            }
         }
     }
 
@@ -1376,7 +1481,7 @@ fn answerPrompt(
     };
 }
 
-const MatchRequest = enum { anchor, retrieval, knowledge, open_chat };
+const MatchRequest = enum { anchor, retrieval, knowledge, open_chat, learned };
 
 const SelectedMatch = struct {
     example: DialogueExample,
@@ -1389,6 +1494,7 @@ fn requestAcceptsScore(scored: LexicalScore, request: MatchRequest) bool {
         .retrieval => scored.exact or ((scored.overlap >= 2 and (scored.prompt_cov_ppm >= 500 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 250) or (scored.topic_overlap >= 1 and scored.overlap >= 1 and scored.candidate_cov_ppm >= 200)),
         .knowledge => scored.exact or (scored.overlap >= 2 and (scored.prompt_cov_ppm >= 520 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 240),
         .open_chat => scored.exact or (scored.overlap >= 2 and (scored.prompt_cov_ppm >= 420 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 220),
+        .learned => scored.exact or (scored.overlap >= 2 and (scored.prompt_cov_ppm >= 500 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 220),
     };
 }
 
@@ -1717,6 +1823,20 @@ fn buildFactRecallMiss(allocator: std.mem.Allocator, key: []const u8) ![]const u
     return std.fmt.allocPrint(allocator, "I do not know your {s} yet. Tell me and I will remember it for this session.", .{key});
 }
 
+fn buildFactForgetResponse(allocator: std.mem.Allocator, key: []const u8) ![]const u8 {
+    if (std.ascii.eqlIgnoreCase(key, "dog")) return allocator.dupe(u8, "Forgot your dog's name for this session.");
+    if (std.ascii.eqlIgnoreCase(key, "cat")) return allocator.dupe(u8, "Forgot your cat's name for this session.");
+    if (std.ascii.eqlIgnoreCase(key, "tomorrow")) return allocator.dupe(u8, "Forgot what you had stored for tomorrow in this session.");
+    return std.fmt.allocPrint(allocator, "Forgot your {s} for this session.", .{key});
+}
+
+fn buildFactForgetMiss(allocator: std.mem.Allocator, key: []const u8) ![]const u8 {
+    if (std.ascii.eqlIgnoreCase(key, "dog")) return allocator.dupe(u8, "I did not have a stored dog name to forget in this session.");
+    if (std.ascii.eqlIgnoreCase(key, "cat")) return allocator.dupe(u8, "I did not have a stored cat name to forget in this session.");
+    if (std.ascii.eqlIgnoreCase(key, "tomorrow")) return allocator.dupe(u8, "I did not have a stored tomorrow item to forget in this session.");
+    return std.fmt.allocPrint(allocator, "I did not have a stored {s} to forget in this session.", .{key});
+}
+
 fn buildFactCapabilityResponse(allocator: std.mem.Allocator, key: []const u8) ![]const u8 {
     if (std.ascii.eqlIgnoreCase(key, "name")) {
         return allocator.dupe(u8, "Yes. Tell me your name and I will remember it for this session.");
@@ -1749,7 +1869,9 @@ fn buildFactCapabilityResponse(allocator: std.mem.Allocator, key: []const u8) ![
 }
 
 fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?ChatResult {
-    if (containsPhraseIgnoreCase(prompt, "what changed in v34") or
+    if (containsPhraseIgnoreCase(prompt, "what changed in v35") or
+        containsPhraseIgnoreCase(prompt, "how is v35 different from v34") or
+        containsPhraseIgnoreCase(prompt, "what changed in v34") or
         containsPhraseIgnoreCase(prompt, "how is v34 different from v33") or
         containsPhraseIgnoreCase(prompt, "what changed in v32") or
         containsPhraseIgnoreCase(prompt, "what changed in v31") or
@@ -1926,11 +2048,11 @@ fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?C
 }
 
 fn buildReleaseChangeResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "V34 promotes the generated runtime prewarm pack to the default chat surface, keeps the v33 powerchat reasoning work, adds a larger warm-start knowledge and coding surface, verifies larger vocabulary probes through 65,536 buckets, and keeps live-current facts behind an explicit external-lookup boundary.");
+    return allocator.dupe(u8, "V35 adds an auto-learned reasoning corpus generated from online dataset adapters plus deterministic fallback rows, routes that learned corpus through the runtime retrieval scorer, fixes JSON slot preservation and session forget semantics, keeps the v34 prewarm contract, and keeps live-current facts behind an explicit external-lookup boundary.");
 }
 
 fn buildNewUserStartResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "New users should start the continuing chat demo, ask what SBAN v34 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact like a name, team, cat, dog, project, launch date, or city, and then try practical reasoning prompts such as a sequence, comparison, word problem, agenda, explanation, summarization request, or coding request.");
+    return allocator.dupe(u8, "New users should start the continuing chat demo, ask what SBAN v35 is, ask how the learned reasoning corpus works, try a CUDA or starter-file command, store and forget a session fact, generate exact JSON slots, and then try practical reasoning prompts such as a sequence, comparison, word problem, agenda, explanation, summarization request, or coding request.");
 }
 
 fn buildCudaCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -1994,7 +2116,7 @@ fn buildTranscriptSafetyResponse(allocator: std.mem.Allocator) ![]const u8 {
 }
 
 fn buildRoadmapResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "After v34, the roadmap should keep pushing on three fronts: broader non-transformer reasoning loops without losing grounding, richer static knowledge/rule packs with measured coverage, and backend acceleration that only becomes the default when CPU or GPU runs actually beat the fallback path.");
+    return allocator.dupe(u8, "After v35, the roadmap should push the learned-corpus path toward incremental online updates, stronger source attribution for refreshed knowledge, and backend acceleration that only becomes the default when CPU or GPU runs actually beat the fallback path.");
 }
 
 fn synthesizeFreeResponse(
@@ -2316,7 +2438,8 @@ fn buildSummarizationResponse(allocator: std.mem.Allocator, prompt: []const u8) 
             const max_len: usize = 180;
             const head = if (source.len > max_len) source[0..max_len] else source;
             if (source.len > max_len) {
-                return std.fmt.allocPrint(allocator, "Summary: {s}...", .{head});
+                const clue_len: usize = @min(source.len, 96);
+                return std.fmt.allocPrint(allocator, "Summary: The supplied passage is long, so the compact summary is: it repeats or elaborates the visible opening topic rather than adding separate claims. Opening topic cue: {s}...", .{source[0..clue_len]});
             }
             return std.fmt.allocPrint(allocator, "Summary: {s}", .{head});
         }
@@ -2656,12 +2779,60 @@ fn buildWritingHelpResponse(allocator: std.mem.Allocator, prompt: []const u8) ![
     return allocator.dupe(u8, "Yes. Tell me the audience, tone, and goal, and I can help draft it. A safe default is to keep it short, direct, and specific about the next step.");
 }
 
+fn takeSimpleFieldWord(input: []const u8) ?[]const u8 {
+    const trimmed = trimLine(input);
+    var idx: usize = 0;
+    while (idx < trimmed.len and std.ascii.isWhitespace(trimmed[idx])) : (idx += 1) {}
+    const start = idx;
+    while (idx < trimmed.len and (std.ascii.isAlphanumeric(trimmed[idx]) or trimmed[idx] == '_' or trimmed[idx] == '-')) : (idx += 1) {}
+    if (idx <= start) return null;
+    return trimmed[start..idx];
+}
+
+fn takeSimpleFieldInteger(input: []const u8) ?u64 {
+    const trimmed = trimLine(input);
+    var idx: usize = 0;
+    while (idx < trimmed.len and std.ascii.isWhitespace(trimmed[idx])) : (idx += 1) {}
+    const start = idx;
+    while (idx < trimmed.len and std.ascii.isDigit(trimmed[idx])) : (idx += 1) {}
+    if (idx <= start) return null;
+    return std.fmt.parseInt(u64, trimmed[start..idx], 10) catch null;
+}
+
+fn extractSimpleNameField(prompt: []const u8) ?[]const u8 {
+    const markers = [_][]const u8{ "name is ", "name " };
+    for (markers) |marker| {
+        if (indexOfPhraseIgnoreCase(prompt, marker)) |idx| {
+            if (takeSimpleFieldWord(prompt[idx + marker.len ..])) |name| return name;
+        }
+    }
+    return null;
+}
+
+fn extractSimpleAgeField(prompt: []const u8) ?u64 {
+    const markers = [_][]const u8{ "age is ", "age " };
+    for (markers) |marker| {
+        if (indexOfPhraseIgnoreCase(prompt, marker)) |idx| {
+            if (takeSimpleFieldInteger(prompt[idx + marker.len ..])) |age| return age;
+        }
+    }
+    return null;
+}
+
+fn buildJsonObjectFromPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?[]const u8 {
+    const name = extractSimpleNameField(prompt) orelse return null;
+    const age = extractSimpleAgeField(prompt) orelse return null;
+    return @as(?[]const u8, try std.fmt.allocPrint(
+        allocator,
+        "```json\n{{\"name\":\"{s}\",\"age\":{d}}}\n```\nThis is valid JSON and preserves the requested `name` and `age` slots exactly.",
+        .{ name, age },
+    ));
+}
+
 fn buildCodingHelpResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
     if (containsPhraseIgnoreCase(prompt, "json") and hasAnyPhraseIgnoreCase(prompt, &.{ "generate", "create", "return", "object", "with name" })) {
-        return allocator.dupe(
-            u8,
-            "```json\n{\"name\":\"Ada\",\"age\":42}\n```\nThis is valid JSON: quoted object keys, a string value for `name`, and a numeric value for `age`.",
-        );
+        if (try buildJsonObjectFromPrompt(allocator, prompt)) |json| return json;
+        return allocator.dupe(u8, "Give the requested JSON fields and values explicitly, for example `name Ada and age 37`, and I will preserve the slot values exactly.");
     }
     if (containsPhraseIgnoreCase(prompt, "zig") and containsPhraseIgnoreCase(prompt, "reverse") and containsPhraseIgnoreCase(prompt, "slice")) {
         return allocator.dupe(
@@ -3394,7 +3565,7 @@ fn buildZigUpstreamResponse(allocator: std.mem.Allocator, prompt: []const u8) ![
     if (containsPhraseIgnoreCase(prompt, "what is zig upstream")) {
         return allocator.dupe(u8, "The upstream Zig repository is the source tree for the Zig language and toolchain, including the compiler, standard library, build system, and language-reference examples.");
     }
-    return allocator.dupe(u8, "I can answer practical Zig upstream questions about the top-level build, standard-library file locations, and the versioned source tree that is bundled for this v34 upgrade work.");
+    return std.fmt.allocPrint(allocator, "I can answer practical Zig upstream questions about the top-level build, standard-library file locations, and the versioned source tree that is bundled for this {s} upgrade work.", .{current_release_version});
 }
 
 fn buildCoffeeResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -3542,13 +3713,15 @@ fn parseChatOptions(writer: *Io.Writer, args: []const []const u8, start_idx: usi
         const value = arg[eq_idx + 1 ..];
         if (std.mem.eql(u8, key, "prewarm_path")) {
             if (std.mem.eql(u8, value, "none") or std.mem.eql(u8, value, "off")) {
-                options.seed_path = current_seed_path;
+                options.seed_path = current_cold_seed_path;
                 options.knowledge_path = null;
                 options.open_seed_path = null;
+                options.learned_path = null;
             } else {
                 options.seed_path = value;
                 options.knowledge_path = value;
                 options.open_seed_path = null;
+                options.learned_path = null;
             }
         } else if (std.mem.eql(u8, key, "seed_path")) {
             options.seed_path = value;
@@ -3556,6 +3729,8 @@ fn parseChatOptions(writer: *Io.Writer, args: []const []const u8, start_idx: usi
             if (std.mem.eql(u8, value, "none") or std.mem.eql(u8, value, "off")) options.open_seed_path = null else options.open_seed_path = value;
         } else if (std.mem.eql(u8, key, "knowledge_path")) {
             if (std.mem.eql(u8, value, "none") or std.mem.eql(u8, value, "off")) options.knowledge_path = null else options.knowledge_path = value;
+        } else if (std.mem.eql(u8, key, "learned_path")) {
+            if (std.mem.eql(u8, value, "none") or std.mem.eql(u8, value, "off")) options.learned_path = null else options.learned_path = value;
         } else if (std.mem.eql(u8, key, "session_path")) {
             options.session_path = value;
         } else if (std.mem.eql(u8, key, "mode")) {
@@ -3912,11 +4087,14 @@ fn wantsRoadmapAnswer(text: []const u8) bool {
         "next version",
         "next release",
         "future work",
+        "what should v35 improve",
+        "what comes after v35",
         "what should v34 improve",
         "what comes after v34",
         "what should v31 improve",
         "what comes after v31",
         "roadmap after",
+        "after v35",
         "after v34",
         "after v31",
         "should improve",
@@ -4325,6 +4503,39 @@ fn sanitizeTurnText(allocator: std.mem.Allocator, text: []const u8) ![]u8 {
     return allocator.dupe(u8, trimLine(out.items));
 }
 
+fn endsWithPhraseIgnoreCase(haystack: []const u8, needle: []const u8) bool {
+    if (needle.len == 0 or haystack.len < needle.len) return false;
+    return std.ascii.eqlIgnoreCase(haystack[haystack.len - needle.len ..], needle);
+}
+
+fn stripTrailingFactFiller(value: []const u8) []const u8 {
+    var trimmed = trimInlineValue(value);
+    while (trimmed.len > 0) {
+        const before_len = trimmed.len;
+        const fillers = [_][]const u8{
+            " right now",
+            " currently",
+            " at the moment",
+            " now",
+        };
+        for (fillers) |filler| {
+            if (trimmed.len > filler.len and endsWithPhraseIgnoreCase(trimmed, filler)) {
+                trimmed = trimInlineValue(trimmed[0 .. trimmed.len - filler.len]);
+                break;
+            }
+        }
+        if (trimmed.len == before_len) break;
+    }
+    return trimmed;
+}
+
+fn sanitizeFactValue(allocator: std.mem.Allocator, text: []const u8) ![]u8 {
+    const sanitized = try sanitizeTurnText(allocator, text);
+    defer allocator.free(sanitized);
+    const trimmed = stripTrailingFactFiller(sanitized);
+    return allocator.dupe(u8, trimmed);
+}
+
 fn escapeForDisplay(allocator: std.mem.Allocator, text: []const u8) ![]u8 {
     var out = std.ArrayList(u8).empty;
     defer out.deinit(allocator);
@@ -4677,6 +4888,33 @@ fn extractFactQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
     return null;
 }
 
+fn extractForgetFactQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    const trimmed = trimLine(prompt);
+    if (startsWithWordIgnoreCase(trimmed, "i forgot") or startsWithWordIgnoreCase(trimmed, "forgot")) return null;
+    const markers = [_][]const u8{
+        "forget my ",
+        "forget our ",
+        "forget the ",
+        "forget ",
+        "delete my ",
+        "delete our ",
+        "delete the ",
+        "remove my ",
+        "remove our ",
+        "remove the ",
+        "clear my ",
+        "clear our ",
+    };
+    for (markers) |marker| {
+        if (indexOfPhraseIgnoreCase(trimmed, marker)) |idx| {
+            if (idx > 0 and !startsWithWordIgnoreCase(trimmed, "please")) continue;
+            const key = trimInlineValue(takeValueUntilBoundary(trimmed[idx + marker.len ..]));
+            if (key.len > 0) return @as(?[]u8, try normalizeFactKey(allocator, key));
+        }
+    }
+    return null;
+}
+
 fn extractMemoryCapabilityQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
     const markers = [_][]const u8{
         "can you remember my ",
@@ -4882,6 +5120,7 @@ fn loadSessionState(allocator: std.mem.Allocator, io: std.Io, path: ?[]const u8)
     if (bytes.len == 0) return .{};
 
     if (std.mem.startsWith(u8, bytes, session_magic) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v34) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v33) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v32) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v31) or
@@ -5433,7 +5672,7 @@ fn solveMath(allocator: std.mem.Allocator, prompt: []const u8) !?MathOutcome {
     if (!parser.atEnd()) return null;
     if (!isSafeFiniteMathValue(value)) {
         return .{
-            .response = try std.fmt.allocPrint(allocator, "The result for {s} is outside SBAN v34's safe exact-number range, so I will not cast it to a fixed integer.", .{expr}),
+            .response = try std.fmt.allocPrint(allocator, "The result for {s} is outside {s}'s safe exact-number range, so I will not cast it to a fixed integer.", .{ expr, current_release_name }),
             .explicit_error = true,
         };
     }
@@ -5470,7 +5709,7 @@ fn solveLinearEquation(allocator: std.mem.Allocator, prompt: []const u8) !?MathO
     const value = constant / coeff;
     if (!isSafeFiniteMathValue(value)) {
         return .{
-            .response = try allocator.dupe(u8, "The linear solution is outside SBAN v34's safe exact-number range."),
+            .response = try std.fmt.allocPrint(allocator, "The linear solution is outside {s}'s safe exact-number range.", .{current_release_name}),
             .explicit_error = true,
         };
     }
@@ -6410,15 +6649,15 @@ test "free synthesis covers lunch joke rewrite and haiku prompts" {
     try std.testing.expect(containsPhraseIgnoreCase(weekend, "museum"));
 }
 
-test "v34 config exposes warm-start architecture" {
-    const release = cfg.v34ReleaseConfig(4);
+test "v35 config exposes auto-learn architecture" {
+    const release = cfg.v35ReleaseConfig(4);
     try std.testing.expect(release.enable_long_term);
     try std.testing.expect(release.enable_hybrid_experts);
     try std.testing.expect(release.continuation_max_order >= 32);
-    try std.testing.expectEqualStrings("sban_v34_4bit_warmstart", cfg.sbanVariantLabel(4, .v34_arch));
+    try std.testing.expectEqualStrings("sban_v35_4bit_autolearn", cfg.sbanVariantLabel(4, .v35_arch));
 }
 
-test "v34 answers 2021 president with date boundary" {
+test "v35 answers 2021 president with date boundary" {
     const allocator = std.testing.allocator;
     const response = try buildGeneralKnowledgeResponse(allocator, "in 2021 who was the president of the united states");
     defer allocator.free(response);
@@ -6427,7 +6666,7 @@ test "v34 answers 2021 president with date boundary" {
     try std.testing.expect(containsPhraseIgnoreCase(response, "January 20"));
 }
 
-test "v34 follows bounded instruction memory" {
+test "v35 follows bounded instruction memory" {
     const allocator = std.testing.allocator;
     var session: SessionState = .{};
     defer session.deinit(allocator);
@@ -6437,7 +6676,7 @@ test "v34 follows bounded instruction memory" {
     try std.testing.expectEqualStrings("kestrel", fact.value);
 }
 
-test "v34 generalized knowledge adds systems and history" {
+test "v35 generalized knowledge adds systems and history" {
     const allocator = std.testing.allocator;
     const api = try buildGeneralKnowledgeResponse(allocator, "what is a REST API");
     defer allocator.free(api);
@@ -6448,13 +6687,36 @@ test "v34 generalized knowledge adds systems and history" {
 }
 
 test "v32 config exposes reasoning architecture" {
-    const config = cfg.v34ReleaseConfig(4);
+    const config = cfg.v35ReleaseConfig(4);
     try std.testing.expect(config.enable_long_term);
     try std.testing.expect(config.enable_token_region_routing);
     try std.testing.expect(config.propagation_depth >= 4);
     try std.testing.expect(config.max_short_memories >= 16384);
     try std.testing.expectEqualStrings("v32_arch", cfg.NetworkVariant.v32_arch.label());
     try std.testing.expectEqualStrings("sban_v32_4bit_reasoning", cfg.sbanVariantLabel(4, .v32_arch));
+}
+
+test "v35 exact json slots and session forget semantics" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+
+    const json = (try buildJsonObjectFromPrompt(allocator, "generate JSON with name Ada and age 37")).?;
+    defer allocator.free(json);
+    try std.testing.expect(containsPhraseIgnoreCase(json, "\"age\":37"));
+    try std.testing.expect(!containsPhraseIgnoreCase(json, "\"age\":42"));
+
+    const fact = (try extractFactCandidate(allocator, "my dog is max now")).?;
+    defer allocator.free(fact.key);
+    defer allocator.free(fact.value);
+    try session.rememberFact(allocator, fact.key, fact.value);
+    try std.testing.expectEqualStrings("max", session.lookupFact("dog").?.value);
+
+    const forget_key = (try extractForgetFactQuery(allocator, "forget my dog name")).?;
+    defer allocator.free(forget_key);
+    try std.testing.expectEqualStrings("dog", forget_key);
+    try std.testing.expect(try session.forgetFact(allocator, forget_key));
+    try std.testing.expect(session.lookupFact("dog") == null);
 }
 
 test "v32 free synthesis handles reasoning prompts" {

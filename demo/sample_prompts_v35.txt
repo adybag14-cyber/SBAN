@@ -1,0 +1,11 @@
+what is SBAN v35
+how does SBAN v35 learn without editing dialogue.zig
+If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+generate JSON with name Ada and age 37
+my dog is max now
+what is my dog name
+forget my dog name
+what is my dog name
+what is DNS
+write a Zig function to reverse a slice
+prewarm_path=none learned_path=none check

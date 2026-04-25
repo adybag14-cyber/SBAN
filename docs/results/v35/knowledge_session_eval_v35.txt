@@ -1,0 +1,27 @@
+[1] prompt=what changed in v35
+mode=operational-release-change
+backend=cpu
+response=V35 adds an auto-learned reasoning corpus generated from online dataset adapters plus deterministic fallback rows, routes that learned corpus through the runtime retrieval scorer, fixes JSON slot preservation and session forget semantics, keeps the v34 prewarm contract, and keeps live-current facts behind an explicit external-lookup boundary.
+
+expect_match=auto-learned
+expect_pass=true
+
+[2] prompt=what changed about session forget in v35
+mode=learned-reasoning
+backend=cpu
+matched_prompt=what changed about session forget in v35
+response=V35 adds a structured forget path. A request such as forget my dog name maps to the normalized dog key, removes that fact from session memory, and later recall returns a miss instead of a stale answer.
+
+expect_match=structured forget
+expect_pass=true
+
+[3] prompt=why did the JSON prompt with age 37 fail before v35
+mode=learned-reasoning
+backend=cpu
+matched_prompt=why did the JSON prompt with age 37 fail before v35
+response=The earlier runtime had a static JSON example that always returned age 42. V35 treats simple JSON name and age prompts as slot filling, so the requested value is preserved instead of copied from a canned example.
+
+expect_match=slot
+expect_pass=true
+
+summary turns=3 anchored=0 retrieved=2 symbolic=1 nonempty=3 uncertain=0 expectations=3 passed=3

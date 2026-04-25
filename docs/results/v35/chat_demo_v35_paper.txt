@@ -1,0 +1,4 @@
+prompt=where is the v35 paper pdf
+mode=operational-paper-path
+backend=cpu
+response=The v35 paper PDF is generated at docs/papers/SBAN_v35_follow_up_research_paper.pdf.

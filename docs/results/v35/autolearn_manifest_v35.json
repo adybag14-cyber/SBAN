@@ -1,0 +1,31 @@
+{
+  "version": "v35",
+  "generated_at_utc": "2026-04-25T11:16:06.132446+00:00",
+  "prewarm_bytes": 348872,
+  "learned_bytes": 25253,
+  "learned_examples": 48,
+  "knowledge_pairs": 48,
+  "online_examples": 40,
+  "fallback_examples": 8,
+  "sources": {
+    "openai/gsm8k": 16,
+    "Ritu27/StrategyQA": 12,
+    "HuggingFaceFW/CommonsenseQA": 12,
+    "fallback-v35": 8
+  },
+  "categories": [
+    "arithmetic",
+    "strategyqa",
+    "commonsense",
+    "runtime-regression"
+  ],
+  "cold_seed_path": "data/sban_cold_seed_v35.txt",
+  "learned_path": "data/sban_learned_reasoning_v35.txt",
+  "online_errors": [],
+  "dataset_adapters": [
+    "openai/gsm8k",
+    "Ritu27/StrategyQA",
+    "HuggingFaceFW/CommonsenseQA"
+  ],
+  "note": "The runtime consumes the learned corpus as data through retrieval; future improvement should regenerate this file rather than adding dialogue.zig prompt branches."
+}

@@ -1,0 +1,8 @@
+User: what is DNS
+Expect: Domain Name System
+
+User: what is entropy
+Expect: second law
+
+User: write a Zig function to reverse a slice
+Expect: pub fn reverse

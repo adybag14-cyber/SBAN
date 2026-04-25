@@ -1,0 +1,4 @@
+prompt=generate JSON with name Ada and age 37
+mode=free-composed
+backend=cpu
+response=```json\n{"name":"Ada","age":37}\n```\nThis is valid JSON and preserves the requested `name` and `age` slots exactly.

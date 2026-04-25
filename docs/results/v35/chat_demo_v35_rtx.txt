@@ -1,0 +1,4 @@
+prompt=can this run on an rtx 4090
+mode=operational-rtx-support
+backend=cpu
+response=Yes. NVIDIA RTX cards such as the RTX 4090 should normally use backend=auto or backend=cuda for the retrieval accelerator path. SBAN now treats CUDA as the preferred retrieval path on NVIDIA, keeps CPU as the safe numeri... [truncated 111 of 331 bytes]

@@ -1,0 +1,54 @@
+[1] prompt=what is SBAN v35
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v35
+response=SBAN v35 is an auto-learned warm-start non-transformer runtime. It uses generated prewarm knowledge plus a learned reasoning corpus built from online dataset adapters and deterministic fallbacks, so reply quality can improve by regenerating data instead of expanding dialogue.zig.
+
+[2] prompt=how does SBAN v35 learn without editing dialogue.zig
+mode=free-anchor
+backend=cpu
+matched_prompt=how does SBAN v35 learn without editing dialogue.zig
+response=SBAN v35 learns by rebuilding data/sban_learned_reasoning_v35.txt from dataset adapters and then loading that file through the same sparse retrieval scorer as other dialogue corpora. Improving the training set changes runtime behavior without adding new hardcoded prompt branches.
+
+[3] prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+mode=learned-reasoning
+backend=cpu
+matched_prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+response=No, not definitely. The statement says every dax is a lum, and only that some lums are norps. The some-lums fact may refer to lums that are not daxes, so the conclusion that every dax is a norp does not follow.
+
+[4] prompt=generate JSON with name Ada and age 37
+mode=free-composed
+backend=cpu
+response=```json\n{"name":"Ada","age":37}\n```\nThis is valid JSON and preserves the requested `name` and `age` slots exactly.
+
+[5] prompt=my dog is max now
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Max, and I will remember that for this session.
+
+[6] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+[7] prompt=forget my dog name
+mode=session-forget-miss
+backend=cpu
+response=I did not have a stored dog name to forget in this session.
+
+[8] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+[9] prompt=what is DNS
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+[10] prompt=write a Zig function to reverse a slice
+mode=free-composed
+backend=cpu
+response=A compact Zig in-place slice reverse is:\n```zig\npub fn reverse(comptime T: type, items: []T) void {\n    var left: usize = 0;\n    var right: usize = items.len;\n    while (left < right) {\n        right -= 1;\n        const tmp = items[left];\n        items[left] = items[right];\n        items[right] = tmp;\n        left += 1;\n    }\n}\n```\nIt swaps the outer elements and walks inward, so it works for any mutable slice type.
+
+summary turns=10 anchored=2 retrieved=1 symbolic=4 nonempty=10 uncertain=0

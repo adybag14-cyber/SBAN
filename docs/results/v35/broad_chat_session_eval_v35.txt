@@ -1,0 +1,25 @@
+[1] prompt=what is DNS
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+expect_match=Domain Name System
+expect_pass=true
+
+[2] prompt=what is entropy
+mode=free-composed
+backend=cpu
+response=Entropy is often described as a measure of energy dispersal or the number of possible microscopic arrangements. The second law says total entropy in an isolated system tends not to decrease.
+
+expect_match=second law
+expect_pass=true
+
+[3] prompt=write a Zig function to reverse a slice
+mode=free-composed
+backend=cpu
+response=A compact Zig in-place slice reverse is:\n```zig\npub fn reverse(comptime T: type, items: []T) void {\n    var left: usize = 0;\n    var right: usize = items.len;\n    while (left < right) {\n        right -= 1;\n        const tmp = items[left];\n        items[left] = items[right];\n        items[right] = tmp;\n        left += 1;\n    }\n}\n```\nIt swaps the outer elements and walks inward, so it works for any mutable slice type.
+
+expect_match=pub fn reverse
+expect_pass=true
+
+summary turns=3 anchored=0 retrieved=0 symbolic=0 nonempty=3 uncertain=0 expectations=3 passed=3

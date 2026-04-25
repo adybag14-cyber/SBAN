@@ -1,0 +1,23 @@
+User: what is SBAN v35
+Expect: auto-learned
+
+User: generate JSON with name Ada and age 37
+Expect: "age":37
+
+User: my dog is luna
+Expect: Luna
+
+User: what is my dog name
+Expect: Luna
+
+User: my dog is max now
+Expect: Max
+
+User: what is my dog name
+Expect: Max
+
+User: forget my dog name
+Expect: Forgot
+
+User: what is my dog name
+Expect: do not know

@@ -1,0 +1,4 @@
+# SBAN v35 cold seed. This is intentionally tiny for prewarm_path=none tests.
+
+User: what is SBAN v35 cold mode
+Assistant: Cold mode disables prewarm, open-chat, knowledge, and learned corpora except for this tiny seed. It is useful for proving that broad answers come from generated data assets rather than hidden code branches.

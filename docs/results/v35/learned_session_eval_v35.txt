@@ -1,0 +1,28 @@
+[1] prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+mode=learned-reasoning
+backend=cpu
+matched_prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+response=No, not definitely. The statement says every dax is a lum, and only that some lums are norps. The some-lums fact may refer to lums that are not daxes, so the conclusion that every dax is a norp does not follow.
+
+expect_match=does not follow
+expect_pass=true
+
+[2] prompt=If all glims are tars and all tars are noles, are all glims noles?
+mode=learned-reasoning
+backend=cpu
+matched_prompt=If all glims are tars and all tars are noles, are all glims noles?
+response=Yes. This is transitive class reasoning: every glim is inside the tar set, and every tar is inside the nole set, so every glim is also a nole.
+
+expect_match=transitive
+expect_pass=true
+
+[3] prompt=A box has 3 red balls and 2 blue balls. If one red ball is added, how many balls are there?
+mode=learned-reasoning
+backend=cpu
+matched_prompt=A box has 3 red balls and 2 blue balls. If one red ball is added, how many balls are there?
+response=There are 6 balls. Start with 3 + 2 = 5, then add one more red ball for 6 total.
+
+expect_match=6
+expect_pass=true
+
+summary turns=3 anchored=0 retrieved=3 symbolic=0 nonempty=3 uncertain=0 expectations=3 passed=3

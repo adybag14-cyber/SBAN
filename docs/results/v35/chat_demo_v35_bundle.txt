@@ -1,0 +1,4 @@
+prompt=what files ship in the bundle
+mode=operational-bundle
+backend=cpu
+response=The v35 release bundle ships the executive summary at SBAN_v35_EXECUTIVE_SUMMARY.md, the report at SBAN_v35_REPORT.md, the paper PDF at docs/papers/SBAN_v35_follow_up_research_paper.pdf, the repo archive at deliverables/... [truncated 155 of 375 bytes]

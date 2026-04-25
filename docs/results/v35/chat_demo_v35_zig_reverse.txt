@@ -1,0 +1,4 @@
+prompt=write a zig function to reverse a slice
+mode=free-composed
+backend=cpu
+response=A compact Zig in-place slice reverse is:\n```zig\npub fn reverse(comptime T: type, items: []T) void {\n    var left: usize = 0;\n    var right: usize = items.len;\n    while (left < right) {\n        right -= 1;\n        const ... [truncated 199 of 419 bytes]

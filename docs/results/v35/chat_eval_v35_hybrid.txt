@@ -1,0 +1,57 @@
+[1] prompt=what is SBAN v35
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v35
+response=SBAN v35 is an auto-learned warm-start non-transformer runtime. It uses generated prewarm knowledge plus a learned reasoning corpus built from online dataset adapters and deterministic fallbacks, so reply quality can improve by regenerating data instead of expanding dialogue.zig.
+
+[2] prompt=how does SBAN v35 learn without editing dialogue.zig
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how does SBAN v35 learn without editing dialogue.zig
+response=SBAN v35 learns by rebuilding data/sban_learned_reasoning_v35.txt from dataset adapters and then loading that file through the same sparse retrieval scorer as other dialogue corpora. Improving the training set changes runtime behavior without adding new hardcoded prompt branches.
+
+[3] prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+response=No, not definitely. The statement says every dax is a lum, and only that some lums are norps. The some-lums fact may refer to lums that are not daxes, so the conclusion that every dax is a norp does not follow.
+
+[4] prompt=generate JSON with name Ada and age 37
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=generate json with name and age
+response=```json {"name":"Ada","age":42} ```
+
+[5] prompt=my dog is max now
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Max, and I will remember that for this session.
+
+[6] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+[7] prompt=forget my dog name
+mode=session-forget-miss
+backend=cpu
+response=I did not have a stored dog name to forget in this session.
+
+[8] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+[9] prompt=what is DNS
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is DNS
+response=DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+[10] prompt=write a Zig function to reverse a slice
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=write a Zig function to reverse a slice
+response=```zig
+
+summary turns=10 anchored=5 retrieved=1 symbolic=4 nonempty=10 uncertain=0

@@ -1,0 +1,115 @@
+name: v35 Release Suite
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner_label:
+        description: Runner label for the core v35 release suite
+        required: false
+        default: ubuntu-latest
+        type: string
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  run-release-suite:
+    runs-on: ${{ inputs.runner_label || 'ubuntu-latest' }}
+    timeout-minutes: 240
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Zig
+        run: python scripts/install_zig_ci.py --version master --output-dir .ci-tools/zig
+
+      - name: Build and unit test
+        run: |
+          zig build test
+          python -m py_compile scripts/build_v35_runtime_prewarm.py scripts/vocab_size_probe_v35.py scripts/ci_smoke_v35.py scripts/host_monitor.py scripts/run_v35_release.py scripts/make_v35_deliverables.py scripts/package_v35_demo.py scripts/run_v35_100m_ci.py
+
+      - name: Capture runner baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/results/v35
+          {
+            echo "timestamp_utc=$(date -u --iso-8601=seconds)"
+            echo "runner_name=${RUNNER_NAME:-unknown}"
+            echo "runner_os=${RUNNER_OS:-unknown}"
+            echo "runner_arch=${RUNNER_ARCH:-unknown}"
+            echo "runner_label=${{ inputs.runner_label || 'ubuntu-latest' }}"
+            echo
+            echo "== uname =="
+            uname -a
+            echo
+            echo "== cpu =="
+            nproc
+            lscpu || true
+            echo
+            echo "== memory =="
+            free -h || true
+            echo
+            echo "== disk =="
+            df -h || true
+            echo
+            echo "== ulimit =="
+            ulimit -a || true
+            echo
+            for path in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -f "$path" ]]; then
+                echo "== $path =="
+                cat "$path"
+                echo
+              fi
+            done
+          } | tee docs/results/v35/_runner_baseline_release_suite.txt
+
+      - name: Run hosted-compatible v35 release suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs/results/v35
+          python scripts/run_v35_release.py --skip-cuda --benchmarks prefix,drift,probe,long_250k,long_1m 2>&1 | tee docs/results/v35/_run_v35_release_suite_ci.log
+
+      - name: Capture runner postmortem
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p docs/results/v35
+          {
+            echo "timestamp_utc=$(date -u --iso-8601=seconds)"
+            echo "job_status=${{ job.status }}"
+            echo
+            echo "== memory =="
+            free -h || true
+            echo
+            echo "== disk =="
+            df -h || true
+            echo
+            echo "== top resident processes =="
+            ps -eo pid,ppid,pcpu,pmem,rss,vsz,etimes,cmd --sort=-rss | head -n 40 || true
+            echo
+            for path in /sys/fs/cgroup/memory.current /sys/fs/cgroup/memory.max /sys/fs/cgroup/memory.events; do
+              if [[ -f "$path" ]]; then
+                echo "== $path =="
+                cat "$path"
+                echo
+              fi
+            done
+          } | tee docs/results/v35/_runner_postmortem_release_suite.txt
+
+      - name: Upload v35 release results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: v35-release-results
+          path: docs/results/v35
+          if-no-files-found: error

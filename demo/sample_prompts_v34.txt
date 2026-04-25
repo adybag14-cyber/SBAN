@@ -1,0 +1,9 @@
+what is SBAN v34
+what is DNS
+what is entropy
+what does defer do in Zig
+write a Zig function to reverse a slice
+write Python BFS for a graph
+how do I triage an outage
+which is larger, 5/8 or 3/5
+who is the current president today

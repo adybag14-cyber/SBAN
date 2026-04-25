@@ -1,0 +1,156 @@
+[1] prompt=what is SBAN v34
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v34
+response=SBAN v34 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+[2] prompt=is SBAN v34 a live web model
+mode=free-anchor
+backend=cpu
+matched_prompt=is SBAN v34 a live web model
+response=No. SBAN v34 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+[3] prompt=what is DNS
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+[4] prompt=what is a REST API
+mode=free-composed
+backend=cpu
+response=A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+[5] prompt=what is entropy
+mode=free-composed
+backend=cpu
+response=Entropy is often described as a measure of energy dispersal or the number of possible microscopic arrangements. The second law says total entropy in an isolated system tends not to decrease.
+
+[6] prompt=what is photosynthesis
+mode=free-composed
+backend=cpu
+response=Photosynthesis is how plants use sunlight to turn water and carbon dioxide into stored energy and oxygen.
+
+[7] prompt=what causes tides
+mode=free-composed
+backend=cpu
+response=Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing.
+
+[8] prompt=what is mitosis
+mode=free-composed
+backend=cpu
+response=Mitosis is cell division that produces two genetically similar daughter cells after duplicated chromosomes are separated.
+
+[9] prompt=what does DNA do
+mode=runtime-prewarm
+backend=cpu
+matched_prompt=what does DNA do
+response=DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate growth, repair, and function.
+
+[10] prompt=what is the capital of Japan
+mode=free-composed
+backend=cpu
+response=The capital of Japan is Tokyo.
+
+[11] prompt=who wrote Hamlet
+mode=free-composed
+backend=cpu
+response=Hamlet is a tragedy by William Shakespeare about revenge, uncertainty, grief, power, and moral hesitation.
+
+[12] prompt=what was Apollo 11
+mode=free-composed
+backend=cpu
+response=Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+
+[13] prompt=what is democracy
+mode=free-composed
+backend=cpu
+response=Democracy is a system of government where political power is grounded in the people, commonly through voting, representation, rights, and accountability.
+
+[14] prompt=what is supply and demand
+mode=free-composed
+backend=cpu
+response=Supply and demand describe how prices tend to move with availability and desire: higher demand can raise prices, while higher supply can lower them, all else equal.
+
+[15] prompt=what is the scientific method
+mode=runtime-prewarm
+backend=cpu
+matched_prompt=what is the scientific method
+response=The scientific method is a disciplined loop of asking a question, forming a hypothesis, testing it with evidence, analyzing results, and revising the explanation.
+
+[16] prompt=what is Big O notation
+mode=free-composed
+backend=cpu
+response=Big O notation describes how an algorithm's resource use grows as input size grows, such as O(1), O(log n), O(n), or O(n^2).
+
+[17] prompt=what is Kubernetes
+mode=free-composed
+backend=cpu
+response=Kubernetes is a system for running and managing containers across multiple machines. In plain English, it helps deploy applications, keep them running, and scale them without handling each server by hand.
+
+[18] prompt=what is OAuth
+mode=free-composed
+backend=cpu
+response=OAuth is a way to let one application access another service on your behalf without handing over your password directly. In practice, it is the pattern behind many 'Sign in with ...' flows and delegated API access tokens.
+
+[19] prompt=what does defer do in Zig
+mode=free-composed
+backend=cpu
+response=In Zig, `defer` schedules a statement to run when the current scope exits. It is commonly used for cleanup such as deinitializing containers, closing handles, or unlocking state.
+
+[20] prompt=how do Zig errors work
+mode=free-composed
+backend=cpu
+response=Zig errors are values in error sets and are often returned through error unions like !T. Callers handle them with try, catch, if error unions, or explicit switches.
+
+[21] prompt=write Zig code that uses defer to close a file
+mode=free-composed
+backend=cpu
+response=A compact Zig file cleanup pattern is:\n```zig\nconst file = try std.fs.cwd().openFile("input.txt", .{});\ndefer file.close();\n```\n`defer` runs when the current scope exits, so the file closes after a successful open even if later code returns early.
+
+[22] prompt=write a Zig function to reverse a slice
+mode=free-composed
+backend=cpu
+response=A compact Zig in-place slice reverse is:\n```zig\npub fn reverse(comptime T: type, items: []T) void {\n    var left: usize = 0;\n    var right: usize = items.len;\n    while (left < right) {\n        right -= 1;\n        const tmp = items[left];\n        items[left] = items[right];\n        items[right] = tmp;\n        left += 1;\n    }\n}\n```\nIt swaps the outer elements and walks inward, so it works for any mutable slice type.
+
+[23] prompt=write Python BFS for a graph
+mode=free-composed
+backend=cpu
+response=A compact Python BFS implementation is:\n```python\nfrom collections import deque\n\ndef bfs(graph, start):\n    seen = {start}\n    q = deque([start])\n    order = []\n    while q:\n        node = q.popleft()\n        order.append(node)\n        for nxt in graph.get(node, []):\n            if nxt not in seen:\n                seen.add(nxt)\n                q.append(nxt)\n    return order\n```\nThe queue gives breadth-first order and `seen` prevents revisiting nodes.
+
+[24] prompt=write SQL to count users by country
+mode=free-composed
+backend=cpu
+response=A simple SQL version is:\n```sql\nSELECT country, COUNT(*) AS user_count\nFROM users\nGROUP BY country\nORDER BY user_count DESC;\n```\nThat groups rows by `country` and counts how many users fall into each group.
+
+[25] prompt=how do i debug a failing CI job
+mode=free-composed
+backend=cpu
+response=To debug a failing CI job, reproduce the command locally, read the first real error rather than the last cascade, compare environment versions, and shrink the failing step to a minimal command.
+
+[26] prompt=how do I triage an outage
+mode=runtime-prewarm
+backend=cpu
+matched_prompt=how do I triage an outage
+response=Start by confirming user impact, recent changes, and the failing dependency. Stabilize first, communicate status, collect logs and metrics, then narrow the root cause after service is safe.
+
+[27] prompt=which is larger, 5/8 or 3/5
+mode=free-composed
+backend=cpu
+response=5/8 is larger. Cross-multiply: 25 versus 24, so the comparison is exact without decimals.
+
+[28] prompt=what comes next in the sequence 3, 6, 12, 24
+mode=free-composed
+backend=cpu
+response=48 comes next. The sequence multiplies by 2 each time.
+
+[29] prompt=compare 0.9 and 0.11
+mode=free-composed
+backend=cpu
+response=0.9 is larger. Aligning place values before comparing avoids the common decimal-length trap.
+
+[30] prompt=who is the current president today
+mode=free-composed
+backend=cpu
+response=I do not have live current facts. This SBAN release uses static bundled knowledge, so current news, office holders, prices, and today's facts need an external lookup.
+
+summary turns=30 anchored=2 retrieved=3 symbolic=0 nonempty=30 uncertain=0

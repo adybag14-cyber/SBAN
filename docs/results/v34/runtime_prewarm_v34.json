@@ -1,0 +1,32 @@
+{
+  "release": "v34",
+  "builder": "build_v34_runtime_prewarm.py",
+  "topic_count": 51,
+  "knowledge_pairs": 402,
+  "categories": [
+    "ai",
+    "biology",
+    "civics",
+    "coding",
+    "computing",
+    "earth",
+    "economics",
+    "engineering",
+    "geography",
+    "history",
+    "literature",
+    "physics",
+    "reasoning",
+    "release",
+    "science",
+    "security",
+    "zig"
+  ],
+  "session_eval_turns": 30,
+  "prewarm_bytes": 316244,
+  "knowledge_bytes": 78633,
+  "open_seed_bytes": 271724,
+  "seed_bytes": 23168,
+  "default_runtime_asset": "data/sban_runtime_prewarm_v34.txt",
+  "method": "structured facts plus generated paraphrase templates; no hand-written chat transcript is required for the v34 warm start"
+}

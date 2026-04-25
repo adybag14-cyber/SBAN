@@ -3,7 +3,7 @@ name: Release Demo Bundles
 on:
   push:
     tags:
-      - "v29*"
+      - "v34*"
   workflow_dispatch:
 
 env:
@@ -41,21 +41,23 @@ jobs:
       - name: Build and test
         run: |
           zig build test
-          python -m py_compile scripts/ci_smoke_v29.py
+          python -m py_compile scripts/build_v34_runtime_prewarm.py scripts/vocab_size_probe_v34.py scripts/ci_smoke_v34.py scripts/package_v34_demo.py
+          python scripts/build_v34_runtime_prewarm.py
+          python scripts/vocab_size_probe_v34.py
           zig build -Doptimize=ReleaseFast
 
       - name: Smoke demo
-        run: python scripts/ci_smoke_v29.py
+        run: python scripts/ci_smoke_v34.py
 
       - name: Package demo bundle
         run: |
-          python scripts/package_v29_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
+          python scripts/package_v34_demo.py --binary ${{ matrix.binary }} --platform ${{ matrix.platform }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-demo
-          path: deliverables/v29/demo/SBAN_v29_${{ matrix.platform }}_demo.zip
+          path: deliverables/v34/demo/SBAN_v34_${{ matrix.platform }}_demo.zip
 
       - name: Ensure release exists
         if: startsWith(github.ref, 'refs/tags/')
@@ -74,4 +76,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "${{ github.ref_name }}" "deliverables/v29/demo/SBAN_v29_${{ matrix.platform }}_demo.zip" --clobber
+          gh release upload "${{ github.ref_name }}" "deliverables/v34/demo/SBAN_v34_${{ matrix.platform }}_demo.zip" --clobber

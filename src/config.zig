@@ -35,6 +35,11 @@ pub const NetworkVariant = enum {
     fixed_capacity,
     single_region,
     no_reputation,
+    v30_arch,
+    v31_arch,
+    v32_arch,
+    v33_arch,
+    v34_arch,
 
     pub fn label(self: NetworkVariant) []const u8 {
         return switch (self) {
@@ -43,6 +48,11 @@ pub const NetworkVariant = enum {
             .fixed_capacity => "fixed_capacity",
             .single_region => "single_region",
             .no_reputation => "no_reputation",
+            .v30_arch => "v30_arch",
+            .v31_arch => "v31_arch",
+            .v32_arch => "v32_arch",
+            .v33_arch => "v33_arch",
+            .v34_arch => "v34_arch",
         };
     }
 };
@@ -70,6 +80,11 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_1bit_fixed_capacity",
             .single_region => "sban_v29_1bit_single_region",
             .no_reputation => "sban_v29_1bit_no_reputation",
+            .v30_arch => "sban_v30_1bit_arch",
+            .v31_arch => "sban_v31_1bit_reasoning",
+            .v32_arch => "sban_v32_1bit_reasoning",
+            .v33_arch => "sban_v33_1bit_powerchat",
+            .v34_arch => "sban_v34_1bit_warmstart",
         },
         2 => switch (variant) {
             .default => unreachable,
@@ -77,6 +92,11 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_2bit_fixed_capacity",
             .single_region => "sban_v29_2bit_single_region",
             .no_reputation => "sban_v29_2bit_no_reputation",
+            .v30_arch => "sban_v30_2bit_arch",
+            .v31_arch => "sban_v31_2bit_reasoning",
+            .v32_arch => "sban_v32_2bit_reasoning",
+            .v33_arch => "sban_v33_2bit_powerchat",
+            .v34_arch => "sban_v34_2bit_warmstart",
         },
         3 => switch (variant) {
             .default => unreachable,
@@ -84,6 +104,11 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_3bit_fixed_capacity",
             .single_region => "sban_v29_3bit_single_region",
             .no_reputation => "sban_v29_3bit_no_reputation",
+            .v30_arch => "sban_v30_3bit_arch",
+            .v31_arch => "sban_v31_3bit_reasoning",
+            .v32_arch => "sban_v32_3bit_reasoning",
+            .v33_arch => "sban_v33_3bit_powerchat",
+            .v34_arch => "sban_v34_3bit_warmstart",
         },
         4 => switch (variant) {
             .default => unreachable,
@@ -91,6 +116,11 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_4bit_fixed_capacity",
             .single_region => "sban_v29_4bit_single_region",
             .no_reputation => "sban_v29_4bit_no_reputation",
+            .v30_arch => "sban_v30_4bit_arch",
+            .v31_arch => "sban_v31_4bit_reasoning",
+            .v32_arch => "sban_v32_4bit_reasoning",
+            .v33_arch => "sban_v33_4bit_powerchat",
+            .v34_arch => "sban_v34_4bit_warmstart",
         },
         5 => switch (variant) {
             .default => unreachable,
@@ -98,6 +128,11 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_5bit_fixed_capacity",
             .single_region => "sban_v29_5bit_single_region",
             .no_reputation => "sban_v29_5bit_no_reputation",
+            .v30_arch => "sban_v30_5bit_arch",
+            .v31_arch => "sban_v31_5bit_reasoning",
+            .v32_arch => "sban_v32_5bit_reasoning",
+            .v33_arch => "sban_v33_5bit_powerchat",
+            .v34_arch => "sban_v34_5bit_warmstart",
         },
         6 => switch (variant) {
             .default => unreachable,
@@ -105,6 +140,11 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_6bit_fixed_capacity",
             .single_region => "sban_v29_6bit_single_region",
             .no_reputation => "sban_v29_6bit_no_reputation",
+            .v30_arch => "sban_v30_6bit_arch",
+            .v31_arch => "sban_v31_6bit_reasoning",
+            .v32_arch => "sban_v32_6bit_reasoning",
+            .v33_arch => "sban_v33_6bit_powerchat",
+            .v34_arch => "sban_v34_6bit_warmstart",
         },
         7 => switch (variant) {
             .default => unreachable,
@@ -112,6 +152,11 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_7bit_fixed_capacity",
             .single_region => "sban_v29_7bit_single_region",
             .no_reputation => "sban_v29_7bit_no_reputation",
+            .v30_arch => "sban_v30_7bit_arch",
+            .v31_arch => "sban_v31_7bit_reasoning",
+            .v32_arch => "sban_v32_7bit_reasoning",
+            .v33_arch => "sban_v33_7bit_powerchat",
+            .v34_arch => "sban_v34_7bit_warmstart",
         },
         8 => switch (variant) {
             .default => unreachable,
@@ -119,8 +164,19 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .fixed_capacity => "sban_v29_8bit_fixed_capacity",
             .single_region => "sban_v29_8bit_single_region",
             .no_reputation => "sban_v29_8bit_no_reputation",
+            .v30_arch => "sban_v30_8bit_arch",
+            .v31_arch => "sban_v31_8bit_reasoning",
+            .v32_arch => "sban_v32_8bit_reasoning",
+            .v33_arch => "sban_v33_8bit_powerchat",
+            .v34_arch => "sban_v34_8bit_warmstart",
         },
-        else => "sban_v29_custom_variant",
+        else => switch (variant) {
+            .v31_arch => "sban_v31_custom_reasoning",
+            .v32_arch => "sban_v32_custom_reasoning",
+            .v33_arch => "sban_v33_custom_powerchat",
+            .v34_arch => "sban_v34_custom_warmstart",
+            else => "sban_v29_custom_variant",
+        },
     };
 }
 
@@ -174,6 +230,7 @@ pub const NetworkConfig = struct {
     long_term_quality_penalty: i16 = 96,
     long_term_threshold_discount_ppm: u16 = 940,
     max_regions: u16 = 8,
+    enable_token_region_routing: bool = false,
     initial_regions: u16 = 1,
     initial_short_target: u32 = 2048,
     min_short_target: u32 = 256,
@@ -217,6 +274,7 @@ pub const NetworkConfig = struct {
     continuation_max_order: u8 = 0,
     continuation_support_prior: u16 = 0,
     continuation_min_support: u16 = 1,
+    continuation_max_cells: u32 = 0,
     recent_markov2_bonus_ppm: u16 = 960,
     burst_bonus_ppm: u16 = 520,
     recent_expert_window: u32 = 32768,
@@ -263,6 +321,197 @@ pub fn configForVariant(bits: u8, variant: NetworkVariant) NetworkConfig {
             config.short_min_reputation = -64;
             config.long_min_reputation = -64;
             config.synapse_bad_reputation = -64;
+        },
+        .v30_arch => {
+            config.enable_long_term = true;
+            config.enable_token_region_routing = true;
+            config.initial_regions = 4;
+            config.max_regions = 8;
+            config.region_split_load = 512;
+            config.region_min_survivors = 1;
+            config.max_short_memories = 12288;
+            config.max_long_memories = 1536;
+            config.initial_short_target = 3072;
+            config.min_short_target = 512;
+            config.birth_margin = 20;
+            config.min_parents_for_birth = 4;
+            config.max_carry_memories = 64;
+            config.max_hidden_per_hop = 48;
+            config.propagation_depth = 3;
+            config.bridge_birth_min_diversity = 1;
+            config.bridge_error_gate_ppm = 520;
+            config.bridge_error_gap_ppm = 60;
+            config.bridge_fallback_diversity = 2;
+            config.bridge_bonus_ppm = 1080;
+            config.long_term_bonus_ppm = 1100;
+            config.long_term_bonus_precision_ppm = 590;
+            config.long_term_threshold_discount_ppm = 920;
+            config.continuation_max_cells = 1500000;
+        },
+        .v31_arch => {
+            config.enable_long_term = true;
+            config.enable_token_region_routing = true;
+            config.enable_hybrid_experts = true;
+            config.initial_regions = 6;
+            config.max_regions = 12;
+            config.region_split_load = 448;
+            config.region_min_survivors = 1;
+            config.max_short_memories = 16384;
+            config.max_long_memories = 2304;
+            config.initial_short_target = 4096;
+            config.min_short_target = 768;
+            config.birth_margin = 19;
+            config.min_parents_for_birth = 4;
+            config.max_carry_memories = 96;
+            config.max_hidden_per_hop = 64;
+            config.propagation_depth = 4;
+            config.bridge_birth_min_diversity = 1;
+            config.bridge_error_gate_ppm = 500;
+            config.bridge_error_gap_ppm = 54;
+            config.bridge_fallback_diversity = 2;
+            config.bridge_bonus_ppm = 1110;
+            config.long_term_bonus_ppm = 1130;
+            config.long_term_bonus_precision_ppm = 580;
+            config.long_term_threshold_discount_ppm = 900;
+            config.hybrid_share_ppm = 48;
+            config.hybrid_recent_drift_bonus = 18;
+            config.hybrid_support_prior = 4;
+            config.hybrid_evidence_prior = 5;
+            config.recent_markov2_bonus_ppm = 1040;
+            config.burst_bonus_ppm = 560;
+            config.markov3_bonus_ppm = 1000;
+            config.markov4_bonus_ppm = 420;
+            config.continuation_bonus_ppm = 1600;
+            config.continuation_min_order = 4;
+            config.continuation_max_order = 18;
+            config.continuation_support_prior = 1;
+            config.continuation_min_support = 1;
+            config.continuation_max_cells = 2200000;
+        },
+        .v32_arch => {
+            // v32 keeps the same non-transformer memory fabric, but uses the
+            // locally measured continuation-heavy v31-derived profile from validation/v32.
+            config.enable_long_term = true;
+            config.enable_token_region_routing = true;
+            config.enable_hybrid_experts = true;
+            config.initial_regions = 8;
+            config.max_regions = 16;
+            config.region_split_load = 384;
+            config.region_min_survivors = 1;
+            config.max_short_memories = 18432;
+            config.max_long_memories = 2816;
+            config.initial_short_target = 4608;
+            config.min_short_target = 768;
+            config.birth_margin = 18;
+            config.min_parents_for_birth = 4;
+            config.max_carry_memories = 112;
+            config.max_hidden_per_hop = 72;
+            config.propagation_depth = 5;
+            config.bridge_birth_min_diversity = 1;
+            config.bridge_error_gate_ppm = 500;
+            config.bridge_error_gap_ppm = 54;
+            config.bridge_fallback_diversity = 2;
+            config.bridge_bonus_ppm = 1110;
+            config.long_term_bonus_ppm = 1130;
+            config.long_term_bonus_precision_ppm = 580;
+            config.long_term_threshold_discount_ppm = 900;
+            config.hybrid_share_ppm = 64;
+            config.hybrid_recent_drift_bonus = 18;
+            config.hybrid_support_prior = 4;
+            config.hybrid_evidence_prior = 5;
+            config.recent_markov2_bonus_ppm = 1040;
+            config.burst_bonus_ppm = 560;
+            config.markov3_bonus_ppm = 1000;
+            config.markov4_bonus_ppm = 620;
+            config.markov5_bonus_ppm = 0;
+            config.continuation_bonus_ppm = 2100;
+            config.continuation_min_order = 4;
+            config.continuation_max_order = 24;
+            config.continuation_support_prior = 1;
+            config.continuation_min_support = 1;
+            config.continuation_max_cells = 2200000;
+        },
+        .v33_arch => {
+            config.enable_long_term = true;
+            config.enable_token_region_routing = true;
+            config.enable_hybrid_experts = true;
+            config.initial_regions = 10;
+            config.max_regions = 18;
+            config.region_split_load = 352;
+            config.region_min_survivors = 1;
+            config.max_short_memories = 21504;
+            config.max_long_memories = 3584;
+            config.initial_short_target = 5120;
+            config.min_short_target = 896;
+            config.birth_margin = 17;
+            config.min_parents_for_birth = 4;
+            config.max_carry_memories = 144;
+            config.max_hidden_per_hop = 80;
+            config.propagation_depth = 5;
+            config.bridge_birth_min_diversity = 1;
+            config.bridge_error_gate_ppm = 492;
+            config.bridge_error_gap_ppm = 50;
+            config.bridge_fallback_diversity = 2;
+            config.bridge_bonus_ppm = 1140;
+            config.long_term_bonus_ppm = 1160;
+            config.long_term_bonus_precision_ppm = 570;
+            config.long_term_threshold_discount_ppm = 890;
+            config.hybrid_share_ppm = 72;
+            config.hybrid_recent_drift_bonus = 20;
+            config.hybrid_support_prior = 5;
+            config.hybrid_evidence_prior = 6;
+            config.recent_markov2_bonus_ppm = 1080;
+            config.burst_bonus_ppm = 590;
+            config.markov3_bonus_ppm = 1040;
+            config.markov4_bonus_ppm = 700;
+            config.markov5_bonus_ppm = 180;
+            config.continuation_bonus_ppm = 2400;
+            config.continuation_min_order = 4;
+            config.continuation_max_order = 28;
+            config.continuation_support_prior = 1;
+            config.continuation_min_support = 1;
+            config.continuation_max_cells = 2800000;
+        },
+        .v34_arch => {
+            config.enable_long_term = true;
+            config.enable_token_region_routing = true;
+            config.enable_hybrid_experts = true;
+            config.initial_regions = 12;
+            config.max_regions = 24;
+            config.region_split_load = 320;
+            config.region_min_survivors = 1;
+            config.max_short_memories = 24576;
+            config.max_long_memories = 4096;
+            config.initial_short_target = 6144;
+            config.min_short_target = 1024;
+            config.birth_margin = 16;
+            config.min_parents_for_birth = 4;
+            config.max_carry_memories = 160;
+            config.max_hidden_per_hop = 96;
+            config.propagation_depth = 6;
+            config.bridge_birth_min_diversity = 1;
+            config.bridge_error_gate_ppm = 486;
+            config.bridge_error_gap_ppm = 48;
+            config.bridge_fallback_diversity = 2;
+            config.bridge_bonus_ppm = 1160;
+            config.long_term_bonus_ppm = 1180;
+            config.long_term_bonus_precision_ppm = 565;
+            config.long_term_threshold_discount_ppm = 880;
+            config.hybrid_share_ppm = 80;
+            config.hybrid_recent_drift_bonus = 22;
+            config.hybrid_support_prior = 5;
+            config.hybrid_evidence_prior = 6;
+            config.recent_markov2_bonus_ppm = 1100;
+            config.burst_bonus_ppm = 620;
+            config.markov3_bonus_ppm = 1060;
+            config.markov4_bonus_ppm = 760;
+            config.markov5_bonus_ppm = 240;
+            config.continuation_bonus_ppm = 2600;
+            config.continuation_min_order = 4;
+            config.continuation_max_order = 32;
+            config.continuation_support_prior = 1;
+            config.continuation_min_support = 1;
+            config.continuation_max_cells = 3400000;
         },
     }
     return config;
@@ -313,6 +562,26 @@ pub fn v22ReleaseConfig(bits: u8) NetworkConfig {
 
 pub fn v29ReleaseConfig(bits: u8) NetworkConfig {
     return v22ReleaseConfig(bits);
+}
+
+pub fn v30ReleaseConfig(bits: u8) NetworkConfig {
+    return configForVariant(bits, .v30_arch);
+}
+
+pub fn v31ReleaseConfig(bits: u8) NetworkConfig {
+    return configForVariant(bits, .v31_arch);
+}
+
+pub fn v32ReleaseConfig(bits: u8) NetworkConfig {
+    return configForVariant(bits, .v32_arch);
+}
+
+pub fn v33ReleaseConfig(bits: u8) NetworkConfig {
+    return configForVariant(bits, .v33_arch);
+}
+
+pub fn v34ReleaseConfig(bits: u8) NetworkConfig {
+    return configForVariant(bits, .v34_arch);
 }
 
 pub fn v18ReleaseConfig(bits: u8) NetworkConfig {
@@ -437,6 +706,8 @@ pub fn applyOverride(config: *NetworkConfig, key: []const u8, value: []const u8)
         config.long_term_threshold_discount_ppm = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "max_regions")) {
         config.max_regions = try std.fmt.parseInt(u16, value, 10);
+    } else if (std.mem.eql(u8, key, "enable_token_region_routing")) {
+        config.enable_token_region_routing = try parseBool(value);
     } else if (std.mem.eql(u8, key, "initial_regions")) {
         config.initial_regions = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "initial_short_target")) {
@@ -521,6 +792,8 @@ pub fn applyOverride(config: *NetworkConfig, key: []const u8, value: []const u8)
         config.continuation_support_prior = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "continuation_min_support")) {
         config.continuation_min_support = try std.fmt.parseInt(u16, value, 10);
+    } else if (std.mem.eql(u8, key, "continuation_max_cells")) {
+        config.continuation_max_cells = try std.fmt.parseInt(u32, value, 10);
     } else if (std.mem.eql(u8, key, "recent_markov2_bonus_ppm")) {
         config.recent_markov2_bonus_ppm = try std.fmt.parseInt(u16, value, 10);
     } else if (std.mem.eql(u8, key, "burst_bonus_ppm")) {

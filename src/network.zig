@@ -2,6 +2,8 @@ const std = @import("std");
 const cfg = @import("config.zig");
 const numeric_cuda = @import("numeric_cuda.zig");
 
+pub const attribution_expert_count: usize = 9;
+
 pub const Prediction = struct {
     token: u8,
     top_score: i32,
@@ -78,6 +80,14 @@ pub const RunSummary = struct {
     margin_total: i64 = 0,
     max_active_nodes: u16 = 0,
     max_active_regions: u16 = 0,
+    sban_graph_correct: usize = 0,
+    hybrid_changed_top: usize = 0,
+    hybrid_changed_top_correct: usize = 0,
+    bridge_activation_total: usize = 0,
+    bridge_satisfied_total: usize = 0,
+    expert_active: [attribution_expert_count]usize = [_]usize{0} ** attribution_expert_count,
+    expert_correct: [attribution_expert_count]usize = [_]usize{0} ** attribution_expert_count,
+    expert_final_match: [attribution_expert_count]usize = [_]usize{0} ** attribution_expert_count,
 };
 
 pub const RunReport = struct {
@@ -200,7 +210,18 @@ pub const RunReport = struct {
         try writer.print("\"margin_total\":{d},", .{self.summary.margin_total});
         try writer.print("\"max_active_nodes\":{d},", .{self.summary.max_active_nodes});
         try writer.print("\"max_active_regions\":{d},", .{self.summary.max_active_regions});
-        try writer.writeAll("\"checkpoints\":[");
+        try writer.print("\"sban_graph_correct\":{d},", .{self.summary.sban_graph_correct});
+        try writer.print("\"hybrid_changed_top\":{d},", .{self.summary.hybrid_changed_top});
+        try writer.print("\"hybrid_changed_top_correct\":{d},", .{self.summary.hybrid_changed_top_correct});
+        try writer.print("\"bridge_activation_total\":{d},", .{self.summary.bridge_activation_total});
+        try writer.print("\"bridge_satisfied_total\":{d},", .{self.summary.bridge_satisfied_total});
+        try writer.writeAll("\"expert_active\":");
+        try writeUsizeArray(writer, &self.summary.expert_active);
+        try writer.writeAll(",\"expert_correct\":");
+        try writeUsizeArray(writer, &self.summary.expert_correct);
+        try writer.writeAll(",\"expert_final_match\":");
+        try writeUsizeArray(writer, &self.summary.expert_final_match);
+        try writer.writeAll(",\"checkpoints\":[");
         for (self.checkpoints.items, 0..) |point, idx| {
             if (idx != 0) try writer.writeAll(",");
             try writer.print(
@@ -327,7 +348,7 @@ fn clampI16(value: i32) i16 {
     return @intCast(value);
 }
 
-const hybrid_expert_count: usize = 9;
+const hybrid_expert_count: usize = attribution_expert_count;
 const expert_sban_idx: usize = 0;
 const expert_markov1_idx: usize = 1;
 const expert_markov2_idx: usize = 2;
@@ -596,6 +617,14 @@ pub const Network = struct {
     last_expert_tokens: [hybrid_expert_count]u8 = [_]u8{0} ** hybrid_expert_count,
     last_expert_scores: [hybrid_expert_count]i32 = [_]i32{0} ** hybrid_expert_count,
     last_expert_active: [hybrid_expert_count]bool = [_]bool{false} ** hybrid_expert_count,
+    expert_active_total: [hybrid_expert_count]usize = [_]usize{0} ** hybrid_expert_count,
+    expert_correct_total: [hybrid_expert_count]usize = [_]usize{0} ** hybrid_expert_count,
+    expert_final_match_total: [hybrid_expert_count]usize = [_]usize{0} ** hybrid_expert_count,
+    sban_graph_correct: usize = 0,
+    hybrid_changed_top: usize = 0,
+    hybrid_changed_top_correct: usize = 0,
+    bridge_activation_total: usize = 0,
+    bridge_satisfied_total: usize = 0,
 
     pub fn init(allocator: std.mem.Allocator, config: cfg.NetworkConfig) !Network {
         const clamped_regions = @max(@as(u16, 1), @min(config.initial_regions, config.max_regions));
@@ -780,7 +809,7 @@ pub const Network = struct {
         while (idx + 1 < bytes.len) : (idx += 1) {
             self.step_index +|= 1;
             @memset(self.output_scores.items, 0);
-            self.applyHybridExperts(bytes[idx]);
+            _ = self.applyHybridExperts(bytes[idx]);
             self.recordExpertPrediction(expert_sban_idx, 0, 0, false);
             self.updateHybridExpertWeights(bytes[idx + 1]);
             self.updateLocalExpertState(bytes[idx], bytes[idx + 1]);
@@ -920,10 +949,22 @@ pub const Network = struct {
         self.rebalanceRegionTargets();
     }
 
+    fn tokenRegionClass(token: u8) u16 {
+        if (token == ' ' or token == '\n' or token == '\t' or token == '\r') return 0;
+        if (token >= 'a' and token <= 'z') return 1;
+        if (token >= 'A' and token <= 'Z') return 2;
+        if (token >= '0' and token <= '9') return 3;
+        if ((token >= 33 and token <= 47) or (token >= 58 and token <= 64) or (token >= 91 and token <= 96) or (token >= 123 and token <= 126)) return 4;
+        if (token < 32) return 5;
+        return 6;
+    }
+
     fn tokenRegion(self: *const Network, token: u8) u16 {
-        _ = self;
-        _ = token;
-        return 0;
+        const open_count = self.open_region_count;
+        if (!self.config.enable_token_region_routing or open_count <= 1) return 0;
+        const class = tokenRegionClass(token);
+        const mixed: u32 = (@as(u32, token) *% 131) ^ (@as(u32, token >> 3) *% 17) ^ (@as(u32, class) *% 29);
+        return @intCast(mixed % @as(u32, open_count));
     }
 
     fn nodeRegion(self: *const Network, id: u32) u16 {
@@ -1234,6 +1275,11 @@ pub const Network = struct {
         self.active_marks.items[idx] = self.mark_epoch;
         try self.active_now.append(self.allocator, id);
         try self.noteRegionActive(self.nodeRegion(id));
+        const neuron = self.neurons.items[idx];
+        if ((neuron.kind == .memory_short or neuron.kind == .memory_long) and neuron.role == .bridge) {
+            self.bridge_activation_total += 1;
+            if (self.bridgeSatisfied(neuron)) self.bridge_satisfied_total += 1;
+        }
     }
 
     fn seedFromHistory(self: *Network, current_token: u8) !void {
@@ -1351,6 +1397,20 @@ pub const Network = struct {
         self.last_expert_active[expert_idx] = active;
     }
 
+    fn recordPredictionAttribution(self: *Network, sban_top: ScoreTop, final_top: ScoreTop, actual_next: u8) void {
+        if (sban_top.token == actual_next) self.sban_graph_correct += 1;
+        if (final_top.token != sban_top.token) {
+            self.hybrid_changed_top += 1;
+            if (final_top.token == actual_next) self.hybrid_changed_top_correct += 1;
+        }
+        for (0..hybrid_expert_count) |idx| {
+            if (!self.last_expert_active[idx]) continue;
+            self.expert_active_total[idx] += 1;
+            if (self.last_expert_tokens[idx] == actual_next) self.expert_correct_total[idx] += 1;
+            if (self.last_expert_tokens[idx] == final_top.token) self.expert_final_match_total[idx] += 1;
+        }
+    }
+
     fn lookupOrder3Row(self: *const Network, key: u32) ?[]const u16 {
         const row_idx = self.order3_row_map.get(key) orelse return null;
         const row_len = @as(usize, self.config.vocab_size);
@@ -1437,9 +1497,12 @@ pub const Network = struct {
         return &self.continuation_cells.items[row_idx];
     }
 
-    fn getOrCreateContinuationCell(self: *Network, key: u64) !*ContinuationCell {
+    fn getOrCreateContinuationCell(self: *Network, key: u64) !?*ContinuationCell {
         if (self.continuation_map.get(key)) |row_idx| {
             return &self.continuation_cells.items[row_idx];
+        }
+        if (self.config.continuation_max_cells != 0 and self.continuation_cells.items.len >= self.config.continuation_max_cells) {
+            return null;
         }
         const row_idx: u32 = @intCast(self.continuation_cells.items.len);
         try self.continuation_map.put(key, row_idx);
@@ -1622,7 +1685,7 @@ pub const Network = struct {
         self.recordExpertPrediction(expert_continuation_idx, 0, 0, false);
     }
 
-    fn applyHybridExperts(self: *Network, current_token: u8) void {
+    fn applyHybridExperts(self: *Network, current_token: u8) ScoreTop {
         for (0..hybrid_expert_count) |idx| self.recordExpertPrediction(idx, 0, 0, false);
         const sban_top = findTop2(self.output_scores.items);
         self.recordExpertPrediction(expert_sban_idx, sban_top.token, sban_top.top_score - sban_top.second_score, true);
@@ -1662,6 +1725,7 @@ pub const Network = struct {
             }
         }
         self.applyContinuationExpert(current_token);
+        return sban_top;
     }
 
     fn updateRecentExpertWindow(self: *Network, current_token: u8, actual_next: u8) void {
@@ -1779,8 +1843,9 @@ pub const Network = struct {
         if (continuation_enabled and max_order >= min_order) {
             var order = min_order;
             while (order <= max_order) : (order += 1) {
-                const cell = try self.getOrCreateContinuationCell(self.continuationKey(current_token, @intCast(order)));
-                updateContinuationCell(cell, actual_next);
+                if (try self.getOrCreateContinuationCell(self.continuationKey(current_token, @intCast(order)))) |cell| {
+                    updateContinuationCell(cell, actual_next);
+                }
             }
         }
     }
@@ -1799,8 +1864,9 @@ pub const Network = struct {
             self.max_active_regions_seen = @intCast(self.active_regions.items.len);
         }
 
-        self.applyHybridExperts(current_token);
+        const sban_top = self.applyHybridExperts(current_token);
         const top = findTop2(self.output_scores.items);
+        self.recordPredictionAttribution(sban_top, top, actual_next);
         const top_token = top.token;
         const top_score = top.top_score;
         const second_score = top.second_score;
@@ -1819,8 +1885,6 @@ pub const Network = struct {
             .surprise = false,
         };
     }
-
-
 
     fn longTermContributionScalePpm(self: *const Network, neuron: Neuron) u16 {
         if (neuron.kind != .memory_long) return 1000;

@@ -1,0 +1,4 @@
+prompt=what command shows cuda support
+mode=operational-cuda-command
+backend=cpu
+response=Use accel-info to confirm the grounded retrieval CUDA path: zig-out/bin/zig_sban accel-info seed_path=data/sban_runtime_prewarm_v34.txt backend=cuda. To confirm the new numeric CUDA path, run zig-out/bin/zig_sban numeric... [truncated 181 of 401 bytes]

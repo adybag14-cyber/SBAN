@@ -131,14 +131,14 @@ fn makeMeta(corpus_cfg: cfg.CorpusConfig, bundle: *const stream.StreamBundle, da
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v29_prefix_bit_sweep",
-                'a' => "enwik8_v29_prefix_ablation",
-                else => "enwik8_v29_prefix_custom",
+                'b' => "enwik8_v32_prefix_bit_sweep",
+                'a' => "enwik8_v32_prefix_ablation",
+                else => "enwik8_v32_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v29_drift_bit_sweep",
-                'a' => "enwik8_v29_drift_ablation",
-                else => "enwik8_v29_drift_custom",
+                'b' => "enwik8_v32_drift_bit_sweep",
+                'a' => "enwik8_v32_drift_ablation",
+                else => "enwik8_v32_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),
@@ -160,14 +160,14 @@ fn makeMetaFromLayout(corpus_cfg: cfg.CorpusConfig, layout: SegmentLayout, datas
     return .{
         .name = switch (corpus_cfg.mode) {
             .prefix => switch (protocol[0]) {
-                'b' => "enwik8_v29_prefix_bit_sweep",
-                'a' => "enwik8_v29_prefix_ablation",
-                else => "enwik8_v29_prefix_custom",
+                'b' => "enwik8_v32_prefix_bit_sweep",
+                'a' => "enwik8_v32_prefix_ablation",
+                else => "enwik8_v32_prefix_custom",
             },
             .drift => switch (protocol[0]) {
-                'b' => "enwik8_v29_drift_bit_sweep",
-                'a' => "enwik8_v29_drift_ablation",
-                else => "enwik8_v29_drift_custom",
+                'b' => "enwik8_v32_drift_bit_sweep",
+                'a' => "enwik8_v32_drift_ablation",
+                else => "enwik8_v32_drift_custom",
             },
         },
         .dataset_name = std.fs.path.basename(dataset_path),
@@ -535,13 +535,13 @@ test "experiment can build prefix bundle and run reports" {
     defer allocator.free(corpus);
     for (corpus, 0..) |*byte, idx| byte.* = @intCast(idx % 256);
 
-    const tmp_path = "/tmp/sban_v5_test_enwik8.bin";
-    try std.fs.cwd().writeFile(.{ .sub_path = tmp_path, .data = corpus });
-    defer std.fs.cwd().deleteFile(tmp_path) catch {};
-
     var threaded = std.Io.Threaded.init(allocator, .{});
     defer threaded.deinit();
     const io = threaded.io();
+
+    const tmp_path = "/tmp/sban_v32_test_enwik8.bin";
+    try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = tmp_path, .data = corpus });
+    defer std.Io.Dir.cwd().deleteFile(io, tmp_path) catch {};
 
     var data = try runCorpus(io, allocator, .{ .dataset_path = tmp_path, .mode = .prefix, .segment_len = 128, .segment_count = 4, .checkpoint_interval = 64, .rolling_window = 32 });
     defer data.deinit();
@@ -691,13 +691,13 @@ test "single variant streamed no-baseline path matches bundled SBAN report" {
     defer allocator.free(corpus);
     for (corpus, 0..) |*byte, idx| byte.* = @intCast(idx % 256);
 
-    const tmp_path = "/tmp/sban_v29_stream_test_enwik8.bin";
-    try std.fs.cwd().writeFile(.{ .sub_path = tmp_path, .data = corpus });
-    defer std.fs.cwd().deleteFile(tmp_path) catch {};
-
     var threaded = std.Io.Threaded.init(allocator, .{});
     defer threaded.deinit();
     const io = threaded.io();
+
+    const tmp_path = "/tmp/sban_v32_stream_test_enwik8.bin";
+    try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = tmp_path, .data = corpus });
+    defer std.Io.Dir.cwd().deleteFile(io, tmp_path) catch {};
 
     const corpus_cfg = cfg.CorpusConfig{
         .dataset_path = tmp_path,

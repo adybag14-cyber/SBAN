@@ -1,0 +1,91 @@
+# SBAN v34 runtime-prewarm session checks.
+
+User: what is SBAN v34
+Expect: warm-start non-transformer
+
+User: is SBAN v34 a live web model
+Expect: external lookup
+
+User: what is DNS
+Expect: Domain Name System
+
+User: what is a REST API
+Expect: HTTP
+
+User: what is entropy
+Expect: second law
+
+User: what is photosynthesis
+Expect: sunlight
+
+User: what causes tides
+Expect: Moon's gravity
+
+User: what is mitosis
+Expect: chromosomes
+
+User: what does DNA do
+Expect: genetic instructions
+
+User: what is the capital of Japan
+Expect: Tokyo
+
+User: who wrote Hamlet
+Expect: Shakespeare
+
+User: what was Apollo 11
+Expect: 1969
+
+User: what is democracy
+Expect: people
+
+User: what is supply and demand
+Expect: prices
+
+User: what is the scientific method
+Expect: hypothesis
+
+User: what is Big O notation
+Expect: input size
+
+User: what is Kubernetes
+Expect: containers
+
+User: what is OAuth
+Expect: password
+
+User: what does defer do in Zig
+Expect: scope exits
+
+User: how do Zig errors work
+Expect: error unions
+
+User: write Zig code that uses defer to close a file
+Expect: defer file.close
+
+User: write a Zig function to reverse a slice
+Expect: pub fn reverse
+
+User: write Python BFS for a graph
+Expect: deque
+
+User: write SQL to count users by country
+Expect: GROUP BY country
+
+User: how do i debug a failing CI job
+Expect: reproduce the command locally
+
+User: how do I triage an outage
+Expect: confirming user impact
+
+User: which is larger, 5/8 or 3/5
+Expect: 5/8 is larger
+
+User: what comes next in the sequence 3, 6, 12, 24
+Expect: 48
+
+User: compare 0.9 and 0.11
+Expect: 0.9 is larger
+
+User: who is the current president today
+Expect: external lookup

@@ -1,0 +1,5 @@
+prompt=what should i do this weekend
+mode=runtime-prewarm
+backend=cpu
+matched_prompt=what should i do this weekend
+response=Pick one restful thing, one useful thing, and one social or fun thing. That usually gives the weekend some shape without overscheduling it.

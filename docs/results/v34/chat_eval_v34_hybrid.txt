@@ -1,0 +1,180 @@
+[1] prompt=what is SBAN v34
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v34
+response=SBAN v34 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+[2] prompt=is SBAN v34 a live web model
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=is SBAN v34 a live web model
+response=No. SBAN v34 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+[3] prompt=what is DNS
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is DNS
+response=DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+[4] prompt=what is a REST API
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is a REST API
+response=A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+[5] prompt=what is entropy
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is entropy
+response=Entropy measures how energy or possible arrangements are spread out. In thermodynamics, the second law says total entropy in an isolated system tends to increase.
+
+[6] prompt=what is photosynthesis
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is photosynthesis
+response=Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+[7] prompt=what causes tides
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what causes tides
+response=Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through tidal bulges.
+
+[8] prompt=what is mitosis
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is mitosis
+response=Mitosis is the process where one cell separates copied chromosomes and divides into two genetically similar daughter cells.
+
+[9] prompt=what does DNA do
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what does DNA do
+response=DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate growth, repair, and function.
+
+[10] prompt=what is the capital of Japan
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is the capital of Japan
+response=The capital of Japan is Tokyo.
+
+[11] prompt=who wrote Hamlet
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=who wrote Hamlet
+response=Hamlet was written by William Shakespeare.
+
+[12] prompt=what was Apollo 11
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what was Apollo 11
+response=Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+
+[13] prompt=what is democracy
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is democracy
+response=Democracy is a system of government where political power comes from the people, usually through voting, representation, rights, and accountability.
+
+[14] prompt=what is supply and demand
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is supply and demand
+response=Supply and demand describe how availability and desire influence price. If demand rises while supply stays limited, prices tend to rise.
+
+[15] prompt=what is the scientific method
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is the scientific method
+response=The scientific method is a disciplined loop of asking a question, forming a hypothesis, testing it with evidence, analyzing results, and revising the explanation.
+
+[16] prompt=what is Big O notation
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is Big O notation
+response=Big O notation describes how an algorithm's cost grows as input size grows, focusing on the dominant scaling behavior such as O(n), O(log n), or O(n^2).
+
+[17] prompt=what is Kubernetes
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is Kubernetes
+response=Kubernetes is a system for deploying, scaling, and managing containers across machines. It keeps workloads running, restarts failed containers, and exposes services.
+
+[18] prompt=what is OAuth
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is OAuth
+response=OAuth lets an app access a service on a user's behalf without directly receiving the user's password, usually by issuing scoped tokens.
+
+[19] prompt=what does defer do in Zig
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what does defer do in Zig
+response=In Zig, defer schedules a statement to run when the current scope exits. It is commonly used for cleanup such as closing files, unlocking mutexes, or deinitializing containers.
+
+[20] prompt=how do Zig errors work
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do Zig errors work
+response=Zig errors are explicit values in error sets. Functions often return error unions like !T, and callers handle them with try, catch, if, or switch instead of exceptions.
+
+[21] prompt=write Zig code that uses defer to close a file
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=write Zig code that uses defer to close a file
+response=```zig
+
+[22] prompt=write a Zig function to reverse a slice
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=write a Zig function to reverse a slice
+response=```zig
+
+[23] prompt=write Python BFS for a graph
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=write Python BFS for a graph
+response=```python
+
+[24] prompt=write SQL to count users by country
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=write SQL to count users by country
+response=```sql
+
+[25] prompt=how do i debug a failing CI job
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do i debug a failing CI job
+response=Reproduce the failing command locally, read the first real error, compare tool and environment versions, isolate the smallest failing step, then commit the minimal fix and rerun the same gate.
+
+[26] prompt=how do I triage an outage
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how do I triage an outage
+response=Start by confirming user impact, recent changes, and the failing dependency. Stabilize first, communicate status, collect logs and metrics, then narrow the root cause after service is safe.
+
+[27] prompt=which is larger, 5/8 or 3/5
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=which is larger, 3/4 or 2/3
+response=3/4 is larger. Cross-multiply: 3*3 = 9 and 2*4 = 8, so 3/4 > 2/3.
+
+[28] prompt=what comes next in the sequence 3, 6, 12, 24
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=what comes next in the sequence 2, 4, 6, 8
+response=10 comes next. The sequence adds 2 each time: 2, 4, 6, 8, 10.
+
+[29] prompt=compare 0.9 and 0.11
+mode=uncertain
+backend=cpu
+response=I am not sure yet. I can handle grounded SBAN questions, remembered session facts, short math, everyday planning, writing help, coding snippets, simple explanations, and a wider set of casual prompts, but I still should not improvise beyond that.
+
+[30] prompt=who is the current president today
+mode=hybrid-retrieved
+backend=cpu
+matched_prompt=who is the current president of notre dame?
+response=Rev. John Jenkins.
+
+summary turns=30 anchored=26 retrieved=3 symbolic=0 nonempty=30 uncertain=1

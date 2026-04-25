@@ -1,0 +1,30 @@
+what is SBAN v34
+is SBAN v34 a live web model
+what is DNS
+what is a REST API
+what is entropy
+what is photosynthesis
+what causes tides
+what is mitosis
+what does DNA do
+what is the capital of Japan
+who wrote Hamlet
+what was Apollo 11
+what is democracy
+what is supply and demand
+what is the scientific method
+what is Big O notation
+what is Kubernetes
+what is OAuth
+what does defer do in Zig
+how do Zig errors work
+write Zig code that uses defer to close a file
+write a Zig function to reverse a slice
+write Python BFS for a graph
+write SQL to count users by country
+how do i debug a failing CI job
+how do I triage an outage
+which is larger, 5/8 or 3/5
+what comes next in the sequence 3, 6, 12, 24
+compare 0.9 and 0.11
+who is the current president today

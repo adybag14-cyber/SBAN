@@ -1,0 +1,5 @@
+prompt=what is SBAN v34
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v34
+response=SBAN v34 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are availab... [truncated 73 of 293 bytes]

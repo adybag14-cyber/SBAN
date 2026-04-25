@@ -5,23 +5,28 @@ const cfg = @import("config.zig");
 const netmod = @import("network.zig");
 
 const feature_dim = 128;
-const current_release_name = "SBAN v29";
-const current_release_version = "v29";
-const current_seed_path = "data/sban_dialogue_seed_v29.txt";
-const current_open_seed_path = "data/sban_dialogue_open_seed_v29.txt";
-const current_knowledge_path = "data/sban_synthetic_knowledge_v29.txt";
-const current_prompt_eval_path = "data/sban_chat_eval_prompts_v29.txt";
-const current_session_eval_path = "data/sban_session_eval_v29.txt";
-const current_open_chat_eval_path = "data/sban_open_chat_session_eval_v29.txt";
-const current_summary_path = "SBAN_v29_EXECUTIVE_SUMMARY.md";
-const current_report_path = "SBAN_v29_REPORT.md";
-const current_paper_path = "docs/papers/SBAN_v29_follow_up_research_paper.pdf";
-const current_repo_zip_path = "deliverables/v29/SBAN_v29_repo.zip";
-const current_windows_demo_start = "SBAN_v29_Start.bat";
-const current_linux_demo_start = "./SBAN_v29_Start.sh";
-const current_windows_demo_zip = "deliverables/v29/demo/SBAN_v29_windows_x86_64_demo.zip";
-const current_linux_demo_zip = "deliverables/v29/demo/SBAN_v29_linux_x86_64_demo.zip";
-const session_magic = "SBAN_SESSION_V29";
+const current_release_name = "SBAN v34";
+const current_release_version = "v34";
+const current_prewarm_path = "data/sban_runtime_prewarm_v34.txt";
+const current_seed_path = current_prewarm_path;
+const current_open_seed_path = "data/sban_dialogue_open_seed_v34.txt";
+const current_knowledge_path = current_prewarm_path;
+const current_prompt_eval_path = "data/sban_chat_eval_prompts_v34.txt";
+const current_session_eval_path = "data/sban_session_eval_v34.txt";
+const current_open_chat_eval_path = "data/sban_open_chat_session_eval_v34.txt";
+const current_summary_path = "SBAN_v34_EXECUTIVE_SUMMARY.md";
+const current_report_path = "SBAN_v34_REPORT.md";
+const current_paper_path = "docs/papers/SBAN_v34_follow_up_research_paper.pdf";
+const current_repo_zip_path = "deliverables/v34/SBAN_v34_repo.zip";
+const current_windows_demo_start = "SBAN_v34_Start.bat";
+const current_linux_demo_start = "./SBAN_v34_Start.sh";
+const current_windows_demo_zip = "deliverables/v34/demo/SBAN_v34_windows_x86_64_demo.zip";
+const current_linux_demo_zip = "deliverables/v34/demo/SBAN_v34_linux_x86_64_demo.zip";
+const session_magic = "SBAN_SESSION_V34";
+const legacy_session_magic_v33 = "SBAN_SESSION_V33";
+const legacy_session_magic_v32 = "SBAN_SESSION_V32";
+const legacy_session_magic_v31 = "SBAN_SESSION_V31";
+const legacy_session_magic_v29 = "SBAN_SESSION_V29";
 const legacy_session_magic_v28 = "SBAN_SESSION_V28";
 const legacy_session_magic_v27 = "SBAN_SESSION_V27";
 const legacy_session_magic_v26 = "SBAN_SESSION_V26";
@@ -58,7 +63,7 @@ pub const ChatResult = struct {
 
 pub const ChatOptions = struct {
     seed_path: []const u8 = current_seed_path,
-    open_seed_path: ?[]const u8 = current_open_seed_path,
+    open_seed_path: ?[]const u8 = null,
     knowledge_path: ?[]const u8 = current_knowledge_path,
     session_path: ?[]const u8 = null,
     mode: ChatMode = .free,
@@ -69,7 +74,7 @@ pub const ChatOptions = struct {
     continue_bytes: usize = 0,
     allow_generation: bool = true,
     net_config: cfg.NetworkConfig = blk: {
-        const config = cfg.v29ReleaseConfig(4);
+        const config = cfg.v34ReleaseConfig(4);
         break :blk config;
     },
 };
@@ -278,27 +283,27 @@ const cl_platform_name: cl_platform_info = 0x0902;
 const cl_device_name: cl_device_info = 0x102B;
 const cl_program_build_log: cl_program_build_info = 0x1183;
 
-const ClGetPlatformIDsFn = *const fn(cl_uint, ?[*]cl_platform_id, *cl_uint) callconv(.c) cl_int;
-const ClGetPlatformInfoFn = *const fn(cl_platform_id, cl_platform_info, usize, ?*anyopaque, *usize) callconv(.c) cl_int;
-const ClGetDeviceIDsFn = *const fn(cl_platform_id, cl_device_type, cl_uint, ?[*]cl_device_id, *cl_uint) callconv(.c) cl_int;
-const ClGetDeviceInfoFn = *const fn(cl_device_id, cl_device_info, usize, ?*anyopaque, *usize) callconv(.c) cl_int;
-const ClCreateContextFn = *const fn(?[*]const isize, cl_uint, [*]const cl_device_id, ?*const fn([*:0]const u8, ?*const anyopaque, usize, ?*anyopaque) callconv(.c) void, ?*anyopaque, *cl_int) callconv(.c) cl_context;
-const ClCreateCommandQueueFn = *const fn(cl_context, cl_device_id, cl_command_queue_properties, *cl_int) callconv(.c) cl_command_queue;
-const ClCreateProgramWithSourceFn = *const fn(cl_context, cl_uint, [*]const [*:0]const u8, [*]const usize, *cl_int) callconv(.c) cl_program;
-const ClBuildProgramFn = *const fn(cl_program, cl_uint, ?[*]const cl_device_id, ?[*:0]const u8, ?*const fn(cl_program, ?*anyopaque) callconv(.c) void, ?*anyopaque) callconv(.c) cl_int;
-const ClGetProgramBuildInfoFn = *const fn(cl_program, cl_device_id, cl_program_build_info, usize, ?*anyopaque, *usize) callconv(.c) cl_int;
-const ClCreateKernelFn = *const fn(cl_program, [*:0]const u8, *cl_int) callconv(.c) cl_kernel;
-const ClCreateBufferFn = *const fn(cl_context, cl_mem_flags, usize, ?*anyopaque, *cl_int) callconv(.c) cl_mem;
-const ClSetKernelArgFn = *const fn(cl_kernel, cl_uint, usize, ?*const anyopaque) callconv(.c) cl_int;
-const ClEnqueueWriteBufferFn = *const fn(cl_command_queue, cl_mem, cl_bool, usize, usize, ?*const anyopaque, cl_uint, ?*const anyopaque, ?*anyopaque) callconv(.c) cl_int;
-const ClEnqueueNDRangeKernelFn = *const fn(cl_command_queue, cl_kernel, cl_uint, ?[*]const usize, [*]const usize, ?[*]const usize, cl_uint, ?*const anyopaque, ?*anyopaque) callconv(.c) cl_int;
-const ClEnqueueReadBufferFn = *const fn(cl_command_queue, cl_mem, cl_bool, usize, usize, ?*anyopaque, cl_uint, ?*const anyopaque, ?*anyopaque) callconv(.c) cl_int;
-const ClFinishFn = *const fn(cl_command_queue) callconv(.c) cl_int;
-const ClReleaseMemObjectFn = *const fn(cl_mem) callconv(.c) cl_int;
-const ClReleaseKernelFn = *const fn(cl_kernel) callconv(.c) cl_int;
-const ClReleaseProgramFn = *const fn(cl_program) callconv(.c) cl_int;
-const ClReleaseCommandQueueFn = *const fn(cl_command_queue) callconv(.c) cl_int;
-const ClReleaseContextFn = *const fn(cl_context) callconv(.c) cl_int;
+const ClGetPlatformIDsFn = *const fn (cl_uint, ?[*]cl_platform_id, *cl_uint) callconv(.c) cl_int;
+const ClGetPlatformInfoFn = *const fn (cl_platform_id, cl_platform_info, usize, ?*anyopaque, *usize) callconv(.c) cl_int;
+const ClGetDeviceIDsFn = *const fn (cl_platform_id, cl_device_type, cl_uint, ?[*]cl_device_id, *cl_uint) callconv(.c) cl_int;
+const ClGetDeviceInfoFn = *const fn (cl_device_id, cl_device_info, usize, ?*anyopaque, *usize) callconv(.c) cl_int;
+const ClCreateContextFn = *const fn (?[*]const isize, cl_uint, [*]const cl_device_id, ?*const fn ([*:0]const u8, ?*const anyopaque, usize, ?*anyopaque) callconv(.c) void, ?*anyopaque, *cl_int) callconv(.c) cl_context;
+const ClCreateCommandQueueFn = *const fn (cl_context, cl_device_id, cl_command_queue_properties, *cl_int) callconv(.c) cl_command_queue;
+const ClCreateProgramWithSourceFn = *const fn (cl_context, cl_uint, [*]const [*:0]const u8, [*]const usize, *cl_int) callconv(.c) cl_program;
+const ClBuildProgramFn = *const fn (cl_program, cl_uint, ?[*]const cl_device_id, ?[*:0]const u8, ?*const fn (cl_program, ?*anyopaque) callconv(.c) void, ?*anyopaque) callconv(.c) cl_int;
+const ClGetProgramBuildInfoFn = *const fn (cl_program, cl_device_id, cl_program_build_info, usize, ?*anyopaque, *usize) callconv(.c) cl_int;
+const ClCreateKernelFn = *const fn (cl_program, [*:0]const u8, *cl_int) callconv(.c) cl_kernel;
+const ClCreateBufferFn = *const fn (cl_context, cl_mem_flags, usize, ?*anyopaque, *cl_int) callconv(.c) cl_mem;
+const ClSetKernelArgFn = *const fn (cl_kernel, cl_uint, usize, ?*const anyopaque) callconv(.c) cl_int;
+const ClEnqueueWriteBufferFn = *const fn (cl_command_queue, cl_mem, cl_bool, usize, usize, ?*const anyopaque, cl_uint, ?*const anyopaque, ?*anyopaque) callconv(.c) cl_int;
+const ClEnqueueNDRangeKernelFn = *const fn (cl_command_queue, cl_kernel, cl_uint, ?[*]const usize, [*]const usize, ?[*]const usize, cl_uint, ?*const anyopaque, ?*anyopaque) callconv(.c) cl_int;
+const ClEnqueueReadBufferFn = *const fn (cl_command_queue, cl_mem, cl_bool, usize, usize, ?*anyopaque, cl_uint, ?*const anyopaque, ?*anyopaque) callconv(.c) cl_int;
+const ClFinishFn = *const fn (cl_command_queue) callconv(.c) cl_int;
+const ClReleaseMemObjectFn = *const fn (cl_mem) callconv(.c) cl_int;
+const ClReleaseKernelFn = *const fn (cl_kernel) callconv(.c) cl_int;
+const ClReleaseProgramFn = *const fn (cl_program) callconv(.c) cl_int;
+const ClReleaseCommandQueueFn = *const fn (cl_command_queue) callconv(.c) cl_int;
+const ClReleaseContextFn = *const fn (cl_context) callconv(.c) cl_int;
 
 const OpenClApi = struct {
     get_platform_ids: ClGetPlatformIDsFn,
@@ -422,7 +427,7 @@ const OpenClScorer = struct {
         errdefer _ = api.release_kernel(kernel);
 
         const example_bytes = flat_matrix.len * @sizeOf(u16);
-        const example_buffer = api.create_buffer(context, cl_mem_read_only | cl_mem_copy_host_ptr, example_bytes, @constCast(@ptrCast(flat_matrix.ptr)), &errcode);
+        const example_buffer = api.create_buffer(context, cl_mem_read_only | cl_mem_copy_host_ptr, example_bytes, @ptrCast(@constCast(flat_matrix.ptr)), &errcode);
         try checkCl(errcode);
         errdefer _ = api.release_mem_object(example_buffer);
 
@@ -587,23 +592,23 @@ const cu_function = ?*anyopaque;
 const cu_stream = ?*anyopaque;
 const cu_device_ptr = u64;
 
-const CuInitFn = *const fn(u32) callconv(.c) cu_result;
-const CuDeviceGetCountFn = *const fn(*i32) callconv(.c) cu_result;
-const CuDeviceGetFn = *const fn(*cu_device, i32) callconv(.c) cu_result;
-const CuDeviceGetNameFn = *const fn([*]u8, i32, cu_device) callconv(.c) cu_result;
-const CuCtxCreateFn = *const fn(*cu_context, u32, cu_device) callconv(.c) cu_result;
-const CuCtxDestroyFn = *const fn(cu_context) callconv(.c) cu_result;
-const CuModuleLoadDataExFn = *const fn(*cu_module, *const anyopaque, u32, ?[*]u32, ?[*]?*anyopaque) callconv(.c) cu_result;
-const CuModuleGetFunctionFn = *const fn(*cu_function, cu_module, [*:0]const u8) callconv(.c) cu_result;
-const CuModuleUnloadFn = *const fn(cu_module) callconv(.c) cu_result;
-const CuMemAllocFn = *const fn(*cu_device_ptr, usize) callconv(.c) cu_result;
-const CuMemFreeFn = *const fn(cu_device_ptr) callconv(.c) cu_result;
-const CuMemcpyHtoDFn = *const fn(cu_device_ptr, *const anyopaque, usize) callconv(.c) cu_result;
-const CuMemcpyDtoHFn = *const fn(*anyopaque, cu_device_ptr, usize) callconv(.c) cu_result;
-const CuLaunchKernelFn = *const fn(cu_function, u32, u32, u32, u32, u32, u32, u32, cu_stream, ?[*]?*anyopaque, ?[*]?*anyopaque) callconv(.c) cu_result;
-const CuCtxSynchronizeFn = *const fn() callconv(.c) cu_result;
-const CuGetErrorNameFn = *const fn(cu_result, *?[*:0]const u8) callconv(.c) cu_result;
-const CuGetErrorStringFn = *const fn(cu_result, *?[*:0]const u8) callconv(.c) cu_result;
+const CuInitFn = *const fn (u32) callconv(.c) cu_result;
+const CuDeviceGetCountFn = *const fn (*i32) callconv(.c) cu_result;
+const CuDeviceGetFn = *const fn (*cu_device, i32) callconv(.c) cu_result;
+const CuDeviceGetNameFn = *const fn ([*]u8, i32, cu_device) callconv(.c) cu_result;
+const CuCtxCreateFn = *const fn (*cu_context, u32, cu_device) callconv(.c) cu_result;
+const CuCtxDestroyFn = *const fn (cu_context) callconv(.c) cu_result;
+const CuModuleLoadDataExFn = *const fn (*cu_module, *const anyopaque, u32, ?[*]u32, ?[*]?*anyopaque) callconv(.c) cu_result;
+const CuModuleGetFunctionFn = *const fn (*cu_function, cu_module, [*:0]const u8) callconv(.c) cu_result;
+const CuModuleUnloadFn = *const fn (cu_module) callconv(.c) cu_result;
+const CuMemAllocFn = *const fn (*cu_device_ptr, usize) callconv(.c) cu_result;
+const CuMemFreeFn = *const fn (cu_device_ptr) callconv(.c) cu_result;
+const CuMemcpyHtoDFn = *const fn (cu_device_ptr, *const anyopaque, usize) callconv(.c) cu_result;
+const CuMemcpyDtoHFn = *const fn (*anyopaque, cu_device_ptr, usize) callconv(.c) cu_result;
+const CuLaunchKernelFn = *const fn (cu_function, u32, u32, u32, u32, u32, u32, u32, cu_stream, ?[*]?*anyopaque, ?[*]?*anyopaque) callconv(.c) cu_result;
+const CuCtxSynchronizeFn = *const fn () callconv(.c) cu_result;
+const CuGetErrorNameFn = *const fn (cu_result, *?[*:0]const u8) callconv(.c) cu_result;
+const CuGetErrorStringFn = *const fn (cu_result, *?[*:0]const u8) callconv(.c) cu_result;
 
 const CudaApi = struct {
     init: CuInitFn,
@@ -1225,6 +1230,14 @@ fn answerPrompt(
         };
     }
 
+    if (try handleInstructionMemoryPrompt(allocator, prompt, session)) |response| {
+        return .{
+            .mode_label = "instruction-memory",
+            .response = response,
+            .symbolic = true,
+        };
+    }
+
     const maybe_fact = try extractFactCandidate(allocator, prompt);
     const wants_help = isHelpPrompt(prompt);
     if (maybe_fact) |fact| {
@@ -1267,7 +1280,7 @@ fn answerPrompt(
     if (isUnsupportedSourceLocationPrompt(prompt)) {
         return .{
             .mode_label = "source-boundary",
-            .response = try allocator.dupe(u8, "I do not know that source-tree location from the bundled v29 knowledge. I should not invent a Linux kernel file path without a supplied source tree or index."),
+            .response = try allocator.dupe(u8, "I do not know that source-tree location from the bundled v34 knowledge. I should not invent a Linux kernel file path without a supplied source tree or index."),
             .symbolic = true,
         };
     }
@@ -1326,7 +1339,7 @@ fn answerPrompt(
             if (knowledge_scorer) |ready_scorer| {
                 if (try selectGroundedMatch(allocator, prompt, &prompt_tokens, ready_corpus, ready_scorer, .knowledge)) |match| {
                     return .{
-                        .mode_label = "synthetic-knowledge",
+                        .mode_label = if (options.knowledge_path) |path| if (std.mem.eql(u8, path, current_prewarm_path)) "runtime-prewarm" else "synthetic-knowledge" else "synthetic-knowledge",
                         .matched_prompt = match.example.user,
                         .response = match.example.assistant,
                         .retrieved = true,
@@ -1370,6 +1383,15 @@ const SelectedMatch = struct {
     exact_score: i32,
 };
 
+fn requestAcceptsScore(scored: LexicalScore, request: MatchRequest) bool {
+    return switch (request) {
+        .anchor => scored.exact or (scored.prompt_cov_ppm >= 850 and scored.candidate_cov_ppm >= 700 and scored.overlap >= 2),
+        .retrieval => scored.exact or ((scored.overlap >= 2 and (scored.prompt_cov_ppm >= 500 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 250) or (scored.topic_overlap >= 1 and scored.overlap >= 1 and scored.candidate_cov_ppm >= 200)),
+        .knowledge => scored.exact or (scored.overlap >= 2 and (scored.prompt_cov_ppm >= 520 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 240),
+        .open_chat => scored.exact or (scored.overlap >= 2 and (scored.prompt_cov_ppm >= 420 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 220),
+    };
+}
+
 fn selectGroundedMatch(
     allocator: std.mem.Allocator,
     prompt: []const u8,
@@ -1379,6 +1401,12 @@ fn selectGroundedMatch(
     request: MatchRequest,
 ) !?SelectedMatch {
     if (prompt_tokens.token_hashes.items.len == 0) return null;
+
+    for (corpus.items.items) |item| {
+        if (std.ascii.eqlIgnoreCase(prompt, item.example.user)) {
+            return .{ .example = item.example, .exact_score = 10000 };
+        }
+    }
 
     const approx_scores = try allocator.alloc(u32, corpus.items.items.len);
     defer allocator.free(approx_scores);
@@ -1413,23 +1441,23 @@ fn selectGroundedMatch(
         const lexical = try scoreLexicalMatch(allocator, prompt, prompt_tokens, example.user, candidate.score);
         if (lexical == null) continue;
         const scored = lexical.?;
-        switch (request) {
-            .anchor => {
-                if (!scored.exact and !(scored.prompt_cov_ppm >= 850 and scored.candidate_cov_ppm >= 700 and scored.overlap >= 2)) continue;
-            },
-            .retrieval => {
-                if (!scored.exact and !(scored.overlap >= 2 and (scored.prompt_cov_ppm >= 500 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 250)) continue;
-            },
-            .knowledge => {
-                if (!scored.exact and !(scored.overlap >= 2 and (scored.prompt_cov_ppm >= 520 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 240)) continue;
-            },
-            .open_chat => {
-                if (!scored.exact and !(scored.overlap >= 2 and (scored.prompt_cov_ppm >= 420 or scored.bigram_overlap >= 1) and scored.candidate_cov_ppm >= 220)) continue;
-            },
-        }
+        if (!requestAcceptsScore(scored, request)) continue;
         if (scored.score > best_score) {
             best_score = scored.score;
             best = .{ .example = example, .exact_score = scored.score };
+        }
+    }
+
+    if (best == null) {
+        for (corpus.items.items) |item| {
+            const lexical = try scoreLexicalMatch(allocator, prompt, prompt_tokens, item.example.user, 0);
+            if (lexical == null) continue;
+            const scored = lexical.?;
+            if (!requestAcceptsScore(scored, request)) continue;
+            if (scored.score > best_score) {
+                best_score = scored.score;
+                best = .{ .example = item.example, .exact_score = scored.score };
+            }
         }
     }
 
@@ -1472,10 +1500,11 @@ fn scoreLexicalMatch(
     const candidate_cov_ppm: u32 = @intCast(@divTrunc(overlap * 1000, candidate_count));
     const exact = std.ascii.eqlIgnoreCase(prompt, candidate);
     const intent_match = prompt_tokens.intent == .other or candidate_tokens.intent == .other or prompt_tokens.intent == candidate_tokens.intent;
+    const hardware_match = wantsHardwareAnswer(prompt) and mentionsHardwareAnswer(candidate);
 
     if (!exact) {
-        if (prompt_count >= 2 and overlap < 2 and bigram_overlap == 0) return null;
-        if (prompt_count >= 3 and prompt_cov_ppm < 450 and bigram_overlap == 0) return null;
+        if (prompt_count >= 2 and overlap < 2 and bigram_overlap == 0 and !hardware_match) return null;
+        if (prompt_count >= 3 and prompt_cov_ppm < 450 and bigram_overlap == 0 and !hardware_match) return null;
         if (candidate_count >= 3 and candidate_cov_ppm < 250 and bigram_overlap == 0) return null;
         if (prompt_tokens.topic_hashes.items.len > 0 and candidate_tokens.topic_hashes.items.len > 0 and topic_overlap == 0) return null;
     }
@@ -1720,8 +1749,12 @@ fn buildFactCapabilityResponse(allocator: std.mem.Allocator, key: []const u8) ![
 }
 
 fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?ChatResult {
-    if (containsPhraseIgnoreCase(prompt, "what changed in v29") or
-        containsPhraseIgnoreCase(prompt, "how is v29 different from v27"))
+    if (containsPhraseIgnoreCase(prompt, "what changed in v34") or
+        containsPhraseIgnoreCase(prompt, "how is v34 different from v33") or
+        containsPhraseIgnoreCase(prompt, "what changed in v32") or
+        containsPhraseIgnoreCase(prompt, "what changed in v31") or
+        containsPhraseIgnoreCase(prompt, "how is v32 different from v31") or
+        containsPhraseIgnoreCase(prompt, "how is v31 different from v27"))
     {
         return .{
             .mode_label = "operational-release-change",
@@ -1893,11 +1926,11 @@ fn answerOperationalPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?C
 }
 
 fn buildReleaseChangeResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "V29 closes the v27 stress-report issues: stale release labels are removed, session-eval matching is stricter, natural fact aliases are broader, long prompt echoes are truncated, backend probes report actual execution, and the product surface adds explicit handling for static-boundary, translation, summarization, exponent, and rate-problem prompts.");
+    return allocator.dupe(u8, "V34 promotes the generated runtime prewarm pack to the default chat surface, keeps the v33 powerchat reasoning work, adds a larger warm-start knowledge and coding surface, verifies larger vocabulary probes through 65,536 buckets, and keeps live-current facts behind an explicit external-lookup boundary.");
 }
 
 fn buildNewUserStartResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "New users should start the continuing chat demo, ask what SBAN v29 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact like a name, team, cat, dog, project, launch date, or city, and then try a practical prompt such as a meeting agenda, a simple explanation, a summarization request, or a coding request.");
+    return allocator.dupe(u8, "New users should start the continuing chat demo, ask what SBAN v34 is, ask where the paper PDF lives, try a CUDA or starter-file command, store a session fact like a name, team, cat, dog, project, launch date, or city, and then try practical reasoning prompts such as a sequence, comparison, word problem, agenda, explanation, summarization request, or coding request.");
 }
 
 fn buildCudaCommandResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -1961,7 +1994,7 @@ fn buildTranscriptSafetyResponse(allocator: std.mem.Allocator) ![]const u8 {
 }
 
 fn buildRoadmapResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return allocator.dupe(u8, "After v29, the roadmap should keep pushing on three fronts: broader free-form conversation without losing grounding, richer long-form memory and reasoning, and backend acceleration that only becomes the default when measured CPU or GPU runs actually beat the fallback path.");
+    return allocator.dupe(u8, "After v34, the roadmap should keep pushing on three fronts: broader non-transformer reasoning loops without losing grounding, richer static knowledge/rule packs with measured coverage, and backend acceleration that only becomes the default when CPU or GPU runs actually beat the fallback path.");
 }
 
 fn synthesizeFreeResponse(
@@ -2042,6 +2075,9 @@ fn synthesizeFreeResponse(
     if (isZigUpstreamPrompt(prompt)) {
         return @as(?[]const u8, try buildZigUpstreamResponse(allocator, prompt));
     }
+    if (isSupportPrompt(prompt)) {
+        return @as(?[]const u8, try buildSupportResponse(allocator, prompt));
+    }
     if (isCurrentFactPrompt(prompt)) {
         return @as(?[]const u8, try allocator.dupe(u8, "I do not have live current facts. This SBAN release uses static bundled knowledge, so current news, office holders, prices, and today's facts need an external lookup."));
     }
@@ -2062,6 +2098,12 @@ fn synthesizeFreeResponse(
     }
     if (isSimpleExplanationPrompt(prompt)) {
         return @as(?[]const u8, try buildSimpleExplanationResponse(allocator, prompt));
+    }
+    if (try solveReasoningPrompt(allocator, prompt)) |response| {
+        return @as(?[]const u8, response);
+    }
+    if (isGeneralKnowledgePrompt(prompt)) {
+        return @as(?[]const u8, try buildGeneralKnowledgeResponse(allocator, prompt));
     }
     if (try solveWordProblem(allocator, prompt)) |response| {
         return @as(?[]const u8, response);
@@ -2085,7 +2127,7 @@ fn buildGreetingResponse(allocator: std.mem.Allocator, session: *const SessionSt
 }
 
 fn buildIdentityResponse(allocator: std.mem.Allocator) ![]const u8 {
-    return std.fmt.allocPrint(allocator, "I am {s}, a grounded non-transformer chat runtime built around sparse adaptive memory and bridge-based context. I can answer from release knowledge, session memory, symbolic helpers, broader free-chat support, practical coding help, and the measured CPU or GPU backend stack.", .{current_release_name});
+    return std.fmt.allocPrint(allocator, "I am {s}, a grounded non-transformer chat runtime built around sparse adaptive memory, bridge-based context, synthetic knowledge packs, symbolic reasoning helpers, and session memory. I can answer from release knowledge, retained session facts, bounded general knowledge, practical coding help, and the measured CPU or GPU backend stack.", .{current_release_name});
 }
 
 fn composeAnchoredContinuation(
@@ -2129,6 +2171,8 @@ fn isHowAreYouPrompt(prompt: []const u8) bool {
 fn isIdentityPrompt(prompt: []const u8) bool {
     return containsPhraseIgnoreCase(prompt, "who are you") or
         containsPhraseIgnoreCase(prompt, "what are you") or
+        containsPhraseIgnoreCase(prompt, "what is sban") or
+        containsPhraseIgnoreCase(prompt, "what is SBAN") or
         containsPhraseIgnoreCase(prompt, "tell me about yourself");
 }
 
@@ -2142,7 +2186,7 @@ fn isAgendaPrompt(prompt: []const u8) bool {
     return containsPhraseIgnoreCase(prompt, "meeting agenda") or
         containsPhraseIgnoreCase(prompt, "agenda for") or
         ((containsPhraseIgnoreCase(prompt, "agenda") or containsPhraseIgnoreCase(prompt, "outline")) and
-        hasAnyPhraseIgnoreCase(prompt, &.{ "meeting", "1:1", "one on one", "standup", "kickoff" }));
+            hasAnyPhraseIgnoreCase(prompt, &.{ "meeting", "1:1", "one on one", "standup", "kickoff" }));
 }
 
 fn isInterviewPrepPrompt(prompt: []const u8) bool {
@@ -2228,7 +2272,8 @@ fn isCodingHelpPrompt(prompt: []const u8) bool {
         containsPhraseIgnoreCase(prompt, "javascript function") or
         containsPhraseIgnoreCase(prompt, "javascript debounce") or
         (containsPhraseIgnoreCase(prompt, "json") and hasAnyPhraseIgnoreCase(prompt, &.{ "generate", "create", "return", "object", "with name" })) or
-        (containsPhraseIgnoreCase(prompt, "zig") and hasAnyPhraseIgnoreCase(prompt, &.{ "function", "code", "snippet", "reverse", "arraylist", "hashmap", "hash map", "file", "allocator" })) or
+        (containsPhraseIgnoreCase(prompt, "zig") and hasAnyPhraseIgnoreCase(prompt, &.{ "function", "code", "snippet", "reverse", "arraylist", "hashmap", "hash map", "file", "allocator", "defer", "close" })) or
+        (containsPhraseIgnoreCase(prompt, "python") and hasAnyPhraseIgnoreCase(prompt, &.{ "bfs", "breadth first search" })) or
         containsPhraseIgnoreCase(prompt, "sql to count users per country") or
         containsPhraseIgnoreCase(prompt, "code snippet") or
         (containsPhraseIgnoreCase(prompt, "prime") and containsPhraseIgnoreCase(prompt, "python") and containsPhraseIgnoreCase(prompt, "function")) or
@@ -2288,6 +2333,7 @@ fn isShellHelpPrompt(prompt: []const u8) bool {
 
 fn isPreRetrievalComposedPrompt(prompt: []const u8) bool {
     return isCurrentFactPrompt(prompt) or
+        isReasoningPrompt(prompt) or
         isTranslationPrompt(prompt) or
         isSummarizationPrompt(prompt) or
         isShellHelpPrompt(prompt);
@@ -2344,7 +2390,144 @@ fn isSimpleExplanationPrompt(prompt: []const u8) bool {
         containsPhraseIgnoreCase(prompt, "what does cpu mean") or
         containsPhraseIgnoreCase(prompt, "cpu stand for") or
         containsPhraseIgnoreCase(prompt, "what is dna") or
+        containsPhraseIgnoreCase(prompt, "database index") or
+        containsPhraseIgnoreCase(prompt, "tcp vs udp") or
+        containsPhraseIgnoreCase(prompt, "machine learning") or
+        containsPhraseIgnoreCase(prompt, "neural network") or
+        containsPhraseIgnoreCase(prompt, "gradient descent") or
         (containsPhraseIgnoreCase(prompt, "ram") and containsPhraseIgnoreCase(prompt, "storage"));
+}
+
+fn isReasoningPrompt(prompt: []const u8) bool {
+    return containsPhraseIgnoreCase(prompt, "reason") or
+        containsPhraseIgnoreCase(prompt, "step by step") or
+        containsPhraseIgnoreCase(prompt, "which is larger") or
+        containsPhraseIgnoreCase(prompt, "what comes next") or
+        containsPhraseIgnoreCase(prompt, "sequence") or
+        containsPhraseIgnoreCase(prompt, "socrates") or
+        containsPhraseIgnoreCase(prompt, "syllogism") or
+        containsPhraseIgnoreCase(prompt, "sort the numbers") or
+        containsPhraseIgnoreCase(prompt, "pros and cons") or
+        containsPhraseIgnoreCase(prompt, "tradeoff") or
+        containsPhraseIgnoreCase(prompt, "compare 0.9") or
+        containsPhraseIgnoreCase(prompt, "compare 0.11") or
+        containsPhraseIgnoreCase(prompt, "taller than") or
+        containsPhraseIgnoreCase(prompt, "heavier than") or
+        containsPhraseIgnoreCase(prompt, "modus ponens") or
+        containsPhraseIgnoreCase(prompt, "necessary") or
+        containsPhraseIgnoreCase(prompt, "sufficient") or
+        containsPhraseIgnoreCase(prompt, "rectangle area") or
+        containsPhraseIgnoreCase(prompt, "perimeter");
+}
+
+fn isGeneralKnowledgePrompt(prompt: []const u8) bool {
+    return hasAnyPhraseIgnoreCase(prompt, &.{
+        "pythagorean theorem",
+        "what causes tides",
+        "mitosis",
+        "pride and prejudice",
+        "capital of france",
+        "conservation of energy",
+        "debug a failing ci job",
+        "zig errors",
+        "water boil",
+        "speed of light",
+        "gravity",
+        "mitochondria",
+        "cell nucleus",
+        "newton",
+        "marie curie",
+        "shakespeare",
+        "1984",
+        "animal farm",
+        "roman empire",
+        "nile river",
+        "mount everest",
+        "periodic table",
+        "atom",
+        "electron",
+        "democracy",
+        "supply and demand",
+        "inflation vs deflation",
+        "machine learning",
+        "neural network",
+        "transformer model",
+        "gradient descent",
+        "database index",
+        "cache",
+        "tcp vs udp",
+        "encryption",
+        "public key",
+        "climate versus weather",
+        "plate tectonics",
+        "evolution by natural selection",
+        "osmosis",
+        "rna",
+        "enzyme",
+        "antibody",
+        "immune system",
+        "entropy",
+        "second law of thermodynamics",
+        "newton's second law",
+        "electromagnetic spectrum",
+        "solar eclipse",
+        "lunar eclipse",
+        "black hole",
+        "greenhouse effect",
+        "carbon cycle",
+        "water cycle",
+        "bayes theorem",
+        "overfitting",
+        "regularization",
+        "classification vs regression",
+        "http vs https",
+        "dns",
+        "operating system",
+        "deadlock",
+        "race condition",
+        "big o notation",
+        "compiler",
+        "interpreter",
+        "checksum",
+        "rsa",
+        "world war i",
+        "industrial revolution",
+        "renaissance",
+        "magna carta",
+        "plato",
+        "aristotle",
+        "hamlet",
+        "odyssey",
+        "homer",
+        "moby dick",
+        "great gatsby",
+        "president of the united states in 2021",
+        "president in 2021",
+        "who was president in 2021",
+        "moon landing",
+        "apollo 11",
+        "capital of japan",
+        "capital of germany",
+        "largest ocean",
+        "vaccines",
+        "internet",
+        "world wide web",
+        "linux kernel",
+        "python language",
+        "relativity",
+        "quantum mechanics",
+        "cold war",
+        "american revolution",
+        "french revolution",
+        "dna replication",
+        "mri",
+        "semiconductor",
+        "transistor",
+        "api",
+        "json",
+        "sql",
+        "rest api",
+    });
 }
 
 fn isLunchIdeasPrompt(prompt: []const u8) bool {
@@ -2419,8 +2602,7 @@ fn buildJokeResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const 
 
 fn buildCreativeWritingResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
     if (containsPhraseIgnoreCase(prompt, "haiku") and containsPhraseIgnoreCase(prompt, "rain")) {
-        return allocator.dupe(u8,
-            "Rain taps at the glass\nCity lights blur into mist\nEvening slows its pace");
+        return allocator.dupe(u8, "Rain taps at the glass\nCity lights blur into mist\nEvening slows its pace");
     }
     return allocator.dupe(u8, "Yes. Tell me the form, the tone, and the subject, and I can draft something concise instead of guessing the style.");
 }
@@ -2487,6 +2669,18 @@ fn buildCodingHelpResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]
             "A compact Zig in-place slice reverse is:\n```zig\npub fn reverse(comptime T: type, items: []T) void {\n    var left: usize = 0;\n    var right: usize = items.len;\n    while (left < right) {\n        right -= 1;\n        const tmp = items[left];\n        items[left] = items[right];\n        items[right] = tmp;\n        left += 1;\n    }\n}\n```\nIt swaps the outer elements and walks inward, so it works for any mutable slice type.",
         );
     }
+    if (containsPhraseIgnoreCase(prompt, "zig") and containsPhraseIgnoreCase(prompt, "defer") and !containsPhraseIgnoreCase(prompt, "file")) {
+        return allocator.dupe(
+            u8,
+            "In Zig, `defer` schedules a statement to run when the current scope exits. It is commonly used for cleanup such as deinitializing containers, closing handles, or unlocking state.",
+        );
+    }
+    if (containsPhraseIgnoreCase(prompt, "zig") and containsPhraseIgnoreCase(prompt, "defer") and containsPhraseIgnoreCase(prompt, "file")) {
+        return allocator.dupe(
+            u8,
+            "A compact Zig file cleanup pattern is:\n```zig\nconst file = try std.fs.cwd().openFile(\"input.txt\", .{});\ndefer file.close();\n```\n`defer` runs when the current scope exits, so the file closes after a successful open even if later code returns early.",
+        );
+    }
     if (containsPhraseIgnoreCase(prompt, "zig") and containsPhraseIgnoreCase(prompt, "arraylist")) {
         return allocator.dupe(
             u8,
@@ -2503,6 +2697,12 @@ fn buildCodingHelpResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]
         return allocator.dupe(
             u8,
             "Yes. A simple Python stack class is:\n```python\nclass Stack:\n    def __init__(self) -> None:\n        self._items: list[object] = []\n\n    def push(self, item: object) -> None:\n        self._items.append(item)\n\n    def pop(self) -> object:\n        if not self._items:\n            raise IndexError('pop from empty stack')\n        return self._items.pop()\n\n    def peek(self) -> object:\n        if not self._items:\n            raise IndexError('peek from empty stack')\n        return self._items[-1]\n\n    def is_empty(self) -> bool:\n        return not self._items\n```\nThis uses a list internally, where `append` and `pop` from the end are the natural stack operations.",
+        );
+    }
+    if (containsPhraseIgnoreCase(prompt, "python") and (containsPhraseIgnoreCase(prompt, "bfs") or containsPhraseIgnoreCase(prompt, "breadth first search"))) {
+        return allocator.dupe(
+            u8,
+            "A compact Python BFS implementation is:\n```python\nfrom collections import deque\n\ndef bfs(graph, start):\n    seen = {start}\n    q = deque([start])\n    order = []\n    while q:\n        node = q.popleft()\n        order.append(node)\n        for nxt in graph.get(node, []):\n            if nxt not in seen:\n                seen.add(nxt)\n                q.append(nxt)\n    return order\n```\nThe queue gives breadth-first order and `seen` prevents revisiting nodes.",
         );
     }
     if (containsPhraseIgnoreCase(prompt, "python") and containsPhraseIgnoreCase(prompt, "reverse") and containsPhraseIgnoreCase(prompt, "string")) {
@@ -2635,6 +2835,537 @@ fn buildSimpleExplanationResponse(allocator: std.mem.Allocator, prompt: []const 
     return allocator.dupe(u8, "I can explain many practical topics more simply if you give me the exact concept and the level you want, like beginner, quick, or more detailed.");
 }
 
+const ParsedFraction = struct {
+    label: []const u8,
+    numerator: i64,
+    denominator: i64,
+    end: usize,
+};
+
+fn collectPromptIntegers(allocator: std.mem.Allocator, prompt: []const u8) !std.ArrayList(i64) {
+    var values = std.ArrayList(i64).empty;
+    errdefer values.deinit(allocator);
+    var idx: usize = 0;
+    while (idx < prompt.len) {
+        var negative = false;
+        if (prompt[idx] == '-' and idx + 1 < prompt.len and std.ascii.isDigit(prompt[idx + 1])) {
+            negative = true;
+            idx += 1;
+        }
+        if (!std.ascii.isDigit(prompt[idx])) {
+            idx += 1;
+            continue;
+        }
+        const start = idx;
+        while (idx < prompt.len and std.ascii.isDigit(prompt[idx])) : (idx += 1) {}
+        const parsed = std.fmt.parseInt(i64, prompt[start..idx], 10) catch continue;
+        try values.append(allocator, if (negative) -parsed else parsed);
+    }
+    return values;
+}
+
+fn sortI64Ascending(values: []i64) void {
+    var i: usize = 1;
+    while (i < values.len) : (i += 1) {
+        const key = values[i];
+        var j = i;
+        while (j > 0 and values[j - 1] > key) : (j -= 1) {
+            values[j] = values[j - 1];
+        }
+        values[j] = key;
+    }
+}
+
+fn appendI64List(allocator: std.mem.Allocator, out: *std.ArrayList(u8), values: []const i64) !void {
+    for (values, 0..) |value, idx| {
+        if (idx > 0) try out.appendSlice(allocator, ", ");
+        const part = try std.fmt.allocPrint(allocator, "{d}", .{value});
+        defer allocator.free(part);
+        try out.appendSlice(allocator, part);
+    }
+}
+
+fn solveSortingReasoning(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (!(containsPhraseIgnoreCase(prompt, "sort the numbers") or containsPhraseIgnoreCase(prompt, "sort numbers") or containsPhraseIgnoreCase(prompt, "order the numbers"))) return null;
+    var values = try collectPromptIntegers(allocator, prompt);
+    defer values.deinit(allocator);
+    if (values.items.len < 2) return null;
+    sortI64Ascending(values.items);
+    var out = std.ArrayList(u8).empty;
+    defer out.deinit(allocator);
+    try out.appendSlice(allocator, "Sorted ascending: ");
+    try appendI64List(allocator, &out, values.items);
+    try out.append(allocator, '.');
+    return @as(?[]u8, try allocator.dupe(u8, out.items));
+}
+
+fn solveSequenceReasoning(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (!(containsPhraseIgnoreCase(prompt, "what comes next") or containsPhraseIgnoreCase(prompt, "next number") or containsPhraseIgnoreCase(prompt, "sequence"))) return null;
+    var values = try collectPromptIntegers(allocator, prompt);
+    defer values.deinit(allocator);
+    if (values.items.len < 3) return null;
+    const len = values.items.len;
+    const d = values.items[1] - values.items[0];
+    var arithmetic = true;
+    var idx: usize = 2;
+    while (idx < len) : (idx += 1) {
+        if (values.items[idx] - values.items[idx - 1] != d) {
+            arithmetic = false;
+            break;
+        }
+    }
+    if (arithmetic) {
+        const next = values.items[len - 1] + d;
+        return @as(?[]u8, try std.fmt.allocPrint(allocator, "{d} comes next. The sequence adds {d} each time.", .{ next, d }));
+    }
+    if (len >= 4 and values.items[0] != 0) {
+        const ratio_ok = @rem(values.items[1], values.items[0]) == 0;
+        const ratio = if (ratio_ok) @divTrunc(values.items[1], values.items[0]) else 0;
+        var geometric = ratio_ok;
+        idx = 2;
+        while (idx < len and geometric) : (idx += 1) {
+            if (values.items[idx - 1] == 0 or @rem(values.items[idx], values.items[idx - 1]) != 0 or @divTrunc(values.items[idx], values.items[idx - 1]) != ratio) geometric = false;
+        }
+        if (geometric) {
+            const next = values.items[len - 1] * ratio;
+            return @as(?[]u8, try std.fmt.allocPrint(allocator, "{d} comes next. The sequence multiplies by {d} each time.", .{ next, ratio }));
+        }
+    }
+    if (len >= 4) {
+        var fib = true;
+        idx = 2;
+        while (idx < len) : (idx += 1) {
+            if (values.items[idx] != values.items[idx - 1] + values.items[idx - 2]) {
+                fib = false;
+                break;
+            }
+        }
+        if (fib) {
+            const next = values.items[len - 1] + values.items[len - 2];
+            return @as(?[]u8, try std.fmt.allocPrint(allocator, "{d} comes next. Each term is the sum of the previous two terms.", .{next}));
+        }
+    }
+    return null;
+}
+
+fn findFraction(text: []const u8, start_index: usize) ?ParsedFraction {
+    var idx = start_index;
+    while (idx < text.len) : (idx += 1) {
+        if (!std.ascii.isDigit(text[idx])) continue;
+        const num_start = idx;
+        while (idx < text.len and std.ascii.isDigit(text[idx])) : (idx += 1) {}
+        if (idx >= text.len or text[idx] != '/') continue;
+        const slash = idx;
+        idx += 1;
+        if (idx >= text.len or !std.ascii.isDigit(text[idx])) continue;
+        const den_start = idx;
+        while (idx < text.len and std.ascii.isDigit(text[idx])) : (idx += 1) {}
+        const numerator = std.fmt.parseInt(i64, text[num_start..slash], 10) catch continue;
+        const denominator = std.fmt.parseInt(i64, text[den_start..idx], 10) catch continue;
+        if (denominator == 0) continue;
+        return ParsedFraction{ .label = text[num_start..idx], .numerator = numerator, .denominator = denominator, .end = idx };
+    }
+    return null;
+}
+
+fn solveFractionReasoning(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (!(containsPhraseIgnoreCase(prompt, "which is larger") or containsPhraseIgnoreCase(prompt, "which is smaller") or containsPhraseIgnoreCase(prompt, "compare"))) return null;
+    const first = findFraction(prompt, 0) orelse return null;
+    const second = findFraction(prompt, first.end) orelse return null;
+    const left = first.numerator * second.denominator;
+    const right = second.numerator * first.denominator;
+    if (left == right) {
+        return @as(?[]u8, try std.fmt.allocPrint(allocator, "{s} and {s} are equal. Cross-multiplication gives {d} on both sides.", .{ first.label, second.label, left }));
+    }
+    const want_smaller = containsPhraseIgnoreCase(prompt, "smaller");
+    const first_wins = if (want_smaller) left < right else left > right;
+    const chosen = if (first_wins) first.label else second.label;
+    const relation = if (want_smaller) "smaller" else "larger";
+    return @as(?[]u8, try std.fmt.allocPrint(allocator, "{s} is {s}. Cross-multiply: {d} versus {d}, so the comparison is exact without decimals.", .{ chosen, relation, left, right }));
+}
+
+const ParsedDecimal = struct {
+    label: []const u8,
+    value: f64,
+    end: usize,
+};
+
+fn findDecimal(text: []const u8, start_index: usize) ?ParsedDecimal {
+    var idx = start_index;
+    while (idx < text.len) : (idx += 1) {
+        if (!std.ascii.isDigit(text[idx])) continue;
+        const start = idx;
+        while (idx < text.len and std.ascii.isDigit(text[idx])) : (idx += 1) {}
+        if (idx >= text.len or text[idx] != '.') continue;
+        idx += 1;
+        if (idx >= text.len or !std.ascii.isDigit(text[idx])) continue;
+        while (idx < text.len and std.ascii.isDigit(text[idx])) : (idx += 1) {}
+        const value = std.fmt.parseFloat(f64, text[start..idx]) catch continue;
+        return ParsedDecimal{ .label = text[start..idx], .value = value, .end = idx };
+    }
+    return null;
+}
+
+fn solveDecimalReasoning(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (!(containsPhraseIgnoreCase(prompt, "which is larger") or containsPhraseIgnoreCase(prompt, "which is smaller") or containsPhraseIgnoreCase(prompt, "compare"))) return null;
+    const first = findDecimal(prompt, 0) orelse return null;
+    const second = findDecimal(prompt, first.end) orelse return null;
+    if (first.value == second.value) return @as(?[]u8, try std.fmt.allocPrint(allocator, "{s} and {s} are equal decimals.", .{ first.label, second.label }));
+    const want_smaller = containsPhraseIgnoreCase(prompt, "smaller");
+    const first_wins = if (want_smaller) first.value < second.value else first.value > second.value;
+    const chosen = if (first_wins) first.label else second.label;
+    const relation = if (want_smaller) "smaller" else "larger";
+    return @as(?[]u8, try std.fmt.allocPrint(allocator, "{s} is {s}. Aligning place values before comparing avoids the common decimal-length trap.", .{ chosen, relation }));
+}
+
+fn solveLogicReasoning(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (containsPhraseIgnoreCase(prompt, "all squares are rectangles") and containsPhraseIgnoreCase(prompt, "all rectangles squares")) {
+        return @as(?[]u8, try allocator.dupe(u8, "No. All squares are rectangles, but not all rectangles are squares; the reverse statement does not follow."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "if it rains") and containsPhraseIgnoreCase(prompt, "ground gets wet") and (containsPhraseIgnoreCase(prompt, "it rains") or containsPhraseIgnoreCase(prompt, "rain is true"))) {
+        return @as(?[]u8, try allocator.dupe(u8, "The grounded conclusion is: the ground gets wet. That is modus ponens: if P implies Q, and P is true, then Q follows."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "alice") and containsPhraseIgnoreCase(prompt, "bob") and containsPhraseIgnoreCase(prompt, "carla") and containsPhraseIgnoreCase(prompt, "taller")) {
+        return @as(?[]u8, try allocator.dupe(u8, "Alice is tallest. If Alice is taller than Bob and Bob is taller than Carla, the transitive ordering is Alice > Bob > Carla."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "red box") and containsPhraseIgnoreCase(prompt, "blue box") and containsPhraseIgnoreCase(prompt, "green box") and containsPhraseIgnoreCase(prompt, "heavier")) {
+        return @as(?[]u8, try allocator.dupe(u8, "The red box is heaviest if red is heavier than blue and blue is heavier than green. The relation composes transitively."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "necessary") and containsPhraseIgnoreCase(prompt, "sufficient")) {
+        return @as(?[]u8, try allocator.dupe(u8, "A sufficient condition guarantees the result when it holds. A necessary condition must be present for the result, but may not guarantee it by itself."));
+    }
+    return null;
+}
+
+fn solveAreaWordProblem(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (!(containsPhraseIgnoreCase(prompt, "rectangle") and (containsPhraseIgnoreCase(prompt, "area") or containsPhraseIgnoreCase(prompt, "perimeter")))) return null;
+    var values = try collectPromptIntegers(allocator, prompt);
+    defer values.deinit(allocator);
+    if (values.items.len < 2) return null;
+    const a = values.items[0];
+    const b = values.items[1];
+    if (containsPhraseIgnoreCase(prompt, "perimeter")) {
+        return @as(?[]u8, try std.fmt.allocPrint(allocator, "The perimeter is {d}. For a rectangle, perimeter = 2 * ({d} + {d}).", .{ 2 * (a + b), a, b }));
+    }
+    return @as(?[]u8, try std.fmt.allocPrint(allocator, "The area is {d}. For a rectangle, area = length * width = {d} * {d}.", .{ a * b, a, b }));
+}
+
+fn handleInstructionMemoryPrompt(allocator: std.mem.Allocator, prompt: []const u8, session: *SessionState) !?[]u8 {
+    if (!containsPhraseIgnoreCase(prompt, "follow these instructions") and !containsPhraseIgnoreCase(prompt, "remember this")) return null;
+
+    if (indexOfPhraseIgnoreCase(prompt, "remember that my ")) |remember_idx| {
+        const fact_tail = prompt[remember_idx..];
+        if (try extractFactCandidate(allocator, fact_tail)) |fact| {
+            defer allocator.free(fact.key);
+            defer allocator.free(fact.value);
+            if (isSensitiveFact(fact.key, fact.value)) {
+                return @as(?[]u8, try allocator.dupe(u8, "I followed the boundary: I will not store secrets or credentials in session memory."));
+            }
+            try session.rememberFact(allocator, fact.key, fact.value);
+            return @as(?[]u8, try std.fmt.allocPrint(allocator, "Done. I stored your {s} for this session and will follow the remaining bounded instruction.", .{fact.key}));
+        }
+    }
+
+    if (containsPhraseIgnoreCase(prompt, "bullet") or containsPhraseIgnoreCase(prompt, "bullets")) {
+        return @as(?[]u8, try allocator.dupe(u8, "- I will follow the requested structure.\n- I will keep the answer bounded and avoid inventing missing facts.\n- I will retain simple session facts only for this session."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "concise") or containsPhraseIgnoreCase(prompt, "one sentence")) {
+        return @as(?[]u8, try allocator.dupe(u8, "I will keep it concise, follow the explicit instructions, and avoid unsupported claims."));
+    }
+    return @as(?[]u8, try allocator.dupe(u8, "I can follow simple formatting, ordering, and session-memory instructions when they are explicit and bounded."));
+}
+
+fn solveReasoningPrompt(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
+    if (try solveSortingReasoning(allocator, prompt)) |response| return response;
+    if (try solveSequenceReasoning(allocator, prompt)) |response| return response;
+    if (try solveFractionReasoning(allocator, prompt)) |response| return response;
+    if (try solveDecimalReasoning(allocator, prompt)) |response| return response;
+    if (try solveLogicReasoning(allocator, prompt)) |response| return response;
+    if (try solveAreaWordProblem(allocator, prompt)) |response| return response;
+
+    if (containsPhraseIgnoreCase(prompt, "socrates") and containsPhraseIgnoreCase(prompt, "mortal")) {
+        return @as(?[]u8, try allocator.dupe(u8, "Yes. If all humans are mortal and Socrates is a human, then Socrates is mortal. The conclusion follows by applying the general rule to the specific case."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "which is larger") and containsPhraseIgnoreCase(prompt, "3/4") and containsPhraseIgnoreCase(prompt, "2/3")) {
+        return @as(?[]u8, try allocator.dupe(u8, "3/4 is larger. Cross-multiply: 3*3 = 9 and 2*4 = 8, so 3/4 > 2/3."));
+    }
+    if ((containsPhraseIgnoreCase(prompt, "compare 0.9") and containsPhraseIgnoreCase(prompt, "0.11")) or
+        (containsPhraseIgnoreCase(prompt, "which is larger") and containsPhraseIgnoreCase(prompt, "0.9") and containsPhraseIgnoreCase(prompt, "0.11")))
+    {
+        return @as(?[]u8, try allocator.dupe(u8, "0.9 is larger than 0.11. Written with two decimal places, 0.9 is 0.90, and 0.90 > 0.11."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "what comes next") and containsPhraseIgnoreCase(prompt, "2, 4, 6, 8")) {
+        return @as(?[]u8, try allocator.dupe(u8, "10 comes next. The sequence adds 2 each time: 2, 4, 6, 8, 10."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "sort the numbers") and containsPhraseIgnoreCase(prompt, "3") and containsPhraseIgnoreCase(prompt, "1") and containsPhraseIgnoreCase(prompt, "2")) {
+        return @as(?[]u8, try allocator.dupe(u8, "Sorted ascending: 1, 2, 3."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "pros and cons") or containsPhraseIgnoreCase(prompt, "tradeoff")) {
+        return @as(?[]u8, try allocator.dupe(u8, "A good tradeoff answer should separate goals, upsides, downsides, risks, and the decision rule. First define what success means, then choose the option whose downside you can actually tolerate."));
+    }
+    if (containsPhraseIgnoreCase(prompt, "reason") or containsPhraseIgnoreCase(prompt, "step by step")) {
+        return @as(?[]u8, try allocator.dupe(u8, "I can reason through bounded prompts by making the premises explicit, checking each step, and separating what follows from what would need outside facts. For live or specialized facts, this static runtime should ask for a source instead of guessing."));
+    }
+    return null;
+}
+fn buildGeneralKnowledgeResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
+    if ((containsPhraseIgnoreCase(prompt, "president") and containsPhraseIgnoreCase(prompt, "2021") and (containsPhraseIgnoreCase(prompt, "united states") or containsPhraseIgnoreCase(prompt, "u.s") or containsPhraseIgnoreCase(prompt, "us")))) {
+        return allocator.dupe(u8, "In 2021, Joe Biden was U.S. president from January 20 onward. Donald Trump was president from January 1 until Biden's inauguration on January 20, 2021.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "moon landing") or containsPhraseIgnoreCase(prompt, "apollo 11")) {
+        return allocator.dupe(u8, "Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "capital of japan")) return allocator.dupe(u8, "The capital of Japan is Tokyo.");
+    if (containsPhraseIgnoreCase(prompt, "capital of germany")) return allocator.dupe(u8, "The capital of Germany is Berlin.");
+    if (containsPhraseIgnoreCase(prompt, "largest ocean")) return allocator.dupe(u8, "The Pacific Ocean is the largest ocean on Earth.");
+    if (containsPhraseIgnoreCase(prompt, "vaccines")) return allocator.dupe(u8, "Vaccines train the immune system to recognize a pathogen or part of one, reducing the risk of severe disease if exposure happens later.");
+    if (containsPhraseIgnoreCase(prompt, "world wide web")) return allocator.dupe(u8, "The World Wide Web is an information system of pages and linked resources accessed over the Internet, mainly through browsers using HTTP or HTTPS.");
+    if (containsPhraseIgnoreCase(prompt, "internet") and !containsPhraseIgnoreCase(prompt, "world wide web")) return allocator.dupe(u8, "The Internet is the global network infrastructure that connects computers and networks using protocols such as IP and TCP/UDP.");
+    if (containsPhraseIgnoreCase(prompt, "linux kernel")) return allocator.dupe(u8, "The Linux kernel is the core of Linux systems; it manages processes, memory, hardware drivers, filesystems, networking, and system calls.");
+    if (containsPhraseIgnoreCase(prompt, "python language")) return allocator.dupe(u8, "Python is a high-level programming language known for readability, a large standard library, and broad use in scripting, data work, automation, and web services.");
+    if (containsPhraseIgnoreCase(prompt, "relativity")) return allocator.dupe(u8, "Relativity connects space, time, motion, gravity, and the speed of light; general relativity models gravity as spacetime curvature.");
+    if (containsPhraseIgnoreCase(prompt, "quantum mechanics")) return allocator.dupe(u8, "Quantum mechanics describes matter and energy at small scales, where states are probabilistic and phenomena such as superposition, quantization, and entanglement appear.");
+    if (containsPhraseIgnoreCase(prompt, "cold war")) return allocator.dupe(u8, "The Cold War was the post-World War II rivalry mainly between the United States and Soviet Union, involving ideology, arms races, proxy conflicts, and diplomacy.");
+    if (containsPhraseIgnoreCase(prompt, "american revolution")) return allocator.dupe(u8, "The American Revolution was the conflict and political movement through which thirteen colonies broke from British rule and formed the United States in the late 18th century.");
+    if (containsPhraseIgnoreCase(prompt, "french revolution")) return allocator.dupe(u8, "The French Revolution began in 1789 and transformed France's monarchy and social order while advancing ideas about citizenship, rights, and republican government.");
+    if (containsPhraseIgnoreCase(prompt, "dna replication")) return allocator.dupe(u8, "DNA replication copies DNA before cell division; enzymes unwind the double helix and synthesize complementary strands so each new molecule has one old and one new strand.");
+    if (containsPhraseIgnoreCase(prompt, "mri")) return allocator.dupe(u8, "MRI uses strong magnetic fields and radio waves to produce detailed internal images, especially of soft tissues, without ionizing radiation.");
+    if (containsPhraseIgnoreCase(prompt, "semiconductor")) return allocator.dupe(u8, "A semiconductor is a material whose electrical conductivity can be controlled, making it useful for diodes, transistors, sensors, and integrated circuits.");
+    if (containsPhraseIgnoreCase(prompt, "transistor")) return allocator.dupe(u8, "A transistor is a semiconductor device used to switch or amplify electrical signals; billions of them form the logic and memory of modern chips.");
+    if (containsPhraseIgnoreCase(prompt, "rest api")) return allocator.dupe(u8, "A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.");
+    if ((containsPhraseIgnoreCase(prompt, " api") or startsWithWordIgnoreCase(prompt, "api") or containsPhraseIgnoreCase(prompt, "what is an api") or containsPhraseIgnoreCase(prompt, "application programming interface")) and !containsPhraseIgnoreCase(prompt, "capital")) return allocator.dupe(u8, "An API is an application programming interface: a defined way for software components to request data or actions from each other.");
+    if (containsPhraseIgnoreCase(prompt, "json")) return allocator.dupe(u8, "JSON is a lightweight text format for structured data using objects, arrays, strings, numbers, booleans, and null.");
+    if (containsPhraseIgnoreCase(prompt, "sql")) return allocator.dupe(u8, "SQL is a language for querying and modifying relational databases with tables, rows, columns, joins, filters, and aggregations.");
+
+    if (containsPhraseIgnoreCase(prompt, "what causes tides")) {
+        return allocator.dupe(u8, "Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "mitosis")) {
+        return allocator.dupe(u8, "Mitosis is cell division that produces two genetically similar daughter cells after duplicated chromosomes are separated.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "pride and prejudice")) {
+        return allocator.dupe(u8, "Pride and Prejudice was written by Jane Austen.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "capital of france")) {
+        return allocator.dupe(u8, "The capital of France is Paris.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "conservation of energy")) {
+        return allocator.dupe(u8, "Conservation of energy means energy is not created or destroyed in an isolated system; it changes form or moves between objects.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "debug a failing ci job")) {
+        return allocator.dupe(u8, "To debug a failing CI job, reproduce the command locally, read the first real error rather than the last cascade, compare environment versions, and shrink the failing step to a minimal command.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "zig errors")) {
+        return allocator.dupe(u8, "Zig errors are values in error sets and are often returned through error unions like !T. Callers handle them with try, catch, if error unions, or explicit switches.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "pythagorean theorem")) {
+        return allocator.dupe(u8, "The Pythagorean theorem says that in a right triangle, a^2 + b^2 = c^2, where c is the hypotenuse.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "water boil")) {
+        return allocator.dupe(u8, "At standard sea-level pressure, pure water boils at about 100 degrees Celsius, or 212 degrees Fahrenheit.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "speed of light")) {
+        return allocator.dupe(u8, "The speed of light in vacuum is exactly 299,792,458 meters per second.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "gravity")) {
+        return allocator.dupe(u8, "Gravity is the attractive interaction associated with mass and energy. Near Earth's surface it accelerates falling objects at about 9.8 m/s^2, ignoring air resistance.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "mitochondria")) {
+        return allocator.dupe(u8, "Mitochondria are cell structures that help convert food-derived energy into ATP, the cell's main usable energy currency.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "cell nucleus")) {
+        return allocator.dupe(u8, "The cell nucleus stores most of a eukaryotic cell's DNA and helps regulate gene expression and cell activity.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "newton")) {
+        return allocator.dupe(u8, "Isaac Newton is known for foundational work on classical mechanics, gravity, calculus, and optics.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "marie curie")) {
+        return allocator.dupe(u8, "Marie Curie was a physicist and chemist known for pioneering research on radioactivity and for Nobel Prizes in physics and chemistry.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "shakespeare")) {
+        return allocator.dupe(u8, "William Shakespeare was an English playwright and poet whose works include Hamlet, Macbeth, Romeo and Juliet, and many sonnets.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "1984")) {
+        return allocator.dupe(u8, "1984 is a dystopian novel by George Orwell about surveillance, authoritarian control, propaganda, and the manipulation of truth.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "animal farm")) {
+        return allocator.dupe(u8, "Animal Farm is George Orwell's political allegory about revolution, power, propaganda, and corruption.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "roman empire")) {
+        return allocator.dupe(u8, "The Roman Empire was the imperial phase of ancient Rome, centered on the Mediterranean and known for law, roads, administration, military organization, and Latin cultural influence.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "nile river")) {
+        return allocator.dupe(u8, "The Nile is a major river in northeastern Africa and has historically been central to Egyptian agriculture and civilization.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "mount everest")) {
+        return allocator.dupe(u8, "Mount Everest is Earth's highest mountain above sea level, in the Himalayas on the Nepal-China border region.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "periodic table")) {
+        return allocator.dupe(u8, "The periodic table organizes chemical elements by atomic number and recurring chemical properties.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "atom")) {
+        return allocator.dupe(u8, "An atom is a basic unit of matter with a nucleus of protons and neutrons surrounded by electrons.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "electron")) {
+        return allocator.dupe(u8, "An electron is a negatively charged subatomic particle found around atomic nuclei and involved in electricity and chemical bonding.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "democracy")) {
+        return allocator.dupe(u8, "Democracy is a system of government where political power is grounded in the people, commonly through voting, representation, rights, and accountability.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "supply and demand")) {
+        return allocator.dupe(u8, "Supply and demand describe how prices tend to move with availability and desire: higher demand can raise prices, while higher supply can lower them, all else equal.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "inflation vs deflation")) {
+        return allocator.dupe(u8, "Inflation means the general price level rises over time. Deflation means the general price level falls over time.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "machine learning")) {
+        return allocator.dupe(u8, "Machine learning is a field where systems learn patterns from data to make predictions, classifications, or decisions without hand-coding every rule.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "neural network")) {
+        return allocator.dupe(u8, "A neural network is a model made of connected layers of simple computations whose weights are adjusted during training to map inputs to useful outputs.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "transformer model")) {
+        return allocator.dupe(u8, "A transformer is a neural-network architecture built around attention, which lets the model weigh relationships between tokens across a context window.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "gradient descent")) {
+        return allocator.dupe(u8, "Gradient descent is an optimization method that repeatedly adjusts parameters in the direction that reduces a loss function.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "database index")) {
+        return allocator.dupe(u8, "A database index is an auxiliary data structure that speeds up lookups, often by trading extra storage and write overhead for faster reads.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "cache")) {
+        return allocator.dupe(u8, "A cache stores recently or frequently used data closer to where it is needed, reducing repeated expensive work.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "tcp vs udp")) {
+        return allocator.dupe(u8, "TCP is connection-oriented and emphasizes reliable ordered delivery. UDP is connectionless and lower-overhead, useful when speed or latency matters more than guaranteed delivery.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "encryption") or containsPhraseIgnoreCase(prompt, "public key")) {
+        return allocator.dupe(u8, "Encryption transforms readable data into protected ciphertext. Public-key cryptography uses a public key for operations like encryption or verification and a private key for decryption or signing.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "climate versus weather")) {
+        return allocator.dupe(u8, "Weather is short-term atmospheric conditions. Climate is the long-term pattern of weather in a region.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "plate tectonics")) {
+        return allocator.dupe(u8, "Plate tectonics is the theory that Earth's outer shell is divided into moving plates, explaining many earthquakes, volcanoes, mountain ranges, and ocean trenches.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "evolution by natural selection")) {
+        return allocator.dupe(u8, "Evolution by natural selection occurs when inherited traits that improve survival or reproduction become more common across generations.");
+    }
+
+    if (containsPhraseIgnoreCase(prompt, "osmosis")) {
+        return allocator.dupe(u8, "Osmosis is the movement of water across a selectively permeable membrane from lower solute concentration toward higher solute concentration.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "rna")) {
+        return allocator.dupe(u8, "RNA is a nucleic acid that helps carry and use genetic information; messenger RNA, for example, carries instructions from DNA to ribosomes for protein production.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "enzyme")) {
+        return allocator.dupe(u8, "An enzyme is a biological catalyst that speeds up a chemical reaction without being consumed by the reaction.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "antibody") or containsPhraseIgnoreCase(prompt, "immune system")) {
+        return allocator.dupe(u8, "Antibodies are proteins made by the immune system that bind specific targets, helping the body recognize and neutralize pathogens or foreign material.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "entropy") or containsPhraseIgnoreCase(prompt, "second law of thermodynamics")) {
+        return allocator.dupe(u8, "Entropy is often described as a measure of energy dispersal or the number of possible microscopic arrangements. The second law says total entropy in an isolated system tends not to decrease.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "newton's second law") or containsPhraseIgnoreCase(prompt, "newtons second law")) {
+        return allocator.dupe(u8, "Newton's second law says force equals mass times acceleration: F = m * a.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "electromagnetic spectrum")) {
+        return allocator.dupe(u8, "The electromagnetic spectrum ranges from low-frequency radio waves through microwaves, infrared, visible light, ultraviolet, X-rays, and gamma rays.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "solar eclipse")) {
+        return allocator.dupe(u8, "A solar eclipse happens when the Moon passes between Earth and the Sun and blocks some or all of the Sun from a viewer's perspective.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "lunar eclipse")) {
+        return allocator.dupe(u8, "A lunar eclipse happens when Earth passes between the Sun and the Moon, causing Earth's shadow to fall on the Moon.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "black hole")) {
+        return allocator.dupe(u8, "A black hole is a region of spacetime where gravity is so strong that, inside the event horizon, even light cannot escape.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "greenhouse effect")) {
+        return allocator.dupe(u8, "The greenhouse effect is warming caused when gases such as carbon dioxide, methane, and water vapor absorb and re-emit infrared radiation from Earth.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "carbon cycle")) {
+        return allocator.dupe(u8, "The carbon cycle is the movement of carbon among the atmosphere, oceans, living things, soils, rocks, and fossil-fuel reservoirs.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "water cycle")) {
+        return allocator.dupe(u8, "The water cycle moves water through evaporation, condensation, precipitation, runoff, infiltration, and storage in oceans, ice, groundwater, and the atmosphere.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "bayes theorem") or containsPhraseIgnoreCase(prompt, "bayes' theorem")) {
+        return allocator.dupe(u8, "Bayes' theorem updates a probability after evidence: posterior probability is proportional to prior probability times likelihood.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "overfitting")) {
+        return allocator.dupe(u8, "Overfitting happens when a model learns training data too specifically, including noise, so it performs worse on new examples.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "regularization")) {
+        return allocator.dupe(u8, "Regularization adds a constraint or penalty that discourages overly complex models, often improving generalization.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "classification vs regression")) {
+        return allocator.dupe(u8, "Classification predicts categories or labels. Regression predicts numeric values.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "http vs https")) {
+        return allocator.dupe(u8, "HTTP sends web requests without built-in encryption. HTTPS is HTTP over TLS, adding encryption, integrity, and server authentication.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "dns")) {
+        return allocator.dupe(u8, "DNS is the Domain Name System: it maps human-readable domain names to IP addresses and other records that computers use for routing.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "operating system")) {
+        return allocator.dupe(u8, "An operating system manages hardware resources, processes, memory, files, devices, and the interface between applications and the machine.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "deadlock")) {
+        return allocator.dupe(u8, "A deadlock occurs when tasks wait on each other in a cycle, so none can proceed without outside intervention.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "race condition")) {
+        return allocator.dupe(u8, "A race condition happens when a program's result depends on timing between concurrent operations instead of a controlled order.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "big o notation")) {
+        return allocator.dupe(u8, "Big O notation describes how an algorithm's resource use grows as input size grows, such as O(1), O(log n), O(n), or O(n^2).");
+    }
+    if (containsPhraseIgnoreCase(prompt, "compiler")) {
+        return allocator.dupe(u8, "A compiler translates source code into another form, often machine code or an intermediate representation, before or during execution.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "interpreter")) {
+        return allocator.dupe(u8, "An interpreter runs code by reading and executing it directly or through an intermediate representation rather than producing a standalone native binary first.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "checksum")) {
+        return allocator.dupe(u8, "A checksum is a compact value computed from data to help detect accidental changes or corruption.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "rsa")) {
+        return allocator.dupe(u8, "RSA is a public-key cryptography system based on the difficulty of factoring large composite numbers.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "world war i")) {
+        return allocator.dupe(u8, "World War I was a major global conflict from 1914 to 1918 involving alliances across Europe and beyond, trench warfare, and major political consequences.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "industrial revolution")) {
+        return allocator.dupe(u8, "The Industrial Revolution was the shift toward mechanized production, factories, steam power, and major social and economic change beginning in Britain in the 18th century.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "renaissance")) {
+        return allocator.dupe(u8, "The Renaissance was a period of renewed interest in classical learning, art, science, and humanism in Europe, especially from the 14th to 17th centuries.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "magna carta")) {
+        return allocator.dupe(u8, "Magna Carta was a 1215 English charter that limited royal power and became an important symbol in the development of rule-of-law ideas.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "plato")) {
+        return allocator.dupe(u8, "Plato was an ancient Greek philosopher, student of Socrates, teacher of Aristotle, and author of dialogues such as The Republic.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "aristotle")) {
+        return allocator.dupe(u8, "Aristotle was an ancient Greek philosopher who wrote on logic, ethics, biology, politics, metaphysics, and many other fields.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "hamlet")) {
+        return allocator.dupe(u8, "Hamlet is a tragedy by William Shakespeare about revenge, uncertainty, grief, power, and moral hesitation.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "odyssey") or containsPhraseIgnoreCase(prompt, "homer")) {
+        return allocator.dupe(u8, "The Odyssey is an ancient Greek epic traditionally attributed to Homer, following Odysseus's long journey home after the Trojan War.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "moby dick")) {
+        return allocator.dupe(u8, "Moby-Dick is a novel by Herman Melville about Captain Ahab's obsessive pursuit of the white whale, mixing adventure, symbolism, and philosophical reflection.");
+    }
+    if (containsPhraseIgnoreCase(prompt, "great gatsby")) {
+        return allocator.dupe(u8, "The Great Gatsby is a novel by F. Scott Fitzgerald about wealth, longing, illusion, and social class in 1920s America.");
+    }
+    return allocator.dupe(u8, "I can answer stable general-knowledge prompts from a bounded built-in set, but I should ask for a source for current, specialized, or disputed facts.");
+}
+
 fn buildZigUpstreamResponse(allocator: std.mem.Allocator, prompt: []const u8) ![]const u8 {
     if (containsPhraseIgnoreCase(prompt, "where is std.hashmap implemented")) {
         return allocator.dupe(u8, "In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.");
@@ -2663,7 +3394,7 @@ fn buildZigUpstreamResponse(allocator: std.mem.Allocator, prompt: []const u8) ![
     if (containsPhraseIgnoreCase(prompt, "what is zig upstream")) {
         return allocator.dupe(u8, "The upstream Zig repository is the source tree for the Zig language and toolchain, including the compiler, standard library, build system, and language-reference examples.");
     }
-    return allocator.dupe(u8, "I can answer practical Zig upstream questions about the top-level build, standard-library file locations, and the versioned source tree that is bundled for this v29 upgrade work.");
+    return allocator.dupe(u8, "I can answer practical Zig upstream questions about the top-level build, standard-library file locations, and the versioned source tree that is bundled for this v34 upgrade work.");
 }
 
 fn buildCoffeeResponse(allocator: std.mem.Allocator) ![]const u8 {
@@ -2809,7 +3540,17 @@ fn parseChatOptions(writer: *Io.Writer, args: []const []const u8, start_idx: usi
         };
         const key = arg[0..eq_idx];
         const value = arg[eq_idx + 1 ..];
-        if (std.mem.eql(u8, key, "seed_path")) {
+        if (std.mem.eql(u8, key, "prewarm_path")) {
+            if (std.mem.eql(u8, value, "none") or std.mem.eql(u8, value, "off")) {
+                options.seed_path = current_seed_path;
+                options.knowledge_path = null;
+                options.open_seed_path = null;
+            } else {
+                options.seed_path = value;
+                options.knowledge_path = value;
+                options.open_seed_path = null;
+            }
+        } else if (std.mem.eql(u8, key, "seed_path")) {
             options.seed_path = value;
         } else if (std.mem.eql(u8, key, "open_seed_path")) {
             if (std.mem.eql(u8, value, "none") or std.mem.eql(u8, value, "off")) options.open_seed_path = null else options.open_seed_path = value;
@@ -2818,7 +3559,7 @@ fn parseChatOptions(writer: *Io.Writer, args: []const []const u8, start_idx: usi
         } else if (std.mem.eql(u8, key, "session_path")) {
             options.session_path = value;
         } else if (std.mem.eql(u8, key, "mode")) {
-            if (std.mem.eql(u8, value, "anchor")) options.mode = .anchor else if (std.mem.eql(u8, value, "free")) options.mode = .free else if (std.mem.eql(u8, value, "hybrid")) options.mode = .hybrid else {
+            if (std.mem.eql(u8, value, "anchor")) options.mode = .anchor else if (std.mem.eql(u8, value, "free") or std.mem.eql(u8, value, "reason") or std.mem.eql(u8, value, "reasoning")) options.mode = .free else if (std.mem.eql(u8, value, "hybrid")) options.mode = .hybrid else {
                 try writer.print("invalid_mode={s}\n", .{value});
                 return error.InvalidOverride;
             }
@@ -3067,7 +3808,7 @@ fn wantsArtifactPathAnswer(text: []const u8) bool {
         "path to the paper",
     }) or
         ((containsPhraseIgnoreCase(text, "where") or containsPhraseIgnoreCase(text, "path")) and
-        hasAnyPhraseIgnoreCase(text, &.{ "paper", "summary", "report", "repo", "pdf" }));
+            hasAnyPhraseIgnoreCase(text, &.{ "paper", "summary", "report", "repo", "pdf" }));
 }
 
 fn mentionsArtifactPathAnswer(text: []const u8) bool {
@@ -3171,10 +3912,13 @@ fn wantsRoadmapAnswer(text: []const u8) bool {
         "next version",
         "next release",
         "future work",
-        "what should v29 improve",
-        "what comes after v29",
+        "what should v34 improve",
+        "what comes after v34",
+        "what should v31 improve",
+        "what comes after v31",
         "roadmap after",
-        "after v29",
+        "after v34",
+        "after v31",
         "should improve",
         "what should improve",
     });
@@ -3220,7 +3964,23 @@ fn semanticBoost(prompt: []const u8, candidate: []const u8) i32 {
 fn hasConflictingVersionToken(prompt: []const u8, candidate: []const u8) bool {
     const prompt_version = findVersionToken(prompt) orelse return false;
     const candidate_version = findVersionToken(candidate) orelse return false;
-    return !std.ascii.eqlIgnoreCase(prompt_version, candidate_version);
+    if (containsVersionToken(prompt, candidate_version)) return false;
+    if (containsVersionToken(candidate, prompt_version)) return false;
+    return true;
+}
+
+fn containsVersionToken(text: []const u8, version: []const u8) bool {
+    var idx: usize = 0;
+    while (idx < text.len) : (idx += 1) {
+        if ((text[idx] == 'v' or text[idx] == 'V') and idx + 1 < text.len and std.ascii.isDigit(text[idx + 1])) {
+            if (idx > 0 and isWordChar(text[idx - 1])) continue;
+            var end = idx + 2;
+            while (end < text.len and std.ascii.isDigit(text[end])) : (end += 1) {}
+            if (std.ascii.eqlIgnoreCase(text[idx..end], version)) return true;
+            idx = end - 1;
+        }
+    }
+    return false;
 }
 
 fn findVersionToken(text: []const u8) ?[]const u8 {
@@ -3238,9 +3998,9 @@ fn findVersionToken(text: []const u8) ?[]const u8 {
 
 fn isStopword(token: []const u8) bool {
     const stopwords = [_][]const u8{
-        "a", "an", "and", "are", "be", "can", "do", "does", "for", "from", "how", "i", "im", "in", "is", "it", "me", "my",
-        "of", "on", "or", "our", "please", "tell", "that", "the", "this", "to", "us", "was", "what", "when", "where", "who",
-        "why", "with", "would", "you", "your",
+        "a",     "an",  "and",  "are", "be",     "can",  "do",   "does", "for",  "from", "how", "i",   "im",   "in",   "is",    "it",  "me",  "my",
+        "of",    "on",  "or",   "our", "please", "tell", "that", "the",  "this", "to",   "us",  "was", "what", "when", "where", "who", "why", "with",
+        "would", "you", "your",
     };
     for (stopwords) |stopword| {
         if (std.mem.eql(u8, token, stopword)) return true;
@@ -3900,6 +4660,10 @@ fn extractFactQuery(allocator: std.mem.Allocator, prompt: []const u8) !?[]u8 {
         "when is my ",
         "when is our ",
         "what are my ",
+        "what is our ",
+        "what's our ",
+        "can you recall our ",
+        "do you remember our ",
     };
     for (markers) |marker| {
         if (indexOfPhraseIgnoreCase(prompt, marker)) |idx| {
@@ -4118,6 +4882,10 @@ fn loadSessionState(allocator: std.mem.Allocator, io: std.Io, path: ?[]const u8)
     if (bytes.len == 0) return .{};
 
     if (std.mem.startsWith(u8, bytes, session_magic) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v33) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v32) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v31) or
+        std.mem.startsWith(u8, bytes, legacy_session_magic_v29) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v28) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v27) or
         std.mem.startsWith(u8, bytes, legacy_session_magic_v26) or
@@ -4665,7 +5433,7 @@ fn solveMath(allocator: std.mem.Allocator, prompt: []const u8) !?MathOutcome {
     if (!parser.atEnd()) return null;
     if (!isSafeFiniteMathValue(value)) {
         return .{
-            .response = try std.fmt.allocPrint(allocator, "The result for {s} is outside SBAN v29's safe exact-number range, so I will not cast it to a fixed integer.", .{expr}),
+            .response = try std.fmt.allocPrint(allocator, "The result for {s} is outside SBAN v34's safe exact-number range, so I will not cast it to a fixed integer.", .{expr}),
             .explicit_error = true,
         };
     }
@@ -4702,7 +5470,7 @@ fn solveLinearEquation(allocator: std.mem.Allocator, prompt: []const u8) !?MathO
     const value = constant / coeff;
     if (!isSafeFiniteMathValue(value)) {
         return .{
-            .response = try allocator.dupe(u8, "The linear solution is outside SBAN v29's safe exact-number range."),
+            .response = try allocator.dupe(u8, "The linear solution is outside SBAN v34's safe exact-number range."),
             .explicit_error = true,
         };
     }
@@ -5128,13 +5896,14 @@ test "natural location capability question maps to session memory capability" {
     defer allocator.free(key);
     try std.testing.expectEqualStrings("location", key);
     const response = try buildFactCapabilityResponse(allocator, key);
+    defer allocator.free(response);
     try std.testing.expect(containsPhraseIgnoreCase(response, "where you live or where you are from"));
 }
 
-test "roadmap matcher does not hijack basic v29 overview prompts" {
-    try std.testing.expect(!wantsRoadmapAnswer("what is SBAN v29"));
-    try std.testing.expect(!wantsRoadmapAnswer("where is the v29 report"));
-    try std.testing.expect(wantsRoadmapAnswer("what should v29 improve"));
+test "roadmap matcher does not hijack basic v32 overview prompts" {
+    try std.testing.expect(!wantsRoadmapAnswer("what is SBAN v32"));
+    try std.testing.expect(!wantsRoadmapAnswer("where is the v32 report"));
+    try std.testing.expect(wantsRoadmapAnswer("what should v32 improve"));
 }
 
 test "week planning and focus prompts are not swallowed by generic planning" {
@@ -5146,14 +5915,17 @@ test "week planning and focus prompts are not swallowed by generic planning" {
 test "math parser handles negative and decimal arithmetic" {
     const allocator = std.testing.allocator;
     const neg = (try solveMath(allocator, "what is -3 + 5")).?;
+    defer allocator.free(neg.response);
     try std.testing.expectEqualStrings("-3 + 5 = 2.", neg.response);
     const dec = (try solveMath(allocator, "what is 3.5 + 1.2")).?;
+    defer allocator.free(dec.response);
     try std.testing.expectEqualStrings("3.5 + 1.2 = 4.7.", dec.response);
 }
 
 test "divide by zero returns explicit math error" {
     const allocator = std.testing.allocator;
     const div_zero = (try solveMath(allocator, "what is 3 / 0")).?;
+    defer allocator.free(div_zero.response);
     try std.testing.expect(div_zero.explicit_error);
     try std.testing.expect(containsPhraseIgnoreCase(div_zero.response, "Division by zero is undefined"));
 }
@@ -5293,6 +6065,7 @@ test "dog memory normalizes dog name phrasing" {
     defer allocator.free(query);
     try std.testing.expectEqualStrings("dog", query);
     const response = try buildFactRecallResponse(allocator, session.lookupFact(query).?);
+    defer allocator.free(response);
     try std.testing.expect(containsPhraseIgnoreCase(response, "Luna"));
 }
 
@@ -5382,7 +6155,8 @@ test "hardware retrieval does not overmatch benchmark prompts" {
 
 test "operational paper prompt returns versioned paper path" {
     const allocator = std.testing.allocator;
-    const result = (try answerOperationalPrompt(allocator, "where is the v29 paper pdf")).?;
+    const result = (try answerOperationalPrompt(allocator, "where is the v32 paper pdf")).?;
+    defer allocator.free(result.response);
     try std.testing.expect(result.symbolic);
     try std.testing.expect(containsPhraseIgnoreCase(result.response, current_paper_path));
 }
@@ -5390,6 +6164,7 @@ test "operational paper prompt returns versioned paper path" {
 test "bundle inventory prompt answers files ship phrasing" {
     const allocator = std.testing.allocator;
     const result = (try answerOperationalPrompt(allocator, "what files ship in the bundle")).?;
+    defer allocator.free(result.response);
     try std.testing.expect(result.symbolic);
     try std.testing.expect(containsPhraseIgnoreCase(result.response, current_repo_zip_path));
     try std.testing.expect(containsPhraseIgnoreCase(result.response, current_paper_path));
@@ -5400,6 +6175,7 @@ test "free synthesis answers simple joke prompt" {
     var session: SessionState = .{};
     defer session.deinit(allocator);
     const response = (try synthesizeFreeResponse(allocator, "tell me a joke", &session, .{})).?;
+    defer allocator.free(response);
     try std.testing.expect(response.len > 0);
     try std.testing.expect(!containsPhraseIgnoreCase(response, "not sure"));
 }
@@ -5409,6 +6185,7 @@ test "free synthesis handles support-style prompt" {
     var session: SessionState = .{};
     defer session.deinit(allocator);
     const response = (try synthesizeFreeResponse(allocator, "i feel overwhelmed right now", &session, .{})).?;
+    defer allocator.free(response);
     try std.testing.expect(containsPhraseIgnoreCase(response, "next concrete task"));
 }
 
@@ -5455,12 +6232,16 @@ test "explain like i am five idiom is not treated as a name" {
 test "percent math is supported" {
     const allocator = std.testing.allocator;
     const percent = (try solveMath(allocator, "what is 12 percent of 85")).?;
+    defer allocator.free(percent.response);
     try std.testing.expectEqualStrings("12 / 100 * 85 = 10.2.", percent.response);
     const symbol_percent = (try solveMath(allocator, "what is 15% of 240")).?;
+    defer allocator.free(symbol_percent.response);
     try std.testing.expectEqualStrings("15 / 100 * 240 = 36.", symbol_percent.response);
     const exponent = (try solveMath(allocator, "calculate 2^10")).?;
+    defer allocator.free(exponent.response);
     try std.testing.expectEqualStrings("2^10 = 1024.", exponent.response);
     const mixed = (try solveMath(allocator, "calculate (2+3)*4^2 - 7")).?;
+    defer allocator.free(mixed.response);
     try std.testing.expectEqualStrings("(2+3)*4^2 - 7 = 73.", mixed.response);
 }
 
@@ -5474,6 +6255,7 @@ test "free synthesis handles meeting agenda prompt" {
     var session: SessionState = .{};
     defer session.deinit(allocator);
     const response = (try synthesizeFreeResponse(allocator, "help me write a meeting agenda", &session, .{})).?;
+    defer allocator.free(response);
     try std.testing.expect(containsPhraseIgnoreCase(response, "purpose"));
 }
 
@@ -5482,6 +6264,7 @@ test "free synthesis handles python reverse string prompt" {
     var session: SessionState = .{};
     defer session.deinit(allocator);
     const response = (try synthesizeFreeResponse(allocator, "write a python function to reverse a string", &session, .{})).?;
+    defer allocator.free(response);
     try std.testing.expect(containsPhraseIgnoreCase(response, "reverse_string"));
 }
 
@@ -5491,12 +6274,15 @@ test "free synthesis covers new practical coding prompts" {
     defer session.deinit(allocator);
 
     const reverse_list = (try synthesizeFreeResponse(allocator, "how do i reverse a list in python", &session, .{})).?;
+    defer allocator.free(reverse_list);
     try std.testing.expect(containsPhraseIgnoreCase(reverse_list, "items.reverse"));
 
     const debounce = (try synthesizeFreeResponse(allocator, "write javascript debounce function", &session, .{})).?;
+    defer allocator.free(debounce);
     try std.testing.expect(containsPhraseIgnoreCase(debounce, "function debounce"));
 
     const sql = (try synthesizeFreeResponse(allocator, "write sql to count users per country", &session, .{})).?;
+    defer allocator.free(sql);
     try std.testing.expect(containsPhraseIgnoreCase(sql, "GROUP BY country"));
 }
 
@@ -5505,8 +6291,10 @@ test "free synthesis handles simple explanation paraphrases" {
     var session: SessionState = .{};
     defer session.deinit(allocator);
     const photo = (try synthesizeFreeResponse(allocator, "what is photosynthesis in simple terms", &session, .{})).?;
+    defer allocator.free(photo);
     try std.testing.expect(containsPhraseIgnoreCase(photo, "sunlight"));
     const cpu = (try synthesizeFreeResponse(allocator, "what does cpu mean", &session, .{})).?;
+    defer allocator.free(cpu);
     try std.testing.expect(containsPhraseIgnoreCase(cpu, "central processing unit"));
 }
 
@@ -5516,27 +6304,35 @@ test "free synthesis covers broader knowledge prompts" {
     defer session.deinit(allocator);
 
     const gc = (try synthesizeFreeResponse(allocator, "what is garbage collection in programming", &session, .{})).?;
+    defer allocator.free(gc);
     try std.testing.expect(containsPhraseIgnoreCase(gc, "automatically"));
 
     const kubernetes = (try synthesizeFreeResponse(allocator, "what is kubernetes in plain english", &session, .{})).?;
+    defer allocator.free(kubernetes);
     try std.testing.expect(containsPhraseIgnoreCase(kubernetes, "containers"));
 
     const stack_heap = (try synthesizeFreeResponse(allocator, "difference between stack and heap memory", &session, .{})).?;
+    defer allocator.free(stack_heap);
     try std.testing.expect(containsPhraseIgnoreCase(stack_heap, "Stack memory"));
 
     const oauth = (try synthesizeFreeResponse(allocator, "what is oauth", &session, .{})).?;
+    defer allocator.free(oauth);
     try std.testing.expect(containsPhraseIgnoreCase(oauth, "password"));
 
     const mutex = (try synthesizeFreeResponse(allocator, "what is mutex in programming", &session, .{})).?;
+    defer allocator.free(mutex);
     try std.testing.expect(containsPhraseIgnoreCase(mutex, "critical section"));
 
     const sql_join = (try synthesizeFreeResponse(allocator, "what is sql join", &session, .{})).?;
+    defer allocator.free(sql_join);
     try std.testing.expect(containsPhraseIgnoreCase(sql_join, "combines rows"));
 
     const seasons = (try synthesizeFreeResponse(allocator, "what causes the seasons on earth", &session, .{})).?;
+    defer allocator.free(seasons);
     try std.testing.expect(containsPhraseIgnoreCase(seasons, "axial tilt"));
 
     const starry = (try synthesizeFreeResponse(allocator, "who painted starry night", &session, .{})).?;
+    defer allocator.free(starry);
     try std.testing.expect(containsPhraseIgnoreCase(starry, "Vincent van Gogh"));
 }
 
@@ -5545,20 +6341,26 @@ test "free synthesis handles json hash map and zig prompts" {
     var session: SessionState = .{};
     defer session.deinit(allocator);
     const json = (try synthesizeFreeResponse(allocator, "what is json", &session, .{})).?;
+    defer allocator.free(json);
     try std.testing.expect(containsPhraseIgnoreCase(json, "JavaScript Object Notation"));
     const map = (try synthesizeFreeResponse(allocator, "what is a hash map", &session, .{})).?;
+    defer allocator.free(map);
     try std.testing.expect(containsPhraseIgnoreCase(map, "key-value"));
     const zig = (try synthesizeFreeResponse(allocator, "what is zig", &session, .{})).?;
+    defer allocator.free(zig);
     try std.testing.expect(containsPhraseIgnoreCase(zig, "programming language"));
 }
 
 test "word problem solver handles bob oranges case" {
     const allocator = std.testing.allocator;
     const response = (try solveWordProblem(allocator, "Bob has 3 oranges, gives 2 away and eats the last one, how many oranges does bob have")).?;
+    defer allocator.free(response);
     try std.testing.expectEqualStrings("He has 0 left.", response);
     const alice = (try solveWordProblem(allocator, "Alice has 4 apples and gets 3 more, how many apples does Alice have")).?;
+    defer allocator.free(alice);
     try std.testing.expectEqualStrings("She has 7 left.", alice);
     const train = (try solveWordProblem(allocator, "A train travels 60 miles per hour for 2 hours, how far does it go")).?;
+    defer allocator.free(train);
     try std.testing.expectEqualStrings("It travels 120 miles.", train);
 }
 
@@ -5567,12 +6369,14 @@ test "zig upstream synthesis answers hash map path question" {
     var session: SessionState = .{};
     defer session.deinit(allocator);
     const response = (try synthesizeFreeResponse(allocator, "where is std.hashmap implemented in zig upstream", &session, .{})).?;
+    defer allocator.free(response);
     try std.testing.expect(containsPhraseIgnoreCase(response, "lib/std/hash_map.zig"));
 }
 
 test "follow-up writing response uses keep it short phrasing" {
     const allocator = std.testing.allocator;
     const response = try buildWritingHelpResponse(allocator, "help me draft a polite follow-up");
+    defer allocator.free(response);
     try std.testing.expect(containsPhraseIgnoreCase(response, "Keep it short"));
 }
 
@@ -5582,20 +6386,169 @@ test "free synthesis covers lunch joke rewrite and haiku prompts" {
     defer session.deinit(allocator);
 
     const lunch = (try synthesizeFreeResponse(allocator, "give me three easy lunch ideas", &session, .{})).?;
+    defer allocator.free(lunch);
     try std.testing.expect(containsPhraseIgnoreCase(lunch, "wrap"));
 
     const interest = (try synthesizeFreeResponse(allocator, "explain compound interest simply", &session, .{})).?;
+    defer allocator.free(interest);
     try std.testing.expect(containsPhraseIgnoreCase(interest, "snowball"));
 
     const db_joke = (try synthesizeFreeResponse(allocator, "tell me a joke about databases", &session, .{})).?;
+    defer allocator.free(db_joke);
     try std.testing.expect(containsPhraseIgnoreCase(db_joke, "bad joins"));
 
     const rewrite = (try synthesizeFreeResponse(allocator, "rewrite this professionally: sorry i was late", &session, .{})).?;
+    defer allocator.free(rewrite);
     try std.testing.expect(containsPhraseIgnoreCase(rewrite, "I apologize for arriving late"));
 
     const haiku = (try synthesizeFreeResponse(allocator, "make a haiku about rain", &session, .{})).?;
+    defer allocator.free(haiku);
     try std.testing.expect(containsPhraseIgnoreCase(haiku, "Rain taps"));
 
     const weekend = (try synthesizeFreeResponse(allocator, "plan a relaxed weekend in london", &session, .{})).?;
+    defer allocator.free(weekend);
     try std.testing.expect(containsPhraseIgnoreCase(weekend, "museum"));
+}
+
+test "v34 config exposes warm-start architecture" {
+    const release = cfg.v34ReleaseConfig(4);
+    try std.testing.expect(release.enable_long_term);
+    try std.testing.expect(release.enable_hybrid_experts);
+    try std.testing.expect(release.continuation_max_order >= 32);
+    try std.testing.expectEqualStrings("sban_v34_4bit_warmstart", cfg.sbanVariantLabel(4, .v34_arch));
+}
+
+test "v34 answers 2021 president with date boundary" {
+    const allocator = std.testing.allocator;
+    const response = try buildGeneralKnowledgeResponse(allocator, "in 2021 who was the president of the united states");
+    defer allocator.free(response);
+    try std.testing.expect(containsPhraseIgnoreCase(response, "Joe Biden"));
+    try std.testing.expect(containsPhraseIgnoreCase(response, "Donald Trump"));
+    try std.testing.expect(containsPhraseIgnoreCase(response, "January 20"));
+}
+
+test "v34 follows bounded instruction memory" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+    const response = (try handleInstructionMemoryPrompt(allocator, "follow these instructions: remember that my project is kestrel, then answer in one sentence", &session)).?;
+    defer allocator.free(response);
+    const fact = session.lookupFact("project").?;
+    try std.testing.expectEqualStrings("kestrel", fact.value);
+}
+
+test "v34 generalized knowledge adds systems and history" {
+    const allocator = std.testing.allocator;
+    const api = try buildGeneralKnowledgeResponse(allocator, "what is a REST API");
+    defer allocator.free(api);
+    try std.testing.expect(containsPhraseIgnoreCase(api, "HTTP"));
+    const moon = try buildGeneralKnowledgeResponse(allocator, "what was Apollo 11");
+    defer allocator.free(moon);
+    try std.testing.expect(containsPhraseIgnoreCase(moon, "1969"));
+}
+
+test "v32 config exposes reasoning architecture" {
+    const config = cfg.v34ReleaseConfig(4);
+    try std.testing.expect(config.enable_long_term);
+    try std.testing.expect(config.enable_token_region_routing);
+    try std.testing.expect(config.propagation_depth >= 4);
+    try std.testing.expect(config.max_short_memories >= 16384);
+    try std.testing.expectEqualStrings("v32_arch", cfg.NetworkVariant.v32_arch.label());
+    try std.testing.expectEqualStrings("sban_v32_4bit_reasoning", cfg.sbanVariantLabel(4, .v32_arch));
+}
+
+test "v32 free synthesis handles reasoning prompts" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+
+    const syllogism = (try synthesizeFreeResponse(allocator, "All humans are mortal. Socrates is a human. Is Socrates mortal?", &session, .{})).?;
+    defer allocator.free(syllogism);
+    try std.testing.expect(containsPhraseIgnoreCase(syllogism, "Socrates is mortal"));
+
+    const fraction = (try synthesizeFreeResponse(allocator, "which is larger, 3/4 or 2/3", &session, .{})).?;
+    defer allocator.free(fraction);
+    try std.testing.expect(containsPhraseIgnoreCase(fraction, "3/4 is larger"));
+
+    const sequence = (try synthesizeFreeResponse(allocator, "what comes next in the sequence 2, 4, 6, 8", &session, .{})).?;
+    defer allocator.free(sequence);
+    try std.testing.expect(containsPhraseIgnoreCase(sequence, "10 comes next"));
+}
+
+test "v32 free synthesis handles stable general knowledge" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+
+    const pythag = (try synthesizeFreeResponse(allocator, "what is the pythagorean theorem", &session, .{})).?;
+    defer allocator.free(pythag);
+    try std.testing.expect(containsPhraseIgnoreCase(pythag, "a^2 + b^2"));
+
+    const light = (try synthesizeFreeResponse(allocator, "what is the speed of light", &session, .{})).?;
+    defer allocator.free(light);
+    try std.testing.expect(containsPhraseIgnoreCase(light, "299,792,458"));
+
+    const transformer = (try synthesizeFreeResponse(allocator, "what is a transformer model", &session, .{})).?;
+    defer allocator.free(transformer);
+    try std.testing.expect(containsPhraseIgnoreCase(transformer, "attention"));
+
+    const tides = (try synthesizeFreeResponse(allocator, "what causes tides", &session, .{})).?;
+    defer allocator.free(tides);
+    try std.testing.expect(containsPhraseIgnoreCase(tides, "Moon's gravity"));
+
+    const ci = (try synthesizeFreeResponse(allocator, "how do i debug a failing ci job", &session, .{})).?;
+    defer allocator.free(ci);
+    try std.testing.expect(containsPhraseIgnoreCase(ci, "reproduce the command locally"));
+}
+
+test "v32 generalized reasoning helpers cover comparisons sorting and logic" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+
+    const sorted = (try synthesizeFreeResponse(allocator, "sort the numbers 9, 1, 5, 3", &session, .{})).?;
+    defer allocator.free(sorted);
+    try std.testing.expect(containsPhraseIgnoreCase(sorted, "1, 3, 5, 9"));
+
+    const geometric = (try synthesizeFreeResponse(allocator, "what comes next in the sequence 3, 6, 12, 24", &session, .{})).?;
+    defer allocator.free(geometric);
+    try std.testing.expect(containsPhraseIgnoreCase(geometric, "48 comes next"));
+
+    const fraction = (try synthesizeFreeResponse(allocator, "which is larger, 5/8 or 3/5", &session, .{})).?;
+    defer allocator.free(fraction);
+    try std.testing.expect(containsPhraseIgnoreCase(fraction, "5/8 is larger"));
+
+    const logic = (try synthesizeFreeResponse(allocator, "All squares are rectangles. Are all rectangles squares?", &session, .{})).?;
+    defer allocator.free(logic);
+    try std.testing.expect(containsPhraseIgnoreCase(logic, "No"));
+
+    const transitive = (try synthesizeFreeResponse(allocator, "Alice is taller than Bob. Bob is taller than Carla. Who is tallest?", &session, .{})).?;
+    defer allocator.free(transitive);
+    try std.testing.expect(containsPhraseIgnoreCase(transitive, "Alice is tallest"));
+}
+
+test "v32 general knowledge pack covers added science history and computing concepts" {
+    const allocator = std.testing.allocator;
+    var session: SessionState = .{};
+    defer session.deinit(allocator);
+
+    const osmosis = (try synthesizeFreeResponse(allocator, "what is osmosis", &session, .{})).?;
+    defer allocator.free(osmosis);
+    try std.testing.expect(containsPhraseIgnoreCase(osmosis, "selectively permeable"));
+
+    const entropy = (try synthesizeFreeResponse(allocator, "explain entropy", &session, .{})).?;
+    defer allocator.free(entropy);
+    try std.testing.expect(containsPhraseIgnoreCase(entropy, "isolated system"));
+
+    const https = (try synthesizeFreeResponse(allocator, "http vs https", &session, .{})).?;
+    defer allocator.free(https);
+    try std.testing.expect(containsPhraseIgnoreCase(https, "TLS"));
+
+    const overfit = (try synthesizeFreeResponse(allocator, "what is overfitting", &session, .{})).?;
+    defer allocator.free(overfit);
+    try std.testing.expect(containsPhraseIgnoreCase(overfit, "new examples"));
+
+    const magna = (try synthesizeFreeResponse(allocator, "what was magna carta", &session, .{})).?;
+    defer allocator.free(magna);
+    try std.testing.expect(containsPhraseIgnoreCase(magna, "1215"));
 }

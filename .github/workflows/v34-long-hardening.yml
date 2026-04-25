@@ -91,7 +91,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p docs/results/v34
-          python scripts/run_v34_release.py --skip-cuda --benchmarks "${{ matrix.benchmark_key }}" --skip-dialogue --skip-accel --skip-numeric-backend-probes --skip-status 2>&1 | tee "docs/results/v34/_run_v34_${{ matrix.benchmark_key }}_ci.log"
+          extra_args=()
+          if [[ "${{ matrix.benchmark_key }}" == "long_20m" ]]; then
+            extra_args+=(--hosted-long-20m-guardrail)
+          fi
+          python scripts/run_v34_release.py --skip-cuda --benchmarks "${{ matrix.benchmark_key }}" --skip-dialogue --skip-accel --skip-numeric-backend-probes --skip-status "${extra_args[@]}" 2>&1 | tee "docs/results/v34/_run_v34_${{ matrix.benchmark_key }}_ci.log"
 
       - name: Capture runner postmortem
         if: always()

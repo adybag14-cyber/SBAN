@@ -16,6 +16,7 @@ RESULTS = ROOT / "docs" / "results" / "v34"
 BIN = ROOT / "zig-out" / "bin" / ("zig_sban.exe" if os.name == "nt" else "zig_sban")
 HEARTBEAT_LOG = RESULTS / "_run_v34_release_heartbeat.jsonl"
 MONITOR: HeartbeatMonitor | None = None
+HOSTED_LONG_20M_GUARDRAIL = False
 
 PREWARM_PATH = "data/sban_runtime_prewarm_v34.txt"
 SEED_PATH = PREWARM_PATH
@@ -241,7 +242,7 @@ def carry_forward_long_20m_guardrail(out_json: Path, reason: str) -> dict[str, f
     meta["carry_forward_reason"] = reason
     meta["release_note"] = (
         "SBAN v34 preserves the v27 20M guardrail because the local workstation "
-        "hit OutOfMemory when rerunning the 20M horizon."
+        "and GitHub-hosted runners hit memory pressure when rerunning the 20M horizon."
     )
 
     model = data["models"][0]
@@ -263,6 +264,11 @@ def carry_forward_long_20m_guardrail(out_json: Path, reason: str) -> dict[str, f
 
 def run_eval(spec: dict[str, object], resume: bool = False) -> dict[str, float | int | str | bool]:
     out_json = RESULTS / str(spec["output"])
+    if str(spec["key"]) == "long_20m" and HOSTED_LONG_20M_GUARDRAIL:
+        return carry_forward_long_20m_guardrail(
+            out_json,
+            "GitHub-hosted v34 20M hardening is guardrailed after the hosted runner terminated the full attempt under memory pressure",
+        )
     if resume and out_json.exists():
         data = json.loads(out_json.read_text(encoding="utf-8"))
         model = data["models"][0]
@@ -426,6 +432,7 @@ def parse_benchmark_keys(raw_value: str | None) -> list[str]:
 
 def main() -> None:
     global MONITOR
+    global HOSTED_LONG_20M_GUARDRAIL
     parser = argparse.ArgumentParser(description="Run the SBAN v34 conversational release suite.")
     parser.add_argument("--zig-exe", help="Path to zig or zig.exe used for the build step.")
     parser.add_argument("--skip-build", action="store_true", help="Reuse the existing zig-out binary.")
@@ -436,10 +443,16 @@ def main() -> None:
     parser.add_argument("--skip-accel", action="store_true", help="Skip accel-info and accel-bench measurements.")
     parser.add_argument("--skip-numeric-backend-probes", action="store_true", help="Skip CPU/cpu_mt/CUDA numeric backend comparison probes.")
     parser.add_argument("--skip-status", action="store_true", help="Skip STATUS.md regeneration.")
+    parser.add_argument(
+        "--hosted-long-20m-guardrail",
+        action="store_true",
+        help="Write the carried-forward v34 20M guardrail immediately instead of attempting the memory-heavy hosted 20M run.",
+    )
     args = parser.parse_args()
 
     RESULTS.mkdir(parents=True, exist_ok=True)
     MONITOR = HeartbeatMonitor(ROOT, HEARTBEAT_LOG)
+    HOSTED_LONG_20M_GUARDRAIL = args.hosted_long_20m_guardrail
     benchmark_keys = parse_benchmark_keys(args.benchmarks)
     MONITOR.emit(
         "startup",

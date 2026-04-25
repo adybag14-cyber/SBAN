@@ -166,10 +166,11 @@ if long_20m_carried_from:
     long_20m_release_note = (
         f"The `longrun_v34_20m.json` artifact is a carried-forward guardrail from "
         f"`{long_20m_carried_from}` with v34 metadata because the local v34 20M rerun "
-        "hit OutOfMemory on this workstation; it is not claimed as a fresh 20M numeric improvement."
+        "hit OutOfMemory on this workstation, and a GitHub-hosted full 20M attempt was terminated "
+        "under memory pressure; it is not claimed as a fresh 20M numeric improvement."
     )
-    long_20m_stance_note = "report the carried-forward 20M guardrail transparently, and skip 100M claims unless a completed JSON artifact actually exists"
-    long_20m_recipe_note = "The hardening ladder includes `longrun_v34_20m.json` as a carried-forward v27 guardrail when this workstation cannot rerun that horizon."
+    long_20m_stance_note = "report the carried-forward 20M guardrail transparently after local and GitHub-hosted memory pressure, and skip 100M claims unless a completed JSON artifact actually exists"
+    long_20m_recipe_note = "The hardening ladder includes `longrun_v34_20m.json` as a carried-forward v27 guardrail when this workstation or a GitHub-hosted runner cannot rerun that horizon."
 else:
     long_20m_summary_label = "20M"
     long_20m_release_note = "v34 keeps the measured 20M hardening ladder from v27 as a release guardrail, with the same bounded continuation fallback at that horizon."
@@ -382,7 +383,7 @@ These numbers still decide whether the accelerated numeric backends deserve prom
 
 ## Long-run note
 
-{f"A completed 100M-class JSON already exists at `{completed_100m_json.relative_to(ROOT).as_posix()}` and can be consulted separately." if completed_100m_json is not None else ("No completed 100M-class JSON artifact was found under `docs/results/` at packaging time, so v34 reports through the carried-forward 20M guardrail only." if long_20m_carried_from else "No completed 100M-class JSON artifact was found under `docs/results/` at packaging time, so v34 reports through the new 20M hardening run only.")}
+{f"A completed 100M-class JSON already exists at `{completed_100m_json.relative_to(ROOT).as_posix()}` and can be consulted separately." if completed_100m_json is not None else ("No completed 100M-class JSON artifact was found under `docs/results/` at packaging time, so v34 reports through the carried-forward 20M guardrail only. The hosted long-hardening workflow records the 10M fresh run and emits the 20M carried-forward guardrail explicitly to avoid another opaque hosted runner termination." if long_20m_carried_from else "No completed 100M-class JSON artifact was found under `docs/results/` at packaging time, so v34 reports through the new 20M hardening run only.")}
 
 ## Interpretation
 

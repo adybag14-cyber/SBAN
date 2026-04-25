@@ -130,7 +130,8 @@ If you need the release targets or commands, read `references/release_profiles.m
   keep compatibility seed/open/knowledge files generated for older scripts and packages,
   verify broad stable facts, reasoning, real-world triage, Python, SQL, and Zig code prompts through `scripts/ci_smoke_v34.py`,
   extend vocab probes through 65,536 buckets while keeping the dense byte-vocab core unchanged,
-  and keep live-current or unsupported source-location claims behind explicit external-lookup boundaries.
+  keep live-current or unsupported source-location claims behind explicit external-lookup boundaries,
+  and guardrail hosted 20M hardening with `--hosted-long-20m-guardrail` after the full GitHub-hosted 20M attempt was terminated under memory pressure before artifact upload.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
@@ -139,6 +140,7 @@ If you need the release targets or commands, read `references/release_profiles.m
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
 - For the v31 era, keep the core hosted release suite split from the independent 10M, 20M, and 100M workflows, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
+- For v34 hosted long hardening, run the 10M job fresh and let the 20M job emit the carried-forward guardrail explicitly on GitHub-hosted runners; only attempt a fresh 20M on a larger runner with enough memory.
 
 ## Deliverables
 

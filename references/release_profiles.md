@@ -12,7 +12,7 @@ SBAN v34 uses the v33 colleague zip as the immediate product baseline and keeps 
 - 250k: `99.4632%`
 - 1M: `99.5334%`
 - 10M: `78.3230%`
-- 20M: `78.4756%`
+- 20M guardrail: `78.4756%` carried forward from `docs/results/v27/longrun_v27_20m.json` with v34 metadata after local and GitHub-hosted memory pressure
 
 ## v34 Target
 
@@ -51,6 +51,12 @@ Run the hosted-compatible release suite:
 
 ```bash
 python scripts/run_v34_release.py --skip-cuda --benchmarks prefix,drift,probe,long_250k,long_1m
+```
+
+Run hosted long hardening with the explicit 20M guardrail on GitHub-hosted runners:
+
+```bash
+python scripts/run_v34_release.py --skip-cuda --benchmarks long_20m --skip-dialogue --skip-accel --skip-numeric-backend-probes --skip-status --hosted-long-20m-guardrail
 ```
 
 Generate deliverables:
@@ -106,6 +112,7 @@ Common network overrides:
 - larger-vocabulary probe: `scripts/vocab_size_probe_v34.py`
 - CI smoke gate: `scripts/ci_smoke_v34.py`
 - release suite: `scripts/run_v34_release.py`
+- hosted 20M guardrail flag: `--hosted-long-20m-guardrail`
 - deliverables: `scripts/make_v34_deliverables.py`
 - demo package: `scripts/package_v34_demo.py`
 - GitHub full suite: `.github/workflows/v34-release-suite.yml`

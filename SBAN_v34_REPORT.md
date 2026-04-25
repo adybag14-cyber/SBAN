@@ -31,7 +31,7 @@ The goal is to keep the packaged numeric engine-health suite stable while turnin
 
 - The shipped numeric suite still runs on `numeric_backend=cpu` with `score_threads=1`.
 - v34 does not promote `cpu_mt` or numeric CUDA by preference; it keeps the safe CPU path and isolates product/reporting repairs from numeric-profile churn.
-- The `longrun_v34_20m.json` artifact is a carried-forward guardrail from `docs/results/v27/longrun_v27_20m.json` with v34 metadata because the local v34 20M rerun hit OutOfMemory on this workstation; it is not claimed as a fresh 20M numeric improvement.
+- The `longrun_v34_20m.json` artifact is a carried-forward guardrail from `docs/results/v27/longrun_v27_20m.json` with v34 metadata because the local v34 20M rerun hit OutOfMemory on this workstation, and a GitHub-hosted full 20M attempt was terminated under memory pressure; it is not claimed as a fresh 20M numeric improvement.
 
 ## Conversation and product checks
 
@@ -194,7 +194,7 @@ response=I am not sure yet. I can handle grounded SBAN questions, remembered ses
 
 ## Long-run note
 
-No completed 100M-class JSON artifact was found under `docs/results/` at packaging time, so v34 reports through the carried-forward 20M guardrail only.
+No completed 100M-class JSON artifact was found under `docs/results/` at packaging time, so v34 reports through the carried-forward 20M guardrail only. The hosted long-hardening workflow records the 10M fresh run and emits the 20M carried-forward guardrail explicitly to avoid another opaque hosted runner termination.
 
 ## Interpretation
 

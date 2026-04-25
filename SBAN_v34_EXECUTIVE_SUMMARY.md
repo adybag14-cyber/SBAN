@@ -43,4 +43,4 @@ Release stance:
 - keep `numeric_backend=cpu` and `score_threads=1` as the packaged default until accelerated numeric runs prove a dependable end-to-end win
 - ship free mode with the generated runtime prewarm pack as the default conversational product surface
 - treat v34 as a broader offline/runtime-updatable assistant, not as a live-current web oracle
-- report the carried-forward 20M guardrail transparently, and skip 100M claims unless a completed JSON artifact actually exists
+- report the carried-forward 20M guardrail transparently after local and GitHub-hosted memory pressure, and skip 100M claims unless a completed JSON artifact actually exists

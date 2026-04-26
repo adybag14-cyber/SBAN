@@ -1,0 +1,1693 @@
+# SBAN v36 synthetic knowledge compatibility pack.
+
+# SBAN v36 synthetic knowledge compatibility pack.
+
+User: what causes tides
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through those tidal bulges, which is why many places see high and low tides each day.
+
+User: why do oceans have tides
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through those tidal bulges, which is why many places see high and low tides each day.
+
+User: explain tides simply
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through those tidal bulges, which is why many places see high and low tides each day.
+
+User: give me a short tides explanation
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through those tidal bulges, which is why many places see high and low tides each day.
+
+User: what is mitosis
+Assistant: Mitosis is the process where one cell divides its copied chromosomes into two matching sets, then splits into two genetically similar daughter cells.
+
+User: explain mitosis simply
+Assistant: Mitosis is the process where one cell divides its copied chromosomes into two matching sets, then splits into two genetically similar daughter cells.
+
+User: what happens during mitosis
+Assistant: Mitosis is the process where one cell divides its copied chromosomes into two matching sets, then splits into two genetically similar daughter cells.
+
+User: give me a short mitosis explanation
+Assistant: Mitosis is the process where one cell divides its copied chromosomes into two matching sets, then splits into two genetically similar daughter cells.
+
+User: what does dna do
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate how living things grow, repair themselves, and function.
+
+User: what is dna for
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate how living things grow, repair themselves, and function.
+
+User: explain dna simply
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate how living things grow, repair themselves, and function.
+
+User: give me a short dna explanation
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate how living things grow, repair themselves, and function.
+
+User: what is photosynthesis
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: how does photosynthesis work
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: explain photosynthesis
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: give me a short photosynthesis explanation
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: what is conservation of energy
+Assistant: Conservation of energy means energy is not created or destroyed in a closed system; it changes form or moves between objects.
+
+User: explain conservation of energy
+Assistant: Conservation of energy means energy is not created or destroyed in a closed system; it changes form or moves between objects.
+
+User: does energy disappear
+Assistant: Conservation of energy means energy is not created or destroyed in a closed system; it changes form or moves between objects.
+
+User: give me a short conservation of energy explanation
+Assistant: Conservation of energy means energy is not created or destroyed in a closed system; it changes form or moves between objects.
+
+User: what is gravity
+Assistant: Gravity is the attraction between masses. Near Earth it pulls objects toward the planet, and on larger scales it shapes orbits, stars, galaxies, and tides.
+
+User: explain gravity simply
+Assistant: Gravity is the attraction between masses. Near Earth it pulls objects toward the planet, and on larger scales it shapes orbits, stars, galaxies, and tides.
+
+User: why do objects fall
+Assistant: Gravity is the attraction between masses. Near Earth it pulls objects toward the planet, and on larger scales it shapes orbits, stars, galaxies, and tides.
+
+User: give me a short gravity explanation
+Assistant: Gravity is the attraction between masses. Near Earth it pulls objects toward the planet, and on larger scales it shapes orbits, stars, galaxies, and tides.
+
+User: what causes earthquakes
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: what is plate tectonics
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: why do earthquakes happen
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: give me a short plate tectonics explanation
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: what is the water cycle
+Assistant: The water cycle moves water through evaporation, condensation into clouds, precipitation, runoff, and storage in oceans, ice, soil, and groundwater.
+
+User: explain evaporation condensation precipitation
+Assistant: The water cycle moves water through evaporation, condensation into clouds, precipitation, runoff, and storage in oceans, ice, soil, and groundwater.
+
+User: how does water cycle work
+Assistant: The water cycle moves water through evaporation, condensation into clouds, precipitation, runoff, and storage in oceans, ice, soil, and groundwater.
+
+User: give me a short water cycle explanation
+Assistant: The water cycle moves water through evaporation, condensation into clouds, precipitation, runoff, and storage in oceans, ice, soil, and groundwater.
+
+User: what is the capital of france
+Assistant: Paris is the capital of France.
+
+User: capital city of france
+Assistant: Paris is the capital of France.
+
+User: which city is france's capital
+Assistant: Paris is the capital of France.
+
+User: give me a short capital france explanation
+Assistant: Paris is the capital of France.
+
+User: what is the capital of japan
+Assistant: Tokyo is the capital of Japan.
+
+User: capital city of japan
+Assistant: Tokyo is the capital of Japan.
+
+User: which city is japan's capital
+Assistant: Tokyo is the capital of Japan.
+
+User: give me a short capital japan explanation
+Assistant: Tokyo is the capital of Japan.
+
+User: who wrote pride and prejudice
+Assistant: Jane Austen wrote Pride and Prejudice.
+
+User: author of pride and prejudice
+Assistant: Jane Austen wrote Pride and Prejudice.
+
+User: who is jane austen
+Assistant: Jane Austen wrote Pride and Prejudice.
+
+User: give me a short pride and prejudice explanation
+Assistant: Jane Austen wrote Pride and Prejudice.
+
+User: who wrote hamlet
+Assistant: William Shakespeare wrote Hamlet.
+
+User: author of hamlet
+Assistant: William Shakespeare wrote Hamlet.
+
+User: what is hamlet
+Assistant: William Shakespeare wrote Hamlet.
+
+User: give me a short hamlet explanation
+Assistant: William Shakespeare wrote Hamlet.
+
+User: what is supply and demand
+Assistant: Supply and demand describes how prices tend to rise when demand is high or supply is scarce, and fall when supply is abundant or demand weakens.
+
+User: explain supply and demand
+Assistant: Supply and demand describes how prices tend to rise when demand is high or supply is scarce, and fall when supply is abundant or demand weakens.
+
+User: why do prices change with supply
+Assistant: Supply and demand describes how prices tend to rise when demand is high or supply is scarce, and fall when supply is abundant or demand weakens.
+
+User: give me a short supply and demand explanation
+Assistant: Supply and demand describes how prices tend to rise when demand is high or supply is scarce, and fall when supply is abundant or demand weakens.
+
+User: what is inflation
+Assistant: Inflation is a broad rise in prices over time, which reduces purchasing power because the same amount of money buys less.
+
+User: explain inflation
+Assistant: Inflation is a broad rise in prices over time, which reduces purchasing power because the same amount of money buys less.
+
+User: why does money buy less
+Assistant: Inflation is a broad rise in prices over time, which reduces purchasing power because the same amount of money buys less.
+
+User: give me a short inflation explanation
+Assistant: Inflation is a broad rise in prices over time, which reduces purchasing power because the same amount of money buys less.
+
+User: what is democracy
+Assistant: Democracy is a system of government where people have political power, usually through voting, representation, civil rights, and public accountability.
+
+User: explain democracy simply
+Assistant: Democracy is a system of government where people have political power, usually through voting, representation, civil rights, and public accountability.
+
+User: what does democratic government mean
+Assistant: Democracy is a system of government where people have political power, usually through voting, representation, civil rights, and public accountability.
+
+User: give me a short democracy explanation
+Assistant: Democracy is a system of government where people have political power, usually through voting, representation, civil rights, and public accountability.
+
+User: what is the scientific method
+Assistant: The scientific method is a disciplined loop: ask a question, form a hypothesis, test it with evidence, analyze results, and revise the explanation when needed.
+
+User: explain hypothesis experiment evidence
+Assistant: The scientific method is a disciplined loop: ask a question, form a hypothesis, test it with evidence, analyze results, and revise the explanation when needed.
+
+User: how do scientists test ideas
+Assistant: The scientific method is a disciplined loop: ask a question, form a hypothesis, test it with evidence, analyze results, and revise the explanation when needed.
+
+User: give me a short scientific method explanation
+Assistant: The scientific method is a disciplined loop: ask a question, form a hypothesis, test it with evidence, analyze results, and revise the explanation when needed.
+
+User: what is binary search
+Assistant: Binary search finds an item in sorted data by halving the remaining search space each step, so its time complexity is O(log n).
+
+User: big o of binary search
+Assistant: Binary search finds an item in sorted data by halving the remaining search space each step, so its time complexity is O(log n).
+
+User: why is binary search logarithmic
+Assistant: Binary search finds an item in sorted data by halving the remaining search space each step, so its time complexity is O(log n).
+
+User: give me a short binary search explanation
+Assistant: Binary search finds an item in sorted data by halving the remaining search space each step, so its time complexity is O(log n).
+
+User: what is a hash map
+Assistant: A hash map stores key-value pairs by hashing each key to choose where it should live, giving average-case constant-time lookup when collisions are controlled.
+
+User: how does a hash map work
+Assistant: A hash map stores key-value pairs by hashing each key to choose where it should live, giving average-case constant-time lookup when collisions are controlled.
+
+User: why are hash maps fast
+Assistant: A hash map stores key-value pairs by hashing each key to choose where it should live, giving average-case constant-time lookup when collisions are controlled.
+
+User: give me a short hash map explanation
+Assistant: A hash map stores key-value pairs by hashing each key to choose where it should live, giving average-case constant-time lookup when collisions are controlled.
+
+User: what does http 404 mean
+Assistant: HTTP 404 means the server was reached but the requested resource was not found. HTTP 500 means the server hit an internal error.
+
+User: what is a 404 error
+Assistant: HTTP 404 means the server was reached but the requested resource was not found. HTTP 500 means the server hit an internal error.
+
+User: explain http 500 vs 404
+Assistant: HTTP 404 means the server was reached but the requested resource was not found. HTTP 500 means the server hit an internal error.
+
+User: give me a short http status explanation
+Assistant: HTTP 404 means the server was reached but the requested resource was not found. HTTP 500 means the server hit an internal error.
+
+User: what is tls
+Assistant: TLS is the protocol behind HTTPS. It authenticates the server, negotiates keys, and encrypts traffic so observers cannot easily read or alter it.
+
+User: what does https encrypt
+Assistant: TLS is the protocol behind HTTPS. It authenticates the server, negotiates keys, and encrypts traffic so observers cannot easily read or alter it.
+
+User: explain tls simply
+Assistant: TLS is the protocol behind HTTPS. It authenticates the server, negotiates keys, and encrypts traffic so observers cannot easily read or alter it.
+
+User: give me a short tls explanation
+Assistant: TLS is the protocol behind HTTPS. It authenticates the server, negotiates keys, and encrypts traffic so observers cannot easily read or alter it.
+
+User: what is git rebase
+Assistant: Git rebase replays commits on top of a new base, creating a linear history. Merge preserves the branch join explicitly with a merge commit.
+
+User: explain git rebase
+Assistant: Git rebase replays commits on top of a new base, creating a linear history. Merge preserves the branch join explicitly with a merge commit.
+
+User: rebase versus merge
+Assistant: Git rebase replays commits on top of a new base, creating a linear history. Merge preserves the branch join explicitly with a merge commit.
+
+User: give me a short git rebase explanation
+Assistant: Git rebase replays commits on top of a new base, creating a linear history. Merge preserves the branch join explicitly with a merge commit.
+
+User: how do allocators work in zig
+Assistant: Zig makes allocation explicit. Code that may allocate usually receives an allocator, uses it to create or resize memory, and releases owned memory with matching deinit or free calls.
+
+User: why does zig pass allocators
+Assistant: Zig makes allocation explicit. Code that may allocate usually receives an allocator, uses it to create or resize memory, and releases owned memory with matching deinit or free calls.
+
+User: explain zig allocator
+Assistant: Zig makes allocation explicit. Code that may allocate usually receives an allocator, uses it to create or resize memory, and releases owned memory with matching deinit or free calls.
+
+User: give me a short zig allocator explanation
+Assistant: Zig makes allocation explicit. Code that may allocate usually receives an allocator, uses it to create or resize memory, and releases owned memory with matching deinit or free calls.
+
+User: how do zig errors work
+Assistant: Zig error unions carry either a value or an error. `try` returns early on an error and unwraps the value otherwise, making error paths explicit.
+
+User: what is a zig error union
+Assistant: Zig error unions carry either a value or an error. `try` returns early on an error and unwraps the value otherwise, making error paths explicit.
+
+User: explain try in zig
+Assistant: Zig error unions carry either a value or an error. `try` returns early on an error and unwraps the value otherwise, making error paths explicit.
+
+User: give me a short zig errors explanation
+Assistant: Zig error unions carry either a value or an error. `try` returns early on an error and unwraps the value otherwise, making error paths explicit.
+
+User: what does defer do in zig
+Assistant: `defer` in Zig schedules cleanup for the end of the current scope, which makes ownership and resource release easier to audit.
+
+User: explain defer in zig
+Assistant: `defer` in Zig schedules cleanup for the end of the current scope, which makes ownership and resource release easier to audit.
+
+User: when should i use defer in zig
+Assistant: `defer` in Zig schedules cleanup for the end of the current scope, which makes ownership and resource release easier to audit.
+
+User: give me a short zig defer explanation
+Assistant: `defer` in Zig schedules cleanup for the end of the current scope, which makes ownership and resource release easier to audit.
+
+User: what is a zig slice
+Assistant: A Zig slice is a pointer plus a length. It views contiguous memory without owning it by itself, while an array has a compile-time known length.
+
+User: explain slices in zig
+Assistant: A Zig slice is a pointer plus a length. It views contiguous memory without owning it by itself, while an array has a compile-time known length.
+
+User: zig slice versus array
+Assistant: A Zig slice is a pointer plus a length. It views contiguous memory without owning it by itself, while an array has a compile-time known length.
+
+User: give me a short zig slices explanation
+Assistant: A Zig slice is a pointer plus a length. It views contiguous memory without owning it by itself, while an array has a compile-time known length.
+
+User: how do i debug a failing ci job
+Assistant: For a failing CI job, read the first real error, reproduce the command locally, isolate whether it is environment or code, make the smallest fix, then rerun the narrow check before the full suite.
+
+User: what should i check when ci fails
+Assistant: For a failing CI job, read the first real error, reproduce the command locally, isolate whether it is environment or code, make the smallest fix, then rerun the narrow check before the full suite.
+
+User: triage a failing github actions run
+Assistant: For a failing CI job, read the first real error, reproduce the command locally, isolate whether it is environment or code, make the smallest fix, then rerun the narrow check before the full suite.
+
+User: give me a short debug ci explanation
+Assistant: For a failing CI job, read the first real error, reproduce the command locally, isolate whether it is environment or code, make the smallest fix, then rerun the narrow check before the full suite.
+
+User: how do i triage a production incident
+Assistant: A practical incident response loop is: stabilize users first, assign roles, capture timeline, identify the blast radius, mitigate, communicate status, then do a blameless follow-up with corrective actions.
+
+User: what are incident response steps
+Assistant: A practical incident response loop is: stabilize users first, assign roles, capture timeline, identify the blast radius, mitigate, communicate status, then do a blameless follow-up with corrective actions.
+
+User: handle an outage checklist
+Assistant: A practical incident response loop is: stabilize users first, assign roles, capture timeline, identify the blast radius, mitigate, communicate status, then do a blameless follow-up with corrective actions.
+
+User: give me a short incident response explanation
+Assistant: A practical incident response loop is: stabilize users first, assign roles, capture timeline, identify the blast radius, mitigate, communicate status, then do a blameless follow-up with corrective actions.
+
+User: how do i write a useful bug report
+Assistant: A useful bug report includes expected behavior, actual behavior, reproduction steps, environment, relevant logs or screenshots, severity, and the smallest known failing case.
+
+User: what should a bug report include
+Assistant: A useful bug report includes expected behavior, actual behavior, reproduction steps, environment, relevant logs or screenshots, severity, and the smallest known failing case.
+
+User: make a bug report template
+Assistant: A useful bug report includes expected behavior, actual behavior, reproduction steps, environment, relevant logs or screenshots, severity, and the smallest known failing case.
+
+User: give me a short bug report explanation
+Assistant: A useful bug report includes expected behavior, actual behavior, reproduction steps, environment, relevant logs or screenshots, severity, and the smallest known failing case.
+
+User: write acceptance criteria
+Assistant: Good acceptance criteria are observable and testable: given the starting state, when the user acts, then the system shows a specific result, including important error and edge cases.
+
+User: what are good acceptance criteria
+Assistant: Good acceptance criteria are observable and testable: given the starting state, when the user acts, then the system shows a specific result, including important error and edge cases.
+
+User: how do i define done for a feature
+Assistant: Good acceptance criteria are observable and testable: given the starting state, when the user acts, then the system shows a specific result, including important error and edge cases.
+
+User: give me a short acceptance criteria explanation
+Assistant: Good acceptance criteria are observable and testable: given the starting state, when the user acts, then the system shows a specific result, including important error and edge cases.
+
+User: how do i plan a small software project
+Assistant: A small software project plan should name the outcome, users, constraints, milestones, risks, validation checks, and the next concrete task that moves the project forward.
+
+User: make a project plan
+Assistant: A small software project plan should name the outcome, users, constraints, milestones, risks, validation checks, and the next concrete task that moves the project forward.
+
+User: software project planning steps
+Assistant: A small software project plan should name the outcome, users, constraints, milestones, risks, validation checks, and the next concrete task that moves the project forward.
+
+User: give me a short project plan explanation
+Assistant: A small software project plan should name the outcome, users, constraints, milestones, risks, validation checks, and the next concrete task that moves the project forward.
+
+User: write a zig function to reverse a slice
+Assistant: A compact Zig in-place reverse function is: ```zig pub fn reverse(comptime T: type, items: []T) void { var left: usize = 0; var right: usize = items.len; while (left < right) { right -= 1; const tmp = items[left]; items[left] = items[right]; items[right] = tmp; left += 1; } } ```
+
+User: show a zig arraylist example
+Assistant: A minimal Zig ArrayList example is: ```zig var list = std.ArrayList(u8).empty; defer list.deinit(allocator); try list.append(allocator, 42); ```
+
+User: write zig code using an error union
+Assistant: A small Zig error-union example is: ```zig const ParseError = error{Empty}; fn firstByte(input: []const u8) ParseError!u8 { if (input.len == 0) return error.Empty; return input[0]; } ```
+
+User: generate json with name and age
+Assistant: ```json {"name":"Ada","age":42} ```
+
+User: what is the speed of light
+Assistant: The speed of light in vacuum is exactly 299,792,458 meters per second.
+
+User: what is gradient descent
+Assistant: Gradient descent is an optimization method that repeatedly adjusts parameters in the direction that reduces a loss function.
+
+User: what is a database index
+Assistant: A database index is an auxiliary data structure that speeds up lookups, often by trading extra storage and write overhead for faster reads.
+
+User: what is evolution by natural selection
+Assistant: Evolution by natural selection occurs when inherited traits that improve survival or reproduction become more common across generations.
+
+User: what is public key encryption
+Assistant: Public-key cryptography uses a public key for operations like encryption or verification and a private key for decryption or signing.
+User: what is osmosis
+Assistant: Osmosis is the movement of water across a selectively permeable membrane from lower solute concentration toward higher solute concentration.
+
+User: explain entropy
+Assistant: Entropy is often described as energy dispersal or the count of possible microscopic arrangements. In an isolated system, total entropy tends not to decrease.
+
+User: http vs https
+Assistant: HTTP sends web requests without built-in encryption. HTTPS is HTTP over TLS, adding encryption, integrity, and server authentication.
+
+User: what is overfitting
+Assistant: Overfitting happens when a model learns training data too specifically, including noise, so it performs worse on new examples.
+
+User: what was magna carta
+Assistant: Magna Carta was a 1215 English charter that limited royal power and became an important symbol in the development of rule-of-law ideas.
+
+User: in 2021 who was the president of the united states
+Assistant: In 2021, Joe Biden was U.S. president from January 20 onward. Donald Trump was president from January 1 until Biden's inauguration on January 20, 2021.
+User: what is a REST API
+Assistant: A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+User: what is JSON
+Assistant: JSON is a lightweight text format for structured data using objects, arrays, strings, numbers, booleans, and null.
+User: what is SQL
+Assistant: SQL is a language for querying and modifying relational databases with tables, rows, columns, joins, filters, and aggregations.
+User: what was Apollo 11
+Assistant: Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+User: what is the Linux kernel
+Assistant: The Linux kernel is the core of Linux systems; it manages processes, memory, hardware drivers, filesystems, networking, and system calls.
+User: what is a transistor
+Assistant: A transistor is a semiconductor device used to switch or amplify electrical signals; billions of them form the logic and memory of modern chips.
+
+User: what is SBAN v36
+Assistant: SBAN v36 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+User: what changed in v36
+Assistant: SBAN v36 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+User: describe the SBAN v36 runtime prewarm
+Assistant: SBAN v36 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+User: explain SBAN v36 simply
+Assistant: SBAN v36 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+User: give me a short answer: what is SBAN v36
+Assistant: SBAN v36 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+User: quickly answer what is SBAN v36
+Assistant: SBAN v36 is a warm-start non-transformer research runtime. It loads a generated runtime prewarm pack by default so broad stable facts, practical coding patterns, reasoning helpers, and session-memory behavior are available without passing separate seed, open-seed, or knowledge-path arguments.
+
+User: is SBAN v36 a live web model
+Assistant: No. SBAN v36 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+User: does SBAN v36 know today's news
+Assistant: No. SBAN v36 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+User: can SBAN v36 answer current facts
+Assistant: No. SBAN v36 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+User: explain is SBAN v36 a live web model simply
+Assistant: No. SBAN v36 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+User: give me a short answer: is SBAN v36 a live web model
+Assistant: No. SBAN v36 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+User: quickly answer is SBAN v36 a live web model
+Assistant: No. SBAN v36 has a generated static runtime prewarm pack and symbolic helpers, but live-current facts, prices, schedules, office holders, and news still need external lookup or a refreshed supplied pack.
+
+User: what is DNS
+Assistant: DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+User: explain domain name system
+Assistant: DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+User: what does DNS do
+Assistant: DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+User: explain DNS simply
+Assistant: DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+User: give me a short answer: what is DNS
+Assistant: DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+User: quickly answer what is DNS
+Assistant: DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+User: what is HTTP 404
+Assistant: HTTP 404 means Not Found. The server was reached, but it could not find a resource at the requested path.
+
+User: what does a 404 error mean
+Assistant: HTTP 404 means Not Found. The server was reached, but it could not find a resource at the requested path.
+
+User: explain HTTP 404 simply
+Assistant: HTTP 404 means Not Found. The server was reached, but it could not find a resource at the requested path.
+
+User: give me a short answer: what is HTTP 404
+Assistant: HTTP 404 means Not Found. The server was reached, but it could not find a resource at the requested path.
+
+User: quickly answer what is HTTP 404
+Assistant: HTTP 404 means Not Found. The server was reached, but it could not find a resource at the requested path.
+
+User: what is a REST API
+Assistant: A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+User: explain REST APIs
+Assistant: A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+User: why do REST APIs use HTTP
+Assistant: A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+User: explain a REST API simply
+Assistant: A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+User: give me a short answer: what is a REST API
+Assistant: A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+User: quickly answer what is a REST API
+Assistant: A REST API exposes resources through URLs and standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE, often returning JSON.
+
+User: what is JSON
+Assistant: JSON is a lightweight text data format built from objects, arrays, strings, numbers, booleans, and null. It is common because it is readable and easy for many languages to parse.
+
+User: why is JSON common
+Assistant: JSON is a lightweight text data format built from objects, arrays, strings, numbers, booleans, and null. It is common because it is readable and easy for many languages to parse.
+
+User: explain JSON simply
+Assistant: JSON is a lightweight text data format built from objects, arrays, strings, numbers, booleans, and null. It is common because it is readable and easy for many languages to parse.
+
+User: give me a short answer: what is JSON
+Assistant: JSON is a lightweight text data format built from objects, arrays, strings, numbers, booleans, and null. It is common because it is readable and easy for many languages to parse.
+
+User: quickly answer what is JSON
+Assistant: JSON is a lightweight text data format built from objects, arrays, strings, numbers, booleans, and null. It is common because it is readable and easy for many languages to parse.
+
+User: what is a SQL join
+Assistant: A SQL join combines rows from related tables using a matching key, such as users.id matching orders.user_id.
+
+User: explain database joins
+Assistant: A SQL join combines rows from related tables using a matching key, such as users.id matching orders.user_id.
+
+User: what does join mean in SQL
+Assistant: A SQL join combines rows from related tables using a matching key, such as users.id matching orders.user_id.
+
+User: explain a SQL join simply
+Assistant: A SQL join combines rows from related tables using a matching key, such as users.id matching orders.user_id.
+
+User: give me a short answer: what is a SQL join
+Assistant: A SQL join combines rows from related tables using a matching key, such as users.id matching orders.user_id.
+
+User: quickly answer what is a SQL join
+Assistant: A SQL join combines rows from related tables using a matching key, such as users.id matching orders.user_id.
+
+User: what is Kubernetes
+Assistant: Kubernetes is a system for deploying, scaling, and managing containers across machines. It keeps workloads running, restarts failed containers, and exposes services.
+
+User: explain Kubernetes in plain English
+Assistant: Kubernetes is a system for deploying, scaling, and managing containers across machines. It keeps workloads running, restarts failed containers, and exposes services.
+
+User: explain Kubernetes simply
+Assistant: Kubernetes is a system for deploying, scaling, and managing containers across machines. It keeps workloads running, restarts failed containers, and exposes services.
+
+User: give me a short answer: what is Kubernetes
+Assistant: Kubernetes is a system for deploying, scaling, and managing containers across machines. It keeps workloads running, restarts failed containers, and exposes services.
+
+User: quickly answer what is Kubernetes
+Assistant: Kubernetes is a system for deploying, scaling, and managing containers across machines. It keeps workloads running, restarts failed containers, and exposes services.
+
+User: what is OAuth
+Assistant: OAuth lets an app access a service on a user's behalf without directly receiving the user's password, usually by issuing scoped tokens.
+
+User: explain delegated authorization
+Assistant: OAuth lets an app access a service on a user's behalf without directly receiving the user's password, usually by issuing scoped tokens.
+
+User: explain OAuth simply
+Assistant: OAuth lets an app access a service on a user's behalf without directly receiving the user's password, usually by issuing scoped tokens.
+
+User: give me a short answer: what is OAuth
+Assistant: OAuth lets an app access a service on a user's behalf without directly receiving the user's password, usually by issuing scoped tokens.
+
+User: quickly answer what is OAuth
+Assistant: OAuth lets an app access a service on a user's behalf without directly receiving the user's password, usually by issuing scoped tokens.
+
+User: what is public key encryption
+Assistant: Public key encryption uses a public key that can be shared and a private key that stays secret. Data encrypted for a recipient can be decrypted only with the matching private key.
+
+User: explain asymmetric encryption
+Assistant: Public key encryption uses a public key that can be shared and a private key that stays secret. Data encrypted for a recipient can be decrypted only with the matching private key.
+
+User: explain public key encryption simply
+Assistant: Public key encryption uses a public key that can be shared and a private key that stays secret. Data encrypted for a recipient can be decrypted only with the matching private key.
+
+User: give me a short answer: what is public key encryption
+Assistant: Public key encryption uses a public key that can be shared and a private key that stays secret. Data encrypted for a recipient can be decrypted only with the matching private key.
+
+User: quickly answer what is public key encryption
+Assistant: Public key encryption uses a public key that can be shared and a private key that stays secret. Data encrypted for a recipient can be decrypted only with the matching private key.
+
+User: what is a checksum
+Assistant: A checksum is a compact value computed from data to help detect accidental changes or corruption. Cryptographic hashes are stronger when tamper resistance matters.
+
+User: why use checksums
+Assistant: A checksum is a compact value computed from data to help detect accidental changes or corruption. Cryptographic hashes are stronger when tamper resistance matters.
+
+User: explain a checksum simply
+Assistant: A checksum is a compact value computed from data to help detect accidental changes or corruption. Cryptographic hashes are stronger when tamper resistance matters.
+
+User: give me a short answer: what is a checksum
+Assistant: A checksum is a compact value computed from data to help detect accidental changes or corruption. Cryptographic hashes are stronger when tamper resistance matters.
+
+User: quickly answer what is a checksum
+Assistant: A checksum is a compact value computed from data to help detect accidental changes or corruption. Cryptographic hashes are stronger when tamper resistance matters.
+
+User: how do i debug a failing CI job
+Assistant: Reproduce the failing command locally, read the first real error, compare tool and environment versions, isolate the smallest failing step, then commit the minimal fix and rerun the same gate.
+
+User: how should I triage CI failure
+Assistant: Reproduce the failing command locally, read the first real error, compare tool and environment versions, isolate the smallest failing step, then commit the minimal fix and rerun the same gate.
+
+User: debug a failing GitHub action
+Assistant: Reproduce the failing command locally, read the first real error, compare tool and environment versions, isolate the smallest failing step, then commit the minimal fix and rerun the same gate.
+
+User: explain how do i debug a failing CI job simply
+Assistant: Reproduce the failing command locally, read the first real error, compare tool and environment versions, isolate the smallest failing step, then commit the minimal fix and rerun the same gate.
+
+User: give me a short answer: how do i debug a failing CI job
+Assistant: Reproduce the failing command locally, read the first real error, compare tool and environment versions, isolate the smallest failing step, then commit the minimal fix and rerun the same gate.
+
+User: quickly answer how do i debug a failing CI job
+Assistant: Reproduce the failing command locally, read the first real error, compare tool and environment versions, isolate the smallest failing step, then commit the minimal fix and rerun the same gate.
+
+User: how do I triage an outage
+Assistant: Start by confirming user impact, recent changes, and the failing dependency. Stabilize first, communicate status, collect logs and metrics, then narrow the root cause after service is safe.
+
+User: what is incident triage
+Assistant: Start by confirming user impact, recent changes, and the failing dependency. Stabilize first, communicate status, collect logs and metrics, then narrow the root cause after service is safe.
+
+User: explain how do I triage an outage simply
+Assistant: Start by confirming user impact, recent changes, and the failing dependency. Stabilize first, communicate status, collect logs and metrics, then narrow the root cause after service is safe.
+
+User: give me a short answer: how do I triage an outage
+Assistant: Start by confirming user impact, recent changes, and the failing dependency. Stabilize first, communicate status, collect logs and metrics, then narrow the root cause after service is safe.
+
+User: quickly answer how do I triage an outage
+Assistant: Start by confirming user impact, recent changes, and the failing dependency. Stabilize first, communicate status, collect logs and metrics, then narrow the root cause after service is safe.
+
+User: what does defer do in Zig
+Assistant: In Zig, defer schedules a statement to run when the current scope exits. It is commonly used for cleanup such as closing files, unlocking mutexes, or deinitializing containers.
+
+User: explain Zig defer
+Assistant: In Zig, defer schedules a statement to run when the current scope exits. It is commonly used for cleanup such as closing files, unlocking mutexes, or deinitializing containers.
+
+User: how does defer work in Zig
+Assistant: In Zig, defer schedules a statement to run when the current scope exits. It is commonly used for cleanup such as closing files, unlocking mutexes, or deinitializing containers.
+
+User: explain what does defer do in Zig simply
+Assistant: In Zig, defer schedules a statement to run when the current scope exits. It is commonly used for cleanup such as closing files, unlocking mutexes, or deinitializing containers.
+
+User: give me a short answer: what does defer do in Zig
+Assistant: In Zig, defer schedules a statement to run when the current scope exits. It is commonly used for cleanup such as closing files, unlocking mutexes, or deinitializing containers.
+
+User: quickly answer what does defer do in Zig
+Assistant: In Zig, defer schedules a statement to run when the current scope exits. It is commonly used for cleanup such as closing files, unlocking mutexes, or deinitializing containers.
+
+User: how do Zig errors work
+Assistant: Zig errors are explicit values in error sets. Functions often return error unions like !T, and callers handle them with try, catch, if, or switch instead of exceptions.
+
+User: what is a Zig error union
+Assistant: Zig errors are explicit values in error sets. Functions often return error unions like !T, and callers handle them with try, catch, if, or switch instead of exceptions.
+
+User: explain how do Zig errors work simply
+Assistant: Zig errors are explicit values in error sets. Functions often return error unions like !T, and callers handle them with try, catch, if, or switch instead of exceptions.
+
+User: give me a short answer: how do Zig errors work
+Assistant: Zig errors are explicit values in error sets. Functions often return error unions like !T, and callers handle them with try, catch, if, or switch instead of exceptions.
+
+User: quickly answer how do Zig errors work
+Assistant: Zig errors are explicit values in error sets. Functions often return error unions like !T, and callers handle them with try, catch, if, or switch instead of exceptions.
+
+User: how do allocators work in Zig
+Assistant: Zig passes allocators explicitly to code that may allocate. The caller controls allocation policy and ownership, and cleanup is usually paired with defer or errdefer.
+
+User: explain Zig allocator pattern
+Assistant: Zig passes allocators explicitly to code that may allocate. The caller controls allocation policy and ownership, and cleanup is usually paired with defer or errdefer.
+
+User: explain how do allocators work in Zig simply
+Assistant: Zig passes allocators explicitly to code that may allocate. The caller controls allocation policy and ownership, and cleanup is usually paired with defer or errdefer.
+
+User: give me a short answer: how do allocators work in Zig
+Assistant: Zig passes allocators explicitly to code that may allocate. The caller controls allocation policy and ownership, and cleanup is usually paired with defer or errdefer.
+
+User: quickly answer how do allocators work in Zig
+Assistant: Zig passes allocators explicitly to code that may allocate. The caller controls allocation policy and ownership, and cleanup is usually paired with defer or errdefer.
+
+User: write a Zig function to reverse a slice
+Assistant: ```zig
+pub fn reverse(comptime T: type, items: []T) void {
+    var left: usize = 0;
+    var right: usize = items.len;
+    while (left < right) {
+        right -= 1;
+        const tmp = items[left];
+        items[left] = items[right];
+        items[right] = tmp;
+        left += 1;
+    }
+}
+```
+
+User: reverse a mutable slice in Zig
+Assistant: ```zig
+pub fn reverse(comptime T: type, items: []T) void {
+    var left: usize = 0;
+    var right: usize = items.len;
+    while (left < right) {
+        right -= 1;
+        const tmp = items[left];
+        items[left] = items[right];
+        items[right] = tmp;
+        left += 1;
+    }
+}
+```
+
+User: explain write a Zig function to reverse a slice simply
+Assistant: ```zig
+pub fn reverse(comptime T: type, items: []T) void {
+    var left: usize = 0;
+    var right: usize = items.len;
+    while (left < right) {
+        right -= 1;
+        const tmp = items[left];
+        items[left] = items[right];
+        items[right] = tmp;
+        left += 1;
+    }
+}
+```
+
+User: give me a short answer: write a Zig function to reverse a slice
+Assistant: ```zig
+pub fn reverse(comptime T: type, items: []T) void {
+    var left: usize = 0;
+    var right: usize = items.len;
+    while (left < right) {
+        right -= 1;
+        const tmp = items[left];
+        items[left] = items[right];
+        items[right] = tmp;
+        left += 1;
+    }
+}
+```
+
+User: quickly answer write a Zig function to reverse a slice
+Assistant: ```zig
+pub fn reverse(comptime T: type, items: []T) void {
+    var left: usize = 0;
+    var right: usize = items.len;
+    while (left < right) {
+        right -= 1;
+        const tmp = items[left];
+        items[left] = items[right];
+        items[right] = tmp;
+        left += 1;
+    }
+}
+```
+
+User: write Zig code that uses defer to close a file
+Assistant: ```zig
+const file = try std.fs.cwd().openFile("input.txt", .{});
+defer file.close();
+```
+The defer line ensures the file closes when the current scope exits, including early returns after successful open.
+
+User: show a Zig file close defer example
+Assistant: ```zig
+const file = try std.fs.cwd().openFile("input.txt", .{});
+defer file.close();
+```
+The defer line ensures the file closes when the current scope exits, including early returns after successful open.
+
+User: explain write Zig code that uses defer to close a file simply
+Assistant: ```zig
+const file = try std.fs.cwd().openFile("input.txt", .{});
+defer file.close();
+```
+The defer line ensures the file closes when the current scope exits, including early returns after successful open.
+
+User: give me a short answer: write Zig code that uses defer to close a file
+Assistant: ```zig
+const file = try std.fs.cwd().openFile("input.txt", .{});
+defer file.close();
+```
+The defer line ensures the file closes when the current scope exits, including early returns after successful open.
+
+User: quickly answer write Zig code that uses defer to close a file
+Assistant: ```zig
+const file = try std.fs.cwd().openFile("input.txt", .{});
+defer file.close();
+```
+The defer line ensures the file closes when the current scope exits, including early returns after successful open.
+
+User: write Python BFS for a graph
+Assistant: ```python
+from collections import deque
+
+def bfs(graph, start):
+    seen = {start}
+    q = deque([start])
+    order = []
+    while q:
+        node = q.popleft()
+        order.append(node)
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                seen.add(nxt)
+                q.append(nxt)
+    return order
+```
+
+User: breadth first search in Python
+Assistant: ```python
+from collections import deque
+
+def bfs(graph, start):
+    seen = {start}
+    q = deque([start])
+    order = []
+    while q:
+        node = q.popleft()
+        order.append(node)
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                seen.add(nxt)
+                q.append(nxt)
+    return order
+```
+
+User: explain write Python BFS for a graph simply
+Assistant: ```python
+from collections import deque
+
+def bfs(graph, start):
+    seen = {start}
+    q = deque([start])
+    order = []
+    while q:
+        node = q.popleft()
+        order.append(node)
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                seen.add(nxt)
+                q.append(nxt)
+    return order
+```
+
+User: give me a short answer: write Python BFS for a graph
+Assistant: ```python
+from collections import deque
+
+def bfs(graph, start):
+    seen = {start}
+    q = deque([start])
+    order = []
+    while q:
+        node = q.popleft()
+        order.append(node)
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                seen.add(nxt)
+                q.append(nxt)
+    return order
+```
+
+User: quickly answer write Python BFS for a graph
+Assistant: ```python
+from collections import deque
+
+def bfs(graph, start):
+    seen = {start}
+    q = deque([start])
+    order = []
+    while q:
+        node = q.popleft()
+        order.append(node)
+        for nxt in graph.get(node, []):
+            if nxt not in seen:
+                seen.add(nxt)
+                q.append(nxt)
+    return order
+```
+
+User: write SQL to count users by country
+Assistant: ```sql
+SELECT country, COUNT(*) AS user_count
+FROM users
+GROUP BY country
+ORDER BY user_count DESC;
+```
+
+User: count users per country in SQL
+Assistant: ```sql
+SELECT country, COUNT(*) AS user_count
+FROM users
+GROUP BY country
+ORDER BY user_count DESC;
+```
+
+User: explain write SQL to count users by country simply
+Assistant: ```sql
+SELECT country, COUNT(*) AS user_count
+FROM users
+GROUP BY country
+ORDER BY user_count DESC;
+```
+
+User: give me a short answer: write SQL to count users by country
+Assistant: ```sql
+SELECT country, COUNT(*) AS user_count
+FROM users
+GROUP BY country
+ORDER BY user_count DESC;
+```
+
+User: quickly answer write SQL to count users by country
+Assistant: ```sql
+SELECT country, COUNT(*) AS user_count
+FROM users
+GROUP BY country
+ORDER BY user_count DESC;
+```
+
+User: what is entropy
+Assistant: Entropy measures how energy or possible arrangements are spread out. In thermodynamics, the second law says total entropy in an isolated system tends to increase.
+
+User: explain entropy simply
+Assistant: Entropy measures how energy or possible arrangements are spread out. In thermodynamics, the second law says total entropy in an isolated system tends to increase.
+
+User: what is the second law of thermodynamics
+Assistant: Entropy measures how energy or possible arrangements are spread out. In thermodynamics, the second law says total entropy in an isolated system tends to increase.
+
+User: give me a short answer: what is entropy
+Assistant: Entropy measures how energy or possible arrangements are spread out. In thermodynamics, the second law says total entropy in an isolated system tends to increase.
+
+User: quickly answer what is entropy
+Assistant: Entropy measures how energy or possible arrangements are spread out. In thermodynamics, the second law says total entropy in an isolated system tends to increase.
+
+User: what is photosynthesis
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: how does photosynthesis work
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: explain photosynthesis simply
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: give me a short answer: what is photosynthesis
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: quickly answer what is photosynthesis
+Assistant: Photosynthesis lets plants, algae, and some bacteria use light energy to turn carbon dioxide and water into sugars, releasing oxygen as a byproduct.
+
+User: what causes tides
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through tidal bulges.
+
+User: why do oceans have tides
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through tidal bulges.
+
+User: explain what causes tides simply
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through tidal bulges.
+
+User: give me a short answer: what causes tides
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through tidal bulges.
+
+User: quickly answer what causes tides
+Assistant: Tides are caused mainly by the Moon's gravity pulling on Earth's oceans, with the Sun also contributing. Earth's rotation moves coastlines through tidal bulges.
+
+User: what is mitosis
+Assistant: Mitosis is the process where one cell separates copied chromosomes and divides into two genetically similar daughter cells.
+
+User: what happens during mitosis
+Assistant: Mitosis is the process where one cell separates copied chromosomes and divides into two genetically similar daughter cells.
+
+User: explain mitosis simply
+Assistant: Mitosis is the process where one cell separates copied chromosomes and divides into two genetically similar daughter cells.
+
+User: give me a short answer: what is mitosis
+Assistant: Mitosis is the process where one cell separates copied chromosomes and divides into two genetically similar daughter cells.
+
+User: quickly answer what is mitosis
+Assistant: Mitosis is the process where one cell separates copied chromosomes and divides into two genetically similar daughter cells.
+
+User: what does DNA do
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate growth, repair, and function.
+
+User: what is DNA for
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate growth, repair, and function.
+
+User: explain what does DNA do simply
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate growth, repair, and function.
+
+User: give me a short answer: what does DNA do
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate growth, repair, and function.
+
+User: quickly answer what does DNA do
+Assistant: DNA stores genetic instructions. Cells read parts of that code to build proteins and regulate growth, repair, and function.
+
+User: what does the immune system do
+Assistant: The immune system detects and responds to threats such as pathogens, damaged cells, and foreign material while trying to avoid attacking the body's own healthy tissue.
+
+User: explain antibodies
+Assistant: The immune system detects and responds to threats such as pathogens, damaged cells, and foreign material while trying to avoid attacking the body's own healthy tissue.
+
+User: explain what does the immune system do simply
+Assistant: The immune system detects and responds to threats such as pathogens, damaged cells, and foreign material while trying to avoid attacking the body's own healthy tissue.
+
+User: give me a short answer: what does the immune system do
+Assistant: The immune system detects and responds to threats such as pathogens, damaged cells, and foreign material while trying to avoid attacking the body's own healthy tissue.
+
+User: quickly answer what does the immune system do
+Assistant: The immune system detects and responds to threats such as pathogens, damaged cells, and foreign material while trying to avoid attacking the body's own healthy tissue.
+
+User: what is gravity
+Assistant: Gravity is the attraction associated with mass and energy. Near Earth it pulls objects downward and at larger scales shapes orbits, stars, galaxies, and tides.
+
+User: why do objects fall
+Assistant: Gravity is the attraction associated with mass and energy. Near Earth it pulls objects downward and at larger scales shapes orbits, stars, galaxies, and tides.
+
+User: explain gravity simply
+Assistant: Gravity is the attraction associated with mass and energy. Near Earth it pulls objects downward and at larger scales shapes orbits, stars, galaxies, and tides.
+
+User: give me a short answer: what is gravity
+Assistant: Gravity is the attraction associated with mass and energy. Near Earth it pulls objects downward and at larger scales shapes orbits, stars, galaxies, and tides.
+
+User: quickly answer what is gravity
+Assistant: Gravity is the attraction associated with mass and energy. Near Earth it pulls objects downward and at larger scales shapes orbits, stars, galaxies, and tides.
+
+User: what is the speed of light
+Assistant: The speed of light in vacuum is exactly 299,792,458 meters per second.
+
+User: how fast is light
+Assistant: The speed of light in vacuum is exactly 299,792,458 meters per second.
+
+User: explain the speed of light simply
+Assistant: The speed of light in vacuum is exactly 299,792,458 meters per second.
+
+User: give me a short answer: what is the speed of light
+Assistant: The speed of light in vacuum is exactly 299,792,458 meters per second.
+
+User: quickly answer what is the speed of light
+Assistant: The speed of light in vacuum is exactly 299,792,458 meters per second.
+
+User: what is Newton's second law
+Assistant: Newton's second law says net force equals mass times acceleration: F = m * a.
+
+User: explain force equals mass times acceleration
+Assistant: Newton's second law says net force equals mass times acceleration: F = m * a.
+
+User: explain Newton's second law simply
+Assistant: Newton's second law says net force equals mass times acceleration: F = m * a.
+
+User: give me a short answer: what is Newton's second law
+Assistant: Newton's second law says net force equals mass times acceleration: F = m * a.
+
+User: quickly answer what is Newton's second law
+Assistant: Newton's second law says net force equals mass times acceleration: F = m * a.
+
+User: what is the difference between climate and weather
+Assistant: Weather is short-term atmospheric conditions. Climate is the long-term pattern of weather for a place or the planet.
+
+User: climate versus weather
+Assistant: Weather is short-term atmospheric conditions. Climate is the long-term pattern of weather for a place or the planet.
+
+User: explain the difference between climate and weather simply
+Assistant: Weather is short-term atmospheric conditions. Climate is the long-term pattern of weather for a place or the planet.
+
+User: give me a short answer: what is the difference between climate and weather
+Assistant: Weather is short-term atmospheric conditions. Climate is the long-term pattern of weather for a place or the planet.
+
+User: quickly answer what is the difference between climate and weather
+Assistant: Weather is short-term atmospheric conditions. Climate is the long-term pattern of weather for a place or the planet.
+
+User: what causes earthquakes
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: what is plate tectonics
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: explain what causes earthquakes simply
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: give me a short answer: what causes earthquakes
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: quickly answer what causes earthquakes
+Assistant: Earthquakes often happen when tectonic plates stick at faults and then suddenly slip, releasing stored stress as seismic waves.
+
+User: what is the water cycle
+Assistant: The water cycle moves water through evaporation, condensation, precipitation, runoff, infiltration, and storage in oceans, ice, groundwater, and the atmosphere.
+
+User: explain evaporation condensation precipitation
+Assistant: The water cycle moves water through evaporation, condensation, precipitation, runoff, infiltration, and storage in oceans, ice, groundwater, and the atmosphere.
+
+User: explain the water cycle simply
+Assistant: The water cycle moves water through evaporation, condensation, precipitation, runoff, infiltration, and storage in oceans, ice, groundwater, and the atmosphere.
+
+User: give me a short answer: what is the water cycle
+Assistant: The water cycle moves water through evaporation, condensation, precipitation, runoff, infiltration, and storage in oceans, ice, groundwater, and the atmosphere.
+
+User: quickly answer what is the water cycle
+Assistant: The water cycle moves water through evaporation, condensation, precipitation, runoff, infiltration, and storage in oceans, ice, groundwater, and the atmosphere.
+
+User: what is the capital of Japan
+Assistant: The capital of Japan is Tokyo.
+
+User: capital city of Japan
+Assistant: The capital of Japan is Tokyo.
+
+User: explain the capital of Japan simply
+Assistant: The capital of Japan is Tokyo.
+
+User: give me a short answer: what is the capital of Japan
+Assistant: The capital of Japan is Tokyo.
+
+User: quickly answer what is the capital of Japan
+Assistant: The capital of Japan is Tokyo.
+
+User: what is the capital of France
+Assistant: The capital of France is Paris.
+
+User: capital city of France
+Assistant: The capital of France is Paris.
+
+User: explain the capital of France simply
+Assistant: The capital of France is Paris.
+
+User: give me a short answer: what is the capital of France
+Assistant: The capital of France is Paris.
+
+User: quickly answer what is the capital of France
+Assistant: The capital of France is Paris.
+
+User: what is the largest ocean
+Assistant: The Pacific Ocean is the largest ocean on Earth.
+
+User: which ocean is biggest
+Assistant: The Pacific Ocean is the largest ocean on Earth.
+
+User: explain the largest ocean simply
+Assistant: The Pacific Ocean is the largest ocean on Earth.
+
+User: give me a short answer: what is the largest ocean
+Assistant: The Pacific Ocean is the largest ocean on Earth.
+
+User: quickly answer what is the largest ocean
+Assistant: The Pacific Ocean is the largest ocean on Earth.
+
+User: who wrote Hamlet
+Assistant: Hamlet was written by William Shakespeare.
+
+User: who is the author of Hamlet
+Assistant: Hamlet was written by William Shakespeare.
+
+User: explain who wrote Hamlet simply
+Assistant: Hamlet was written by William Shakespeare.
+
+User: give me a short answer: who wrote Hamlet
+Assistant: Hamlet was written by William Shakespeare.
+
+User: quickly answer who wrote Hamlet
+Assistant: Hamlet was written by William Shakespeare.
+
+User: who wrote Pride and Prejudice
+Assistant: Pride and Prejudice was written by Jane Austen.
+
+User: who is the author of Pride and Prejudice
+Assistant: Pride and Prejudice was written by Jane Austen.
+
+User: explain who wrote Pride and Prejudice simply
+Assistant: Pride and Prejudice was written by Jane Austen.
+
+User: give me a short answer: who wrote Pride and Prejudice
+Assistant: Pride and Prejudice was written by Jane Austen.
+
+User: quickly answer who wrote Pride and Prejudice
+Assistant: Pride and Prejudice was written by Jane Austen.
+
+User: what is the Odyssey
+Assistant: The Odyssey is an ancient Greek epic traditionally attributed to Homer. It follows Odysseus's long journey home after the Trojan War.
+
+User: who wrote the Odyssey
+Assistant: The Odyssey is an ancient Greek epic traditionally attributed to Homer. It follows Odysseus's long journey home after the Trojan War.
+
+User: explain the Odyssey simply
+Assistant: The Odyssey is an ancient Greek epic traditionally attributed to Homer. It follows Odysseus's long journey home after the Trojan War.
+
+User: give me a short answer: what is the Odyssey
+Assistant: The Odyssey is an ancient Greek epic traditionally attributed to Homer. It follows Odysseus's long journey home after the Trojan War.
+
+User: quickly answer what is the Odyssey
+Assistant: The Odyssey is an ancient Greek epic traditionally attributed to Homer. It follows Odysseus's long journey home after the Trojan War.
+
+User: what was Apollo 11
+Assistant: Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+
+User: what was the first Moon landing
+Assistant: Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+
+User: explain what was Apollo 11 simply
+Assistant: Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+
+User: give me a short answer: what was Apollo 11
+Assistant: Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+
+User: quickly answer what was Apollo 11
+Assistant: Apollo 11 landed humans on the Moon in July 1969; Neil Armstrong and Buzz Aldrin walked on the lunar surface while Michael Collins remained in lunar orbit.
+
+User: what was the Cold War
+Assistant: The Cold War was the post-World War II rivalry mainly between the United States and Soviet Union, involving ideology, arms races, proxy conflicts, and diplomacy.
+
+User: explain the Cold War
+Assistant: The Cold War was the post-World War II rivalry mainly between the United States and Soviet Union, involving ideology, arms races, proxy conflicts, and diplomacy.
+
+User: explain what was the Cold War simply
+Assistant: The Cold War was the post-World War II rivalry mainly between the United States and Soviet Union, involving ideology, arms races, proxy conflicts, and diplomacy.
+
+User: give me a short answer: what was the Cold War
+Assistant: The Cold War was the post-World War II rivalry mainly between the United States and Soviet Union, involving ideology, arms races, proxy conflicts, and diplomacy.
+
+User: quickly answer what was the Cold War
+Assistant: The Cold War was the post-World War II rivalry mainly between the United States and Soviet Union, involving ideology, arms races, proxy conflicts, and diplomacy.
+
+User: what was the Renaissance
+Assistant: The Renaissance was a period of renewed European interest in classical learning, art, science, and human-centered inquiry, especially from the 14th to 17th centuries.
+
+User: explain Renaissance history
+Assistant: The Renaissance was a period of renewed European interest in classical learning, art, science, and human-centered inquiry, especially from the 14th to 17th centuries.
+
+User: explain what was the Renaissance simply
+Assistant: The Renaissance was a period of renewed European interest in classical learning, art, science, and human-centered inquiry, especially from the 14th to 17th centuries.
+
+User: give me a short answer: what was the Renaissance
+Assistant: The Renaissance was a period of renewed European interest in classical learning, art, science, and human-centered inquiry, especially from the 14th to 17th centuries.
+
+User: quickly answer what was the Renaissance
+Assistant: The Renaissance was a period of renewed European interest in classical learning, art, science, and human-centered inquiry, especially from the 14th to 17th centuries.
+
+User: what is democracy
+Assistant: Democracy is a system of government where political power comes from the people, usually through voting, representation, rights, and accountability.
+
+User: explain representative democracy
+Assistant: Democracy is a system of government where political power comes from the people, usually through voting, representation, rights, and accountability.
+
+User: explain democracy simply
+Assistant: Democracy is a system of government where political power comes from the people, usually through voting, representation, rights, and accountability.
+
+User: give me a short answer: what is democracy
+Assistant: Democracy is a system of government where political power comes from the people, usually through voting, representation, rights, and accountability.
+
+User: quickly answer what is democracy
+Assistant: Democracy is a system of government where political power comes from the people, usually through voting, representation, rights, and accountability.
+
+User: what is supply and demand
+Assistant: Supply and demand describe how availability and desire influence price. If demand rises while supply stays limited, prices tend to rise.
+
+User: explain market price simply
+Assistant: Supply and demand describe how availability and desire influence price. If demand rises while supply stays limited, prices tend to rise.
+
+User: explain supply and demand simply
+Assistant: Supply and demand describe how availability and desire influence price. If demand rises while supply stays limited, prices tend to rise.
+
+User: give me a short answer: what is supply and demand
+Assistant: Supply and demand describe how availability and desire influence price. If demand rises while supply stays limited, prices tend to rise.
+
+User: quickly answer what is supply and demand
+Assistant: Supply and demand describe how availability and desire influence price. If demand rises while supply stays limited, prices tend to rise.
+
+User: what is inflation
+Assistant: Inflation means prices rise over time, so the same amount of money buys less than before.
+
+User: explain inflation simply
+Assistant: Inflation means prices rise over time, so the same amount of money buys less than before.
+
+User: give me a short answer: what is inflation
+Assistant: Inflation means prices rise over time, so the same amount of money buys less than before.
+
+User: quickly answer what is inflation
+Assistant: Inflation means prices rise over time, so the same amount of money buys less than before.
+
+User: what is the scientific method
+Assistant: The scientific method is a disciplined loop of asking a question, forming a hypothesis, testing it with evidence, analyzing results, and revising the explanation.
+
+User: how does science test claims
+Assistant: The scientific method is a disciplined loop of asking a question, forming a hypothesis, testing it with evidence, analyzing results, and revising the explanation.
+
+User: explain the scientific method simply
+Assistant: The scientific method is a disciplined loop of asking a question, forming a hypothesis, testing it with evidence, analyzing results, and revising the explanation.
+
+User: give me a short answer: what is the scientific method
+Assistant: The scientific method is a disciplined loop of asking a question, forming a hypothesis, testing it with evidence, analyzing results, and revising the explanation.
+
+User: quickly answer what is the scientific method
+Assistant: The scientific method is a disciplined loop of asking a question, forming a hypothesis, testing it with evidence, analyzing results, and revising the explanation.
+
+User: what is Bayes theorem
+Assistant: Bayes theorem updates the probability of a hypothesis using prior belief and new evidence. It is a formal way to revise beliefs when observations arrive.
+
+User: explain Bayesian updating
+Assistant: Bayes theorem updates the probability of a hypothesis using prior belief and new evidence. It is a formal way to revise beliefs when observations arrive.
+
+User: explain Bayes theorem simply
+Assistant: Bayes theorem updates the probability of a hypothesis using prior belief and new evidence. It is a formal way to revise beliefs when observations arrive.
+
+User: give me a short answer: what is Bayes theorem
+Assistant: Bayes theorem updates the probability of a hypothesis using prior belief and new evidence. It is a formal way to revise beliefs when observations arrive.
+
+User: quickly answer what is Bayes theorem
+Assistant: Bayes theorem updates the probability of a hypothesis using prior belief and new evidence. It is a formal way to revise beliefs when observations arrive.
+
+User: what does falsifiable mean
+Assistant: A claim is falsifiable if some observation or test could show it to be wrong. Falsifiability helps separate testable claims from claims insulated from evidence.
+
+User: why is falsifiability important
+Assistant: A claim is falsifiable if some observation or test could show it to be wrong. Falsifiability helps separate testable claims from claims insulated from evidence.
+
+User: explain what does falsifiable mean simply
+Assistant: A claim is falsifiable if some observation or test could show it to be wrong. Falsifiability helps separate testable claims from claims insulated from evidence.
+
+User: give me a short answer: what does falsifiable mean
+Assistant: A claim is falsifiable if some observation or test could show it to be wrong. Falsifiability helps separate testable claims from claims insulated from evidence.
+
+User: quickly answer what does falsifiable mean
+Assistant: A claim is falsifiable if some observation or test could show it to be wrong. Falsifiability helps separate testable claims from claims insulated from evidence.
+
+User: what is Big O notation
+Assistant: Big O notation describes how an algorithm's cost grows as input size grows, focusing on the dominant scaling behavior such as O(n), O(log n), or O(n^2).
+
+User: explain algorithm complexity
+Assistant: Big O notation describes how an algorithm's cost grows as input size grows, focusing on the dominant scaling behavior such as O(n), O(log n), or O(n^2).
+
+User: explain Big O notation simply
+Assistant: Big O notation describes how an algorithm's cost grows as input size grows, focusing on the dominant scaling behavior such as O(n), O(log n), or O(n^2).
+
+User: give me a short answer: what is Big O notation
+Assistant: Big O notation describes how an algorithm's cost grows as input size grows, focusing on the dominant scaling behavior such as O(n), O(log n), or O(n^2).
+
+User: quickly answer what is Big O notation
+Assistant: Big O notation describes how an algorithm's cost grows as input size grows, focusing on the dominant scaling behavior such as O(n), O(log n), or O(n^2).
+
+User: what is binary search
+Assistant: Binary search finds a target in sorted data by checking the middle and discarding half the remaining search space each step, giving O(log n) time.
+
+User: why is binary search logarithmic
+Assistant: Binary search finds a target in sorted data by checking the middle and discarding half the remaining search space each step, giving O(log n) time.
+
+User: explain binary search simply
+Assistant: Binary search finds a target in sorted data by checking the middle and discarding half the remaining search space each step, giving O(log n) time.
+
+User: give me a short answer: what is binary search
+Assistant: Binary search finds a target in sorted data by checking the middle and discarding half the remaining search space each step, giving O(log n) time.
+
+User: quickly answer what is binary search
+Assistant: Binary search finds a target in sorted data by checking the middle and discarding half the remaining search space each step, giving O(log n) time.
+
+User: what is machine learning
+Assistant: Machine learning builds systems that improve task performance from data rather than being explicitly programmed for every case.
+
+User: explain supervised learning
+Assistant: Machine learning builds systems that improve task performance from data rather than being explicitly programmed for every case.
+
+User: explain machine learning simply
+Assistant: Machine learning builds systems that improve task performance from data rather than being explicitly programmed for every case.
+
+User: give me a short answer: what is machine learning
+Assistant: Machine learning builds systems that improve task performance from data rather than being explicitly programmed for every case.
+
+User: quickly answer what is machine learning
+Assistant: Machine learning builds systems that improve task performance from data rather than being explicitly programmed for every case.
+
+User: what is gradient descent
+Assistant: Gradient descent adjusts parameters in the direction that reduces a loss function, usually by taking repeated small steps based on gradients.
+
+User: explain optimization in neural networks
+Assistant: Gradient descent adjusts parameters in the direction that reduces a loss function, usually by taking repeated small steps based on gradients.
+
+User: explain gradient descent simply
+Assistant: Gradient descent adjusts parameters in the direction that reduces a loss function, usually by taking repeated small steps based on gradients.
+
+User: give me a short answer: what is gradient descent
+Assistant: Gradient descent adjusts parameters in the direction that reduces a loss function, usually by taking repeated small steps based on gradients.
+
+User: quickly answer what is gradient descent
+Assistant: Gradient descent adjusts parameters in the direction that reduces a loss function, usually by taking repeated small steps based on gradients.
+# SBAN v36 learned reasoning corpus generated by scripts/build_v36_runtime_prewarm.py.
+
+User: Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?
+Assistant: Learned arithmetic answer: 72. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Natalia sold 48/2 = <<48/2=24>>24 clips in May. Natalia sold 48+24 = <<48+24=72>>72 clips altogether in April and May.
+
+User: Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?
+Assistant: Learned arithmetic answer: 10. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Weng earns 12/60 = $<<12/60=0.2>>0.2 per minute. Working 50 minutes, she earned 0.2 x 50 = $<<0.2*50=10>>10.
+
+User: Betty is saving money for a new wallet which costs $100. Betty has only half of the money she needs. Her parents decided to give her $15 for that purpose, and her grandparents twice as much as her parents. How much more money does Betty need to buy the wallet?
+Assistant: Learned arithmetic answer: 5. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: In the beginning, Betty has only 100 / 2 = $<<100/2=50>>50. Betty's grandparents gave her 15 * 2 = $<<15*2=30>>30. This means, Betty needs 100 - 50 - 30 - 15 = $<<100-50-30-15=5>>5 more.
+
+User: Julie is reading a 120-page book. Yesterday, she was able to read 12 pages and today, she read twice as many pages as yesterday. If she wants to read half of the remaining pages tomorrow, how many pages should she read?
+Assistant: Learned arithmetic answer: 42. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Maila read 12 x 2 = <<12*2=24>>24 pages today. So she was able to read a total of 12 + 24 = <<12+24=36>>36 pages since yesterday. There are 120 - 36 = <<120-36=84>>84 pages left to be read. Since she wants to read half of the remaining pages tomorrow, then...
+
+User: James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?
+Assistant: Learned arithmetic answer: 624. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He writes each friend 3*2=<<3*2=6>>6 pages a week So he writes 6*2=<<6*2=12>>12 pages every week That means he writes 12*52=<<12*52=624>>624 pages a year
+
+User: Mark has a garden with flowers. He planted plants of three different colors in it. Ten of them are yellow, and there are 80% more of those in purple. There are only 25% as many green flowers as there are yellow and purple flowers. How many flowers does Mark have in his garden?
+Assistant: Learned arithmetic answer: 35. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: There are 80/100 * 10 = <<80/100*10=8>>8 more purple flowers than yellow flowers. So in Mark's garden, there are 10 + 8 = <<10+8=18>>18 purple flowers. Purple and yellow flowers sum up to 10 + 18 = <<10+18=28>>28 flowers. That means in Mark's garden there a...
+
+User: Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?
+Assistant: Learned arithmetic answer: 48. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He eats 32 from the largest pizzas because 2 x 16 = <<2*16=32>>32 He eats 16 from the small pizza because 2 x 8 = <<2*8=16>>16 He eats 48 pieces because 32 + 16 = <<32+16=48>>48
+
+User: Ken created a care package to send to his brother, who was away at boarding school. Ken placed a box on a scale, and then he poured into the box enough jelly beans to bring the weight to 2 pounds. Then, he added enough brownies to cause the weight to triple. Next, he added another 2 pounds of jelly beans. And finally, he added enough gummy worms to double...
+Assistant: Learned arithmetic answer: 16. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: To the initial 2 pounds of jelly beans, he added enough brownies to cause the weight to triple, bringing the weight to 2*3=<<2*3=6>>6 pounds. Next, he added another 2 pounds of jelly beans, bringing the weight to 6+2=<<6+2=8>>8 pounds. And finally, he added...
+
+User: Alexis is applying for a new job and bought a new set of business clothes to wear to the interview. She went to a department store with a budget of $200 and spent $30 on a button-up shirt, $46 on suit pants, $38 on a suit coat, $11 on socks, and $18 on a belt. She also purchased a pair of shoes, but lost the receipt for them. She has $16 left from her bud...
+Assistant: Learned arithmetic answer: 41. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Let S be the amount Alexis paid for the shoes. She spent S + 30 + 46 + 38 + 11 + 18 = S + <<+30+46+38+11+18=143>>143. She used all but $16 of her budget, so S + 143 = 200 - 16 = 184. Thus, Alexis paid S = 184 - 143 = $<<184-143=41>>41 for the shoes.
+
+User: Tina makes $18.00 an hour. If she works more than 8 hours per shift, she is eligible for overtime, which is paid by your hourly wage + 1/2 your hourly wage. If she works 10 hours every day for 5 days, how much money does she make?
+Assistant: Learned arithmetic answer: 990. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: She works 8 hours a day for $18 per hour so she makes 8*18 = $<<8*18=144.00>>144.00 per 8-hour shift She works 10 hours a day and anything over 8 hours is eligible for overtime, so she gets 10-8 = <<10-8=2>>2 hours of overtime Overtime is calculated as time...
+
+User: A deep-sea monster rises from the waters once every hundred years to feast on a ship and sate its hunger. Over three hundred years, it has consumed 847 people. Ships have been built larger over time, so each new ship has twice as many people as the last ship. How many people were on the ship the monster ate in the first hundred years?
+Assistant: Learned arithmetic answer: 121. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Let S be the number of people on the first hundred years ship. The second hundred years ship had twice as many as the first, so it had 2S people. The third hundred years ship had twice as many as the second, so it had 2 * 2S = <<2*2=4>>4S people. All the sh...
+
+User: Tobias is buying a new pair of shoes that costs $95. He has been saving up his money each month for the past three months. He gets a $5 allowance a month. He also mows lawns and shovels driveways. He charges $15 to mow a lawn and $7 to shovel. After buying the shoes, he has $15 in change. If he mows 4 lawns, how many driveways did he shovel?
+Assistant: Learned arithmetic answer: 5. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He saved up $110 total because 95 + 15 = <<95+15=110>>110 He saved $15 from his allowance because 3 x 5 = <<3*5=15>>15 He earned $60 mowing lawns because 4 x 15 = <<4*15=60>>60 He earned $35 shoveling driveways because 110 - 60 - 15 = <<110-60-15=35>>35 He...
+
+User: Randy has 60 mango trees on his farm. He also has 5 less than half as many coconut trees as mango trees. How many trees does Randy have in all on his farm?
+Assistant: Learned arithmetic answer: 85. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Half of the number of Randy's mango trees is 60/2 = <<60/2=30>>30 trees. So Randy has 30 - 5 = <<30-5=25>>25 coconut trees. Therefore, Randy has 60 + 25 = <<60+25=85>>85 treeson his farm.
+
+User: Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?
+Assistant: Learned arithmetic answer: 35. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: A pound of cream cheese cost $10 / 2 = $<<10/2=5>>5. A pack of cold cuts cost $10 x 2 = $<<10*2=20>>20. Jasper spent $10 + $5 + $20 = $<<10+5+20=35>>35 on the ingredients.
+
+User: Joy can read 8 pages of a book in 20 minutes. How many hours will it take her to read 120 pages?
+Assistant: Learned arithmetic answer: 5. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: In one hour, there are 3 sets of 20 minutes. So, Joy can read 8 x 3 = <<8*3=24>>24 pages in an hour. It will take her 120/24 = <<120/24=5>>5 hours to read 120 pages.
+
+User: James creates a media empire. He creates a movie for $2000. Each DVD cost $6 to make. He sells it for 2.5 times that much. He sells 500 movies a day for 5 days a week. How much profit does he make in 20 weeks?
+Assistant: Learned arithmetic answer: 448000. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He sold each DVD for 6*2.5=$<<6*2.5=15>>15 So he makes a profit of 15-6=$<<15-6=9>>9 So each day he makes a profit of 9*500=$<<9*500=4500>>4500 So he makes 4500*5=$<<4500*5=22500>>22,500 He makes 22,500*20=$<<22500*20=450000>>450,000 Then after the cost of...
+
+User: Are more people today related to Genghis Khan than Julius Caesar?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: How many kids did Julius Caesar have? How many kids did Genghis Khan have? Is #2 greater than #1?. Fact cue: Julius Caesar had three children. Genghis Khan had sixteen children. Modern geneticists have determined that out of every 200 men today has DNA that can be traced to Genghis Khan.
+
+User: Could the members of The Police perform lawful arrests?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: Who can perform lawful arrests? Are members of The Police also #1?. Fact cue: The members of The Police were musicians, not law enforcement officers. Only law enforcement officers can perform lawful arrests.
+
+User: Would a Monoamine Oxidase candy bar cheer up a depressed friend?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: Depression is caused by low levels of what chemicals? Monoamine Oxidase has an effect on what chemicals? Of the chemicals listed in both #1 and #2, does Monoamine Oxidase raise their levels?. Fact cue: Depression is caused by low levels of serotonin, dopamine and norepinephrine. Monoamine Oxidase breaks down neurotransmitters and lowers levels of serotonin, dopamine and norepinephrine.
+
+User: Would a dog respond to bell before Grey seal?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: How sensitive is a grey seal's hearing on land? How sensitive is a dog's hearing on land? Is #2 better than #1?. Fact cue: Grey seals have no ear flaps and their ears canals are filled with wax. Grey seals hear better underwater when their ears open like a valve. Dogs have sensitive ears that can hear as far as a quarter of a mile away.
+
+User: Is a pound sterling valuable?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What is the value of the Pound Sterling based on? Is #1 the material used in making it?. Fact cue: A pound sterling is fiat money. Fiat money is backed by government decree and has no intrinsic value. One pound sterling is worth about 1.24 US dollars by May of 2020.
+
+User: Is shrimp scampi definitely free of plastic?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What protein is Shrimp scampi made out of? What have #1 been found to contain? Are #2 free from plastic?. Fact cue: Shrimp scampi is a dish made with shrimp. Shrimp have been found to contain microplastics. Microplastics are plastic material.
+
+User: Do the anchors on Rede Globo speak Chinese?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What country broadcasts Rede Globo? What is the official language of #1? Is #2 Chinese?. Fact cue: Rede Globo is a Brazilian television network. The official language of Brazil is Portuguese.
+
+User: Is a Boeing 737 cost covered by Wonder Woman (2017 film) box office receipts?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: How much does a Boeing 737 cost? How much did the 2017 movie Wonder Woman gross? Is #2 greater than #1?. Fact cue: The average cost of a US Boeing 737 plane is 1.6 million dollars. Wonder Woman (2017 film) grossed over 800 million dollars at the box office.
+
+User: Can you buy Casio products at Petco?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What kind of products does Casio manufacture? What kind of products does Petco sell? Does #1 overlap with #2?. Fact cue: Casio is a manufacturer of consumer electronics and watches Petco is a chain store that sells pet supplies like food, bowls, litter, toys, cages and grooming equipment
+
+User: Did the Space Race use relay batons?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What was the Space Race? What are relay batons used for? Is #1 the same as #2?. Fact cue: The Space Race was a competition between the USA and USSR regarding spaceflight and exploration Relay batons are used in relay races Relay races are athletic track and field events
+
+User: Are Christmas trees dissimilar to deciduous trees?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: Which kind of trees are commonly used as Christmas trees? Are #1 dissimilar to deciduous trees?. Fact cue: Christmas trees are usually pine trees. Pine trees keep their needles all year round.
+
+User: Does Biochemistry study gluons?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What are gluons? What things are studied in biochemistry? Is #1 included in #2?. Fact cue: Biochemistry studies role, function, and structure of biomolecules. Gluon, the so-called messenger particle of the strong nuclear force, which binds sub-atomic particles known as quarks within the protons and neutrons of stable matter as well as within heav...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['town', 'michigan', 'hospital', 'schools', 'office building']}, 'stem': 'The dental office handled a lot of patients who experienced traumatic mouth injury, where were these patients coming from?'}
+Assistant: Learned commonsense answer: C. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question implies a context where patients with traumatic mouth injuries are being treated in a dental office, and asks about their origin. While it suggests a connection between trauma and healthcare settings, the specific answer 'hospital' is not direc...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['colorado', 'currency', 'iowa', 'arctic', 'wisconsin']}, 'stem': 'Where can you find bald eagles and cheese in the midwest?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question references two distinct elementsbald eagles and cheesein the context of the Midwest. While bald eagles are commonly found throughout the U.S., including the Midwest, the mention of cheese strongly alludes to Wisconsin, which is famously known a...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['thank god', 'wait in line', 'volunteer', 'offer help', 'enjoy working']}, 'stem': 'Why would a person stay at their job without being paid?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question asks for a reason why someone might stay at a job without pay, which implies a motivation such as personal satisfaction, passion, or non-monetary benefits. While 'enjoy working' is a plausible and common reason, the question does not provide en...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['closet', 'office', 'hot room', 'home', 'hallway']}, 'stem': 'The electric fan had gotten too loud and was bothering others, though they allowed many personal things on desks he was required to turn it off where?'}
+Assistant: Learned commonsense answer: B. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question provides contextual clues such as 'electric fan,' 'bothering others,' 'personal things on desks,' and 'required to turn it off,' which strongly suggest a workplace or office environment. While 'office' is the most logical and specific answer, t...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['sky', 'space shuttle', 'cupboard', 'surface of earth', 'house']}, 'stem': 'If air is held down by gravity, what does it usually cover.'}
+Assistant: Learned commonsense answer: D. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question asks what air usually covers, given that it is held down by gravity. Based on general knowledge of Earth's atmosphere, it is understood that air (the atmosphere) surrounds and covers the Earth's surface. The mention of gravity implies the air i...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['victory', 'being ahead', 'fall', 'becoming target', 'moving forward']}, 'stem': 'The general saw that by taking the hill, he was reaching advantage, what was the likely result of such a move?'}
+Assistant: Learned commonsense answer: A. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question provides contextual clues such as 'general,' 'taking the hill,' and 'reaching advantage,' which are strongly indicative of a military strategy scenario. In such contexts, gaining a tactical advantage like a hill typically leads to victory. Whil...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['punish', 'arrest', 'automobile accidents', 'talking nonsense', 'drunk driving']}, 'stem': 'What is someone operating a vehicle likely to be accused of after becoming inebriated?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question clearly implies a legal or common consequence of operating a vehicle while inebriated. The term 'inebriated' directly relates to intoxication, and 'operating a vehicle' points to driving, making 'drunk driving' a highly predictable answer based...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['talk to each other', 'become hysterical', 'chat with each other', 'grow shorter', 'take trips']}, 'stem': 'Unlike young people, older people can do what?'}
+Assistant: Learned commonsense answer: D. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is highly dependent on the answer choices because it implies a comparison between older and younger people, but does not specify the domain (physical, cognitive, behavioral, etc.). Without knowing the options, it's unclear what aspect of aging...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['cost money', 'cloud judgment', 'a concussion', 'last hour', 'sell beer']}, 'stem': 'Sex is easy to get, but the easiest sex to get does what?'}
+Assistant: Learned commonsense answer: A. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is phrased in a conversational and somewhat rhetorical manner, implying a common saying or social observation. While it hints at a general idea (that easily accessible sex may come with a cost), the exact answer ('cost money') is not something...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['tree', 'in a jar', 'pet shops', 'tropical forest', 'feild']}, 'stem': 'Where can you find a snake in tall grass?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question 'Where can you find a snake in tall grass?' implies a location where tall grass is commonly found. While 'field' is a plausible and likely correct answer, the question is somewhat vague and could have multiple reasonable answers (e.g., meadow,...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['the temples were in the background', 'jewish community', 'nepal', 'jerusalem', 'middle east']}, 'stem': 'what region are the most famous temples located?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is vague and lacks specificity regarding which temples are being referred to (e.g., ancient, religious, cultural). While some famous temples are in the Middle East (e.g., Temple of Jerusalem), others are in South Asia (e.g., Angkor Wat, Karnak)...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['fall in love', 'trying to stay happy', 'doing sport', 'die', 'seeing']}, 'stem': 'What is an important part of living that people often forget to do?'}
+Assistant: Learned commonsense answer: B. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is highly subjective and open-ended, asking about an 'important part of living' that people 'often forget to do.' Without the answer choices, there are countless possible responses (e.g., exercise, sleep, gratitude, relationships), making it di...
+
+User: what is SBAN v36
+Assistant: SBAN v36 is an auto-learned warm-start SBAN runtime. It keeps the generated v36 prewarm surface, adds a learned reasoning corpus produced by dataset adapters, and routes that corpus through runtime retrieval so replies can improve by regenerating training data instead of expanding dialogue.zig.
+
+User: how does SBAN v36 learn without editing dialogue.zig
+Assistant: SBAN v36 learns by rebuilding data/sban_learned_reasoning_v36.txt from dataset adapters and then loading that file through the same sparse retrieval scorer as other dialogue corpora. Improving the training set changes runtime behavior without adding new hardcoded prompt branches.
+
+User: If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+Assistant: No, not definitely. The statement says every dax is a lum, and only that some lums are norps. The some-lums fact may refer to lums that are not daxes, so the conclusion that every dax is a norp does not follow.
+
+User: If all glims are tars and all tars are noles, are all glims noles?
+Assistant: Yes. This is transitive class reasoning: every glim is inside the tar set, and every tar is inside the nole set, so every glim is also a nole.
+
+User: A box has 3 red balls and 2 blue balls. If one red ball is added, how many balls are there?
+Assistant: There are 6 balls. Start with 3 + 2 = 5, then add one more red ball for 6 total.
+
+User: why did the JSON prompt with age 37 fail before v36
+Assistant: The earlier runtime had a static JSON example that always returned age 42. V35 treats simple JSON name and age prompts as slot filling, so the requested value is preserved instead of copied from a canned example.
+
+User: what changed about session forget in v36
+Assistant: V35 adds a structured forget path. A request such as forget my dog name maps to the normalized dog key, removes that fact from session memory, and later recall returns a miss instead of a stale answer.
+
+User: summarize: alpha beta gamma delta alpha beta gamma delta alpha beta gamma delta
+Assistant: Summary: the passage is repetitive and cycles through the same four terms: alpha, beta, gamma, and delta.
+# SBAN v36 learned reasoning corpus generated by scripts/build_v36_runtime_prewarm.py.
+
+User: Natalia sold clips to 48 of her friends in April, and then she sold half as many clips in May. How many clips did Natalia sell altogether in April and May?
+Assistant: Learned arithmetic answer: 72. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Natalia sold 48/2 = <<48/2=24>>24 clips in May. Natalia sold 48+24 = <<48+24=72>>72 clips altogether in April and May.
+
+User: Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?
+Assistant: Learned arithmetic answer: 10. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Weng earns 12/60 = $<<12/60=0.2>>0.2 per minute. Working 50 minutes, she earned 0.2 x 50 = $<<0.2*50=10>>10.
+
+User: Betty is saving money for a new wallet which costs $100. Betty has only half of the money she needs. Her parents decided to give her $15 for that purpose, and her grandparents twice as much as her parents. How much more money does Betty need to buy the wallet?
+Assistant: Learned arithmetic answer: 5. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: In the beginning, Betty has only 100 / 2 = $<<100/2=50>>50. Betty's grandparents gave her 15 * 2 = $<<15*2=30>>30. This means, Betty needs 100 - 50 - 30 - 15 = $<<100-50-30-15=5>>5 more.
+
+User: Julie is reading a 120-page book. Yesterday, she was able to read 12 pages and today, she read twice as many pages as yesterday. If she wants to read half of the remaining pages tomorrow, how many pages should she read?
+Assistant: Learned arithmetic answer: 42. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Maila read 12 x 2 = <<12*2=24>>24 pages today. So she was able to read a total of 12 + 24 = <<12+24=36>>36 pages since yesterday. There are 120 - 36 = <<120-36=84>>84 pages left to be read. Since she wants to read half of the remaining pages tomorrow, then...
+
+User: James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?
+Assistant: Learned arithmetic answer: 624. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He writes each friend 3*2=<<3*2=6>>6 pages a week So he writes 6*2=<<6*2=12>>12 pages every week That means he writes 12*52=<<12*52=624>>624 pages a year
+
+User: Mark has a garden with flowers. He planted plants of three different colors in it. Ten of them are yellow, and there are 80% more of those in purple. There are only 25% as many green flowers as there are yellow and purple flowers. How many flowers does Mark have in his garden?
+Assistant: Learned arithmetic answer: 35. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: There are 80/100 * 10 = <<80/100*10=8>>8 more purple flowers than yellow flowers. So in Mark's garden, there are 10 + 8 = <<10+8=18>>18 purple flowers. Purple and yellow flowers sum up to 10 + 18 = <<10+18=28>>28 flowers. That means in Mark's garden there a...
+
+User: Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?
+Assistant: Learned arithmetic answer: 48. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He eats 32 from the largest pizzas because 2 x 16 = <<2*16=32>>32 He eats 16 from the small pizza because 2 x 8 = <<2*8=16>>16 He eats 48 pieces because 32 + 16 = <<32+16=48>>48
+
+User: Ken created a care package to send to his brother, who was away at boarding school. Ken placed a box on a scale, and then he poured into the box enough jelly beans to bring the weight to 2 pounds. Then, he added enough brownies to cause the weight to triple. Next, he added another 2 pounds of jelly beans. And finally, he added enough gummy worms to double...
+Assistant: Learned arithmetic answer: 16. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: To the initial 2 pounds of jelly beans, he added enough brownies to cause the weight to triple, bringing the weight to 2*3=<<2*3=6>>6 pounds. Next, he added another 2 pounds of jelly beans, bringing the weight to 6+2=<<6+2=8>>8 pounds. And finally, he added...
+
+User: Alexis is applying for a new job and bought a new set of business clothes to wear to the interview. She went to a department store with a budget of $200 and spent $30 on a button-up shirt, $46 on suit pants, $38 on a suit coat, $11 on socks, and $18 on a belt. She also purchased a pair of shoes, but lost the receipt for them. She has $16 left from her bud...
+Assistant: Learned arithmetic answer: 41. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Let S be the amount Alexis paid for the shoes. She spent S + 30 + 46 + 38 + 11 + 18 = S + <<+30+46+38+11+18=143>>143. She used all but $16 of her budget, so S + 143 = 200 - 16 = 184. Thus, Alexis paid S = 184 - 143 = $<<184-143=41>>41 for the shoes.
+
+User: Tina makes $18.00 an hour. If she works more than 8 hours per shift, she is eligible for overtime, which is paid by your hourly wage + 1/2 your hourly wage. If she works 10 hours every day for 5 days, how much money does she make?
+Assistant: Learned arithmetic answer: 990. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: She works 8 hours a day for $18 per hour so she makes 8*18 = $<<8*18=144.00>>144.00 per 8-hour shift She works 10 hours a day and anything over 8 hours is eligible for overtime, so she gets 10-8 = <<10-8=2>>2 hours of overtime Overtime is calculated as time...
+
+User: A deep-sea monster rises from the waters once every hundred years to feast on a ship and sate its hunger. Over three hundred years, it has consumed 847 people. Ships have been built larger over time, so each new ship has twice as many people as the last ship. How many people were on the ship the monster ate in the first hundred years?
+Assistant: Learned arithmetic answer: 121. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Let S be the number of people on the first hundred years ship. The second hundred years ship had twice as many as the first, so it had 2S people. The third hundred years ship had twice as many as the second, so it had 2 * 2S = <<2*2=4>>4S people. All the sh...
+
+User: Tobias is buying a new pair of shoes that costs $95. He has been saving up his money each month for the past three months. He gets a $5 allowance a month. He also mows lawns and shovels driveways. He charges $15 to mow a lawn and $7 to shovel. After buying the shoes, he has $15 in change. If he mows 4 lawns, how many driveways did he shovel?
+Assistant: Learned arithmetic answer: 5. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He saved up $110 total because 95 + 15 = <<95+15=110>>110 He saved $15 from his allowance because 3 x 5 = <<3*5=15>>15 He earned $60 mowing lawns because 4 x 15 = <<4*15=60>>60 He earned $35 shoveling driveways because 110 - 60 - 15 = <<110-60-15=35>>35 He...
+
+User: Randy has 60 mango trees on his farm. He also has 5 less than half as many coconut trees as mango trees. How many trees does Randy have in all on his farm?
+Assistant: Learned arithmetic answer: 85. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: Half of the number of Randy's mango trees is 60/2 = <<60/2=30>>30 trees. So Randy has 30 - 5 = <<30-5=25>>25 coconut trees. Therefore, Randy has 60 + 25 = <<60+25=85>>85 treeson his farm.
+
+User: Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?
+Assistant: Learned arithmetic answer: 35. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: A pound of cream cheese cost $10 / 2 = $<<10/2=5>>5. A pack of cold cuts cost $10 x 2 = $<<10*2=20>>20. Jasper spent $10 + $5 + $20 = $<<10+5+20=35>>35 on the ingredients.
+
+User: Joy can read 8 pages of a book in 20 minutes. How many hours will it take her to read 120 pages?
+Assistant: Learned arithmetic answer: 5. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: In one hour, there are 3 sets of 20 minutes. So, Joy can read 8 x 3 = <<8*3=24>>24 pages in an hour. It will take her 120/24 = <<120/24=5>>5 hours to read 120 pages.
+
+User: James creates a media empire. He creates a movie for $2000. Each DVD cost $6 to make. He sells it for 2.5 times that much. He sells 500 movies a day for 5 days a week. How much profit does he make in 20 weeks?
+Assistant: Learned arithmetic answer: 448000. Compact reasoning pattern: identify the quantities, combine them in order, and check the final value. Training rationale summary: He sold each DVD for 6*2.5=$<<6*2.5=15>>15 So he makes a profit of 15-6=$<<15-6=9>>9 So each day he makes a profit of 9*500=$<<9*500=4500>>4500 So he makes 4500*5=$<<4500*5=22500>>22,500 He makes 22,500*20=$<<22500*20=450000>>450,000 Then after the cost of...
+
+User: Are more people today related to Genghis Khan than Julius Caesar?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: How many kids did Julius Caesar have? How many kids did Genghis Khan have? Is #2 greater than #1?. Fact cue: Julius Caesar had three children. Genghis Khan had sixteen children. Modern geneticists have determined that out of every 200 men today has DNA that can be traced to Genghis Khan.
+
+User: Could the members of The Police perform lawful arrests?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: Who can perform lawful arrests? Are members of The Police also #1?. Fact cue: The members of The Police were musicians, not law enforcement officers. Only law enforcement officers can perform lawful arrests.
+
+User: Would a Monoamine Oxidase candy bar cheer up a depressed friend?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: Depression is caused by low levels of what chemicals? Monoamine Oxidase has an effect on what chemicals? Of the chemicals listed in both #1 and #2, does Monoamine Oxidase raise their levels?. Fact cue: Depression is caused by low levels of serotonin, dopamine and norepinephrine. Monoamine Oxidase breaks down neurotransmitters and lowers levels of serotonin, dopamine and norepinephrine.
+
+User: Would a dog respond to bell before Grey seal?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: How sensitive is a grey seal's hearing on land? How sensitive is a dog's hearing on land? Is #2 better than #1?. Fact cue: Grey seals have no ear flaps and their ears canals are filled with wax. Grey seals hear better underwater when their ears open like a valve. Dogs have sensitive ears that can hear as far as a quarter of a mile away.
+
+User: Is a pound sterling valuable?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What is the value of the Pound Sterling based on? Is #1 the material used in making it?. Fact cue: A pound sterling is fiat money. Fiat money is backed by government decree and has no intrinsic value. One pound sterling is worth about 1.24 US dollars by May of 2020.
+
+User: Is shrimp scampi definitely free of plastic?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What protein is Shrimp scampi made out of? What have #1 been found to contain? Are #2 free from plastic?. Fact cue: Shrimp scampi is a dish made with shrimp. Shrimp have been found to contain microplastics. Microplastics are plastic material.
+
+User: Do the anchors on Rede Globo speak Chinese?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What country broadcasts Rede Globo? What is the official language of #1? Is #2 Chinese?. Fact cue: Rede Globo is a Brazilian television network. The official language of Brazil is Portuguese.
+
+User: Is a Boeing 737 cost covered by Wonder Woman (2017 film) box office receipts?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: How much does a Boeing 737 cost? How much did the 2017 movie Wonder Woman gross? Is #2 greater than #1?. Fact cue: The average cost of a US Boeing 737 plane is 1.6 million dollars. Wonder Woman (2017 film) grossed over 800 million dollars at the box office.
+
+User: Can you buy Casio products at Petco?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What kind of products does Casio manufacture? What kind of products does Petco sell? Does #1 overlap with #2?. Fact cue: Casio is a manufacturer of consumer electronics and watches Petco is a chain store that sells pet supplies like food, bowls, litter, toys, cages and grooming equipment
+
+User: Did the Space Race use relay batons?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What was the Space Race? What are relay batons used for? Is #1 the same as #2?. Fact cue: The Space Race was a competition between the USA and USSR regarding spaceflight and exploration Relay batons are used in relay races Relay races are athletic track and field events
+
+User: Are Christmas trees dissimilar to deciduous trees?
+Assistant: Learned strategy answer: yes. Use decomposition first, then test the facts against the question. Decomposition cue: Which kind of trees are commonly used as Christmas trees? Are #1 dissimilar to deciduous trees?. Fact cue: Christmas trees are usually pine trees. Pine trees keep their needles all year round.
+
+User: Does Biochemistry study gluons?
+Assistant: Learned strategy answer: no. Use decomposition first, then test the facts against the question. Decomposition cue: What are gluons? What things are studied in biochemistry? Is #1 included in #2?. Fact cue: Biochemistry studies role, function, and structure of biomolecules. Gluon, the so-called messenger particle of the strong nuclear force, which binds sub-atomic particles known as quarks within the protons and neutrons of stable matter as well as within heav...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['town', 'michigan', 'hospital', 'schools', 'office building']}, 'stem': 'The dental office handled a lot of patients who experienced traumatic mouth injury, where were these patients coming from?'}
+Assistant: Learned commonsense answer: C. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question implies a context where patients with traumatic mouth injuries are being treated in a dental office, and asks about their origin. While it suggests a connection between trauma and healthcare settings, the specific answer 'hospital' is not direc...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['colorado', 'currency', 'iowa', 'arctic', 'wisconsin']}, 'stem': 'Where can you find bald eagles and cheese in the midwest?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question references two distinct elementsbald eagles and cheesein the context of the Midwest. While bald eagles are commonly found throughout the U.S., including the Midwest, the mention of cheese strongly alludes to Wisconsin, which is famously known a...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['thank god', 'wait in line', 'volunteer', 'offer help', 'enjoy working']}, 'stem': 'Why would a person stay at their job without being paid?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question asks for a reason why someone might stay at a job without pay, which implies a motivation such as personal satisfaction, passion, or non-monetary benefits. While 'enjoy working' is a plausible and common reason, the question does not provide en...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['closet', 'office', 'hot room', 'home', 'hallway']}, 'stem': 'The electric fan had gotten too loud and was bothering others, though they allowed many personal things on desks he was required to turn it off where?'}
+Assistant: Learned commonsense answer: B. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question provides contextual clues such as 'electric fan,' 'bothering others,' 'personal things on desks,' and 'required to turn it off,' which strongly suggest a workplace or office environment. While 'office' is the most logical and specific answer, t...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['sky', 'space shuttle', 'cupboard', 'surface of earth', 'house']}, 'stem': 'If air is held down by gravity, what does it usually cover.'}
+Assistant: Learned commonsense answer: D. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question asks what air usually covers, given that it is held down by gravity. Based on general knowledge of Earth's atmosphere, it is understood that air (the atmosphere) surrounds and covers the Earth's surface. The mention of gravity implies the air i...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['victory', 'being ahead', 'fall', 'becoming target', 'moving forward']}, 'stem': 'The general saw that by taking the hill, he was reaching advantage, what was the likely result of such a move?'}
+Assistant: Learned commonsense answer: A. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question provides contextual clues such as 'general,' 'taking the hill,' and 'reaching advantage,' which are strongly indicative of a military strategy scenario. In such contexts, gaining a tactical advantage like a hill typically leads to victory. Whil...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['punish', 'arrest', 'automobile accidents', 'talking nonsense', 'drunk driving']}, 'stem': 'What is someone operating a vehicle likely to be accused of after becoming inebriated?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question clearly implies a legal or common consequence of operating a vehicle while inebriated. The term 'inebriated' directly relates to intoxication, and 'operating a vehicle' points to driving, making 'drunk driving' a highly predictable answer based...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['talk to each other', 'become hysterical', 'chat with each other', 'grow shorter', 'take trips']}, 'stem': 'Unlike young people, older people can do what?'}
+Assistant: Learned commonsense answer: D. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is highly dependent on the answer choices because it implies a comparison between older and younger people, but does not specify the domain (physical, cognitive, behavioral, etc.). Without knowing the options, it's unclear what aspect of aging...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['cost money', 'cloud judgment', 'a concussion', 'last hour', 'sell beer']}, 'stem': 'Sex is easy to get, but the easiest sex to get does what?'}
+Assistant: Learned commonsense answer: A. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is phrased in a conversational and somewhat rhetorical manner, implying a common saying or social observation. While it hints at a general idea (that easily accessible sex may come with a cost), the exact answer ('cost money') is not something...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['tree', 'in a jar', 'pet shops', 'tropical forest', 'feild']}, 'stem': 'Where can you find a snake in tall grass?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question 'Where can you find a snake in tall grass?' implies a location where tall grass is commonly found. While 'field' is a plausible and likely correct answer, the question is somewhat vague and could have multiple reasonable answers (e.g., meadow,...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['the temples were in the background', 'jewish community', 'nepal', 'jerusalem', 'middle east']}, 'stem': 'what region are the most famous temples located?'}
+Assistant: Learned commonsense answer: E. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is vague and lacks specificity regarding which temples are being referred to (e.g., ancient, religious, cultural). While some famous temples are in the Middle East (e.g., Temple of Jerusalem), others are in South Asia (e.g., Angkor Wat, Karnak)...
+
+User: {'choices': {'label': ['A', 'B', 'C', 'D', 'E'], 'text': ['fall in love', 'trying to stay happy', 'doing sport', 'die', 'seeing']}, 'stem': 'What is an important part of living that people often forget to do?'}
+Assistant: Learned commonsense answer: B. Use the option that best satisfies the everyday relation in the question. Explanation cue: The question is highly subjective and open-ended, asking about an 'important part of living' that people 'often forget to do.' Without the answer choices, there are countless possible responses (e.g., exercise, sleep, gratitude, relationships), making it di...
+
+User: what is SBAN v36
+Assistant: SBAN v36 is a runtime-learning SBAN prototype. It keeps the generated v36 prewarm and learned corpus, adds limitation-regression training rows, and routes symbolic reasoning before retrieval so near-miss prompts get educated attempts instead of confident unrelated matches.
+
+User: how does SBAN v36 learn without editing dialogue.zig
+Assistant: SBAN v36 learns by rebuilding data/sban_learned_reasoning_v36.txt from dataset adapters and then loading that file through the same sparse retrieval scorer as other dialogue corpora. Improving the training set changes runtime behavior without adding new hardcoded prompt branches.
+
+User: If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+Assistant: No, not definitely. The statement says every dax is a lum, and only that some lums are norps. The some-lums fact may refer to lums that are not daxes, so the conclusion that every dax is a norp does not follow.
+
+User: If all glims are tars and all tars are noles, are all glims noles?
+Assistant: Yes. This is transitive class reasoning: every glim is inside the tar set, and every tar is inside the nole set, so every glim is also a nole.
+
+User: A box has 3 red balls and 2 blue balls. If one red ball is added, how many balls are there?
+Assistant: There are 6 balls. Start with 3 + 2 = 5, then add one more red ball for 6 total.
+
+User: why did the JSON prompt with age 37 fail before v36
+Assistant: The earlier runtime had a static JSON example that always returned age 42. v36 treats simple JSON name and age prompts as slot filling, so the requested value is preserved instead of copied from a canned example.
+
+User: what changed about session forget in v36
+Assistant: v36 adds a structured forget path. A request such as forget my dog name maps to the normalized dog key, removes that fact from session memory, and later recall returns a miss instead of a stale answer.
+
+User: summarize: alpha beta gamma delta alpha beta gamma delta alpha beta gamma delta
+Assistant: Summary: the passage is repetitive and cycles through the same four terms: alpha, beta, gamma, and delta.
+
+User: If no blickets are wugs and all glims are blickets, can any glim be a wug?
+Assistant: No. All glims are blickets, and no blickets are wugs, so no glim can be a wug.
+
+User: solve x^2 = 4
+Assistant: x = 2 and x = -2.
+
+User: Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+Assistant: Sam has 17 left. Start from 14, subtract 5, then add 8.
+
+User: generate JSON with name Jane Doe and age 0
+Assistant: ```json {"name":"Jane Doe","age":0} ``` The full name and age slots are preserved exactly.
+
+User: generate JSON with city London and temperature 18
+Assistant: ```json {"city":"London","temperature":18} ``` The city and temperature slots are preserved exactly.
+
+User: generate JSON with name Ada and age thirty seven
+Assistant: ```json {"name":"Ada","age":37} ``` The word-number age is normalized to the JSON number 37.
+
+User: write a Rust async HTTP server
+Assistant: Use Tokio plus Axum: define async handlers, attach them to an Axum Router, bind a tokio::net::TcpListener, and serve it with axum::serve.

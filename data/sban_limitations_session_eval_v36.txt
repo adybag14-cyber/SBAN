@@ -1,0 +1,23 @@
+User: If no blickets are wugs and all glims are blickets, can any glim be a wug?
+Expect: No
+
+User: solve x^2 = 4
+Expect: x = -2
+
+User: Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+Expect: 17
+
+User: generate JSON with name Jane Doe and age 0
+Expect: "name":"Jane Doe"
+
+User: generate JSON with city London and temperature 18
+Expect: "temperature":18
+
+User: generate JSON with name Ada and age thirty seven
+Expect: "age":37
+
+User: what is the weather tomorrow
+Expect: external lookup
+
+User: write a Rust async HTTP server
+Expect: axum

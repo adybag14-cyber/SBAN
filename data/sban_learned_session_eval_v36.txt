@@ -1,0 +1,8 @@
+User: If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+Expect: does not follow
+
+User: If all glims are tars and all tars are noles, are all glims noles?
+Expect: transitive
+
+User: A box has 3 red balls and 2 blue balls. If one red ball is added, how many balls are there?
+Expect: 6

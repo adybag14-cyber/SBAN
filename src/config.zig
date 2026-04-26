@@ -41,6 +41,7 @@ pub const NetworkVariant = enum {
     v33_arch,
     v34_arch,
     v35_arch,
+    v36_arch,
 
     pub fn label(self: NetworkVariant) []const u8 {
         return switch (self) {
@@ -55,6 +56,7 @@ pub const NetworkVariant = enum {
             .v33_arch => "v33_arch",
             .v34_arch => "v34_arch",
             .v35_arch => "v35_arch",
+            .v36_arch => "v36_arch",
         };
     }
 };
@@ -88,6 +90,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_1bit_powerchat",
             .v34_arch => "sban_v34_1bit_warmstart",
             .v35_arch => "sban_v35_1bit_autolearn",
+            .v36_arch => "sban_v36_1bit_runtime_learning",
         },
         2 => switch (variant) {
             .default => unreachable,
@@ -101,6 +104,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_2bit_powerchat",
             .v34_arch => "sban_v34_2bit_warmstart",
             .v35_arch => "sban_v35_2bit_autolearn",
+            .v36_arch => "sban_v36_2bit_runtime_learning",
         },
         3 => switch (variant) {
             .default => unreachable,
@@ -114,6 +118,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_3bit_powerchat",
             .v34_arch => "sban_v34_3bit_warmstart",
             .v35_arch => "sban_v35_3bit_autolearn",
+            .v36_arch => "sban_v36_3bit_runtime_learning",
         },
         4 => switch (variant) {
             .default => unreachable,
@@ -127,6 +132,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_4bit_powerchat",
             .v34_arch => "sban_v34_4bit_warmstart",
             .v35_arch => "sban_v35_4bit_autolearn",
+            .v36_arch => "sban_v36_4bit_runtime_learning",
         },
         5 => switch (variant) {
             .default => unreachable,
@@ -140,6 +146,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_5bit_powerchat",
             .v34_arch => "sban_v34_5bit_warmstart",
             .v35_arch => "sban_v35_5bit_autolearn",
+            .v36_arch => "sban_v36_5bit_runtime_learning",
         },
         6 => switch (variant) {
             .default => unreachable,
@@ -153,6 +160,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_6bit_powerchat",
             .v34_arch => "sban_v34_6bit_warmstart",
             .v35_arch => "sban_v35_6bit_autolearn",
+            .v36_arch => "sban_v36_6bit_runtime_learning",
         },
         7 => switch (variant) {
             .default => unreachable,
@@ -166,6 +174,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_7bit_powerchat",
             .v34_arch => "sban_v34_7bit_warmstart",
             .v35_arch => "sban_v35_7bit_autolearn",
+            .v36_arch => "sban_v36_7bit_runtime_learning",
         },
         8 => switch (variant) {
             .default => unreachable,
@@ -179,6 +188,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_8bit_powerchat",
             .v34_arch => "sban_v34_8bit_warmstart",
             .v35_arch => "sban_v35_8bit_autolearn",
+            .v36_arch => "sban_v36_8bit_runtime_learning",
         },
         else => switch (variant) {
             .v31_arch => "sban_v31_custom_reasoning",
@@ -186,6 +196,7 @@ pub fn sbanVariantLabel(bits: u8, variant: NetworkVariant) []const u8 {
             .v33_arch => "sban_v33_custom_powerchat",
             .v34_arch => "sban_v34_custom_warmstart",
             .v35_arch => "sban_v35_custom_autolearn",
+            .v36_arch => "sban_v36_custom_runtime_learning",
             else => "sban_v29_custom_variant",
         },
     };
@@ -483,7 +494,7 @@ pub fn configForVariant(bits: u8, variant: NetworkVariant) NetworkConfig {
             config.continuation_min_support = 1;
             config.continuation_max_cells = 2800000;
         },
-        .v34_arch, .v35_arch => {
+        .v34_arch, .v35_arch, .v36_arch => {
             config.enable_long_term = true;
             config.enable_token_region_routing = true;
             config.enable_hybrid_experts = true;
@@ -523,7 +534,7 @@ pub fn configForVariant(bits: u8, variant: NetworkVariant) NetworkConfig {
             config.continuation_support_prior = 1;
             config.continuation_min_support = 1;
             config.continuation_max_cells = 3400000;
-            if (variant == .v35_arch) {
+            if (variant == .v35_arch or variant == .v36_arch) {
                 config.max_short_memories = 28672;
                 config.max_long_memories = 4608;
                 config.initial_short_target = 6656;
@@ -538,6 +549,22 @@ pub fn configForVariant(bits: u8, variant: NetworkVariant) NetworkConfig {
                 config.markov5_bonus_ppm = 280;
                 config.continuation_bonus_ppm = 2800;
                 config.continuation_max_cells = 3600000;
+            }
+            if (variant == .v36_arch) {
+                config.max_short_memories = 30720;
+                config.max_long_memories = 5120;
+                config.initial_short_target = 7168;
+                config.max_carry_memories = 192;
+                config.max_hidden_per_hop = 112;
+                config.hybrid_share_ppm = 96;
+                config.hybrid_recent_drift_bonus = 26;
+                config.recent_markov2_bonus_ppm = 1140;
+                config.burst_bonus_ppm = 660;
+                config.markov3_bonus_ppm = 1100;
+                config.markov4_bonus_ppm = 840;
+                config.markov5_bonus_ppm = 320;
+                config.continuation_bonus_ppm = 3000;
+                config.continuation_max_cells = 3800000;
             }
         },
     }
@@ -613,6 +640,10 @@ pub fn v34ReleaseConfig(bits: u8) NetworkConfig {
 
 pub fn v35ReleaseConfig(bits: u8) NetworkConfig {
     return configForVariant(bits, .v35_arch);
+}
+
+pub fn v36ReleaseConfig(bits: u8) NetworkConfig {
+    return configForVariant(bits, .v36_arch);
 }
 
 pub fn v18ReleaseConfig(bits: u8) NetworkConfig {

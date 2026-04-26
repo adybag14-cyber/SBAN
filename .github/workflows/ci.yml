@@ -34,12 +34,12 @@ jobs:
       - name: Run unit tests
         run: |
           zig build test
-          python -m py_compile scripts/build_v35_runtime_prewarm.py scripts/vocab_size_probe_v35.py scripts/ci_smoke_v35.py
-          python scripts/build_v35_runtime_prewarm.py
-          python scripts/vocab_size_probe_v35.py
+          python -m py_compile scripts/build_v36_runtime_prewarm.py scripts/vocab_size_probe_v36.py scripts/ci_smoke_v36.py
+          python scripts/build_v36_runtime_prewarm.py
+          python scripts/vocab_size_probe_v36.py
 
       - name: Build release binary
         run: zig build -Doptimize=ReleaseFast
 
       - name: Smoke demo
-        run: python scripts/ci_smoke_v35.py
+        run: python scripts/ci_smoke_v36.py

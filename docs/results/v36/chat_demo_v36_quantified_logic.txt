@@ -1,0 +1,4 @@
+prompt=If no blickets are wugs and all glims are blickets, can any glim be a wug?
+mode=free-composed
+backend=cpu
+response=No. All glims are blickets, and no blickets are wugs, so no glim can be a wug.

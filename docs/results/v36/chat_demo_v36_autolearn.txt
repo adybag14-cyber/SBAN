@@ -1,0 +1,5 @@
+prompt=how does SBAN v36 learn without editing dialogue.zig
+mode=free-anchor
+backend=cpu
+matched_prompt=how does SBAN v36 learn without editing dialogue.zig
+response=SBAN v36 learns by rebuilding data/sban_learned_reasoning_v36.txt from dataset adapters and then loading that file through the same sparse retrieval scorer as other dialogue corpora. Improving the training set changes runtime behavior without adding new hardco... [truncated 20 of 280 bytes]

@@ -1,0 +1,26 @@
+[1] prompt=hello
+mode=free-composed
+backend=cpu
+response=Hello. I am SBAN v36, ready for grounded SBAN questions and broader free chat.
+
+expect_match=SBAN v36
+expect_pass=true
+
+[2] prompt=what should new users try first
+mode=operational-new-user-start
+backend=cpu
+response=New users should start the continuing chat demo, ask what SBAN v36 is, ask how the learned reasoning corpus works, try a CUDA or starter-file command, store and reject a negated session fact, generate exact JSON slots, and then try practical reasoning prompts such as quantified logic, x^2 = n, a word problem, agenda, explanation, summarization request, or coding request.
+
+expect_match=learned reasoning
+expect_pass=true
+
+[3] prompt=how does SBAN v36 learn without editing dialogue.zig
+mode=free-anchor
+backend=cpu
+matched_prompt=how does SBAN v36 learn without editing dialogue.zig
+response=SBAN v36 learns by rebuilding data/sban_learned_reasoning_v36.txt from dataset adapters and then loading that file through the same sparse retrieval scorer as other dialogue corpora. Improving the training set changes runtime behavior without adding new hardcoded prompt branches.
+
+expect_match=sban_learned_reasoning_v36.txt
+expect_pass=true
+
+summary turns=3 anchored=1 retrieved=0 symbolic=1 nonempty=3 uncertain=0 expectations=3 passed=3

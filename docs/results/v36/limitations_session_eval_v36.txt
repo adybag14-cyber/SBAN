@@ -1,0 +1,66 @@
+[1] prompt=If no blickets are wugs and all glims are blickets, can any glim be a wug?
+mode=free-composed
+backend=cpu
+response=No. All glims are blickets, and no blickets are wugs, so no glim can be a wug.
+
+expect_match=No
+expect_pass=true
+
+[2] prompt=solve x^2 = 4
+mode=symbolic-math
+backend=cpu
+response=x = 2 and x = -2.
+
+expect_match=x = -2
+expect_pass=true
+
+[3] prompt=Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+mode=learned-reasoning
+backend=cpu
+matched_prompt=Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+response=Sam has 17 left. Start from 14, subtract 5, then add 8.
+
+expect_match=17
+expect_pass=true
+
+[4] prompt=generate JSON with name Jane Doe and age 0
+mode=free-composed
+backend=cpu
+response=```json\n{"name":"Jane Doe","age":0}\n```\nThis is valid JSON and preserves the requested `name` and `age` slots exactly.
+
+expect_match="name":"Jane Doe"
+expect_pass=true
+
+[5] prompt=generate JSON with city London and temperature 18
+mode=free-composed
+backend=cpu
+response=```json\n{"city":"London","temperature":18}\n```\nThis is valid JSON and preserves the requested `city` and `temperature` slots exactly.
+
+expect_match="temperature":18
+expect_pass=true
+
+[6] prompt=generate JSON with name Ada and age thirty seven
+mode=free-composed
+backend=cpu
+response=```json\n{"name":"Ada","age":37}\n```\nThis is valid JSON and preserves the requested `name` and `age` slots exactly.
+
+expect_match="age":37
+expect_pass=true
+
+[7] prompt=what is the weather tomorrow
+mode=free-composed
+backend=cpu
+response=I do not have live current facts. This SBAN release uses static bundled knowledge, so current news, office holders, prices, and today's facts need an external lookup.
+
+expect_match=external lookup
+expect_pass=true
+
+[8] prompt=write a Rust async HTTP server
+mode=free-composed
+backend=cpu
+response=A compact Rust async HTTP server with Axum is:\n```rust\nuse axum::{routing::get, Router};\n\nasync fn health() -> &'static str {\n    "ok"\n}\n\n#[tokio::main]\nasync fn main() -> anyhow::Result<()> {\n    let app = Router::new().route("/health", get(health));\n    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;\n    axum::serve(listener, app).await?;\n    Ok(())\n}\n```\nUse `tokio`, `axum`, and optionally `anyhow` in `Cargo.toml`; add routes and shared state once the health endpoint is running.
+
+expect_match=axum
+expect_pass=true
+
+summary turns=8 anchored=0 retrieved=1 symbolic=1 nonempty=8 uncertain=0 expectations=8 passed=8

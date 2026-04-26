@@ -1,0 +1,17 @@
+what is SBAN v36
+how does SBAN v36 learn without editing dialogue.zig
+If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+generate JSON with name Ada and age 37
+my dog is max now
+what is my dog name
+forget my dog name
+what is my dog name
+what is DNS
+write a Zig function to reverse a slice
+If no blickets are wugs and all glims are blickets, can any glim be a wug?
+solve x^2 = 4
+Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+generate JSON with name Jane Doe and age 0
+generate JSON with city London and temperature 18
+generate JSON with name Ada and age thirty seven
+write a Rust async HTTP server

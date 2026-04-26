@@ -1,0 +1,4 @@
+prompt=solve x^2 = 4
+mode=symbolic-math
+backend=cpu
+response=x = 2 and x = -2.

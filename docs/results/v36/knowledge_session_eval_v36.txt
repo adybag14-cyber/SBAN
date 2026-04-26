@@ -1,0 +1,27 @@
+[1] prompt=what changed in v36
+mode=operational-release-change
+backend=cpu
+response=V36 focuses the auto-learned runtime on paths that validated well in v35: symbolic reasoning before retrieval, stricter learned-corpus acceptance, broader generated knowledge assets, exact JSON slot filling, negated-memory rejection, simple quadratic solving, real word-problem arithmetic, and practical Rust/Zig/Python coding help while keeping live-current facts behind an external-lookup boundary.
+
+expect_match=auto-learned
+expect_pass=true
+
+[2] prompt=what changed about session forget in v36
+mode=learned-reasoning
+backend=cpu
+matched_prompt=what changed about session forget in v36
+response=v36 adds a structured forget path. A request such as forget my dog name maps to the normalized dog key, removes that fact from session memory, and later recall returns a miss instead of a stale answer.
+
+expect_match=structured forget
+expect_pass=true
+
+[3] prompt=why did the JSON prompt with age 37 fail before v36
+mode=learned-reasoning
+backend=cpu
+matched_prompt=why did the JSON prompt with age 37 fail before v36
+response=The earlier runtime had a static JSON example that always returned age 42. v36 treats simple JSON name and age prompts as slot filling, so the requested value is preserved instead of copied from a canned example.
+
+expect_match=slot
+expect_pass=true
+
+summary turns=3 anchored=0 retrieved=2 symbolic=1 nonempty=3 uncertain=0 expectations=3 passed=3

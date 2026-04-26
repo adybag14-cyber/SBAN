@@ -1,0 +1,98 @@
+[1] prompt=what is SBAN v36
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v36
+response=SBAN v36 is an auto-learned warm-start non-transformer runtime. It uses generated prewarm knowledge plus a learned reasoning corpus built from online dataset adapters and deterministic fallbacks, so reply quality can improve by regenerating data instead of expanding dialogue.zig.
+
+expect_match=auto-learned
+expect_pass=true
+
+[2] prompt=generate JSON with name Ada and age 37
+mode=free-composed
+backend=cpu
+response=```json\n{"name":"Ada","age":37}\n```\nThis is valid JSON and preserves the requested `name` and `age` slots exactly.
+
+expect_match="age":37
+expect_pass=true
+
+[3] prompt=my dog is luna
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Luna, and I will remember that for this session.
+
+expect_match=Luna
+expect_pass=true
+
+[4] prompt=what is my dog name
+mode=session-recall
+backend=cpu
+response=Your dog's name is Luna.
+
+expect_match=Luna
+expect_pass=true
+
+[5] prompt=my dog is max now
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Max, and I will remember that for this session.
+
+expect_match=Max
+expect_pass=true
+
+[6] prompt=what is my dog name
+mode=session-recall
+backend=cpu
+response=Your dog's name is Max.
+
+expect_match=Max
+expect_pass=true
+
+[7] prompt=forget my dog name
+mode=session-forget
+backend=cpu
+response=Forgot your dog's name for this session.
+
+expect_match=Forgot
+expect_pass=true
+
+[8] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+expect_match=do not know
+expect_pass=true
+
+[9] prompt=my dog is not max
+mode=session-fact-rejected
+backend=cpu
+response=I will not store that as a session fact because the request is negated or says not to remember it.
+
+expect_match=not store
+expect_pass=true
+
+[10] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+expect_match=do not know
+expect_pass=true
+
+[11] prompt=please do not remember that my cat is io
+mode=session-fact-rejected
+backend=cpu
+response=I will not store that as a session fact because the request is negated or says not to remember it.
+
+expect_match=not store
+expect_pass=true
+
+[12] prompt=what is my cat name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your cat's name yet. Tell me with 'my cat is ...' and I will remember it for this session.
+
+expect_match=do not know
+expect_pass=true
+
+summary turns=12 anchored=1 retrieved=0 symbolic=10 nonempty=12 uncertain=0 expectations=12 passed=12

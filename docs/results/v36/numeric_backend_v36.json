@@ -1,0 +1,54 @@
+{
+  "release_cpu_250k": {
+    "accuracy": 99.4632,
+    "elapsed_seconds": 18.46793190005701,
+    "total_predictions": 250000,
+    "configured_backend": "cpu",
+    "cpu_steps": 250000,
+    "cpu_mt_steps": 0,
+    "cuda_steps": 0
+  },
+  "release_cpu_1m": {
+    "accuracy": 99.5334,
+    "elapsed_seconds": 47.81564319995232,
+    "total_predictions": 1000000,
+    "configured_backend": "cpu",
+    "cpu_steps": 1000000,
+    "cpu_mt_steps": 0,
+    "cuda_steps": 0
+  },
+  "release_cpu_mt4_250k": {
+    "accuracy": 99.4632,
+    "elapsed_seconds": 33.55921119998675,
+    "total_predictions": 250000,
+    "configured_backend": "cpu_mt",
+    "cpu_steps": 0,
+    "cpu_mt_steps": 250000,
+    "cuda_steps": 0
+  },
+  "release_cpu_mt4_1m": {
+    "accuracy": 99.5334,
+    "elapsed_seconds": 110.19737599999644,
+    "total_predictions": 1000000,
+    "configured_backend": "cpu_mt",
+    "cpu_steps": 0,
+    "cpu_mt_steps": 1000000,
+    "cuda_steps": 0
+  },
+  "speedup_cpu_mt_vs_cpu_250k": 0.5503,
+  "speedup_cpu_mt_vs_cpu_1m": 0.4339,
+  "release_cuda_250k": {
+    "accuracy": null,
+    "elapsed_seconds": null,
+    "total_predictions": 0,
+    "reason": "no_cuda_runtime"
+  },
+  "release_cuda_1m": {
+    "accuracy": null,
+    "elapsed_seconds": null,
+    "total_predictions": 0,
+    "reason": "no_cuda_runtime"
+  },
+  "speedup_cuda_vs_cpu_250k": null,
+  "speedup_cuda_vs_cpu_1m": null
+}

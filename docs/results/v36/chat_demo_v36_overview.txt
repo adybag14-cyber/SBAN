@@ -1,0 +1,5 @@
+prompt=what is SBAN v36
+mode=free-anchor
+backend=cpu
+matched_prompt=what is SBAN v36
+response=SBAN v36 is an auto-learned warm-start non-transformer runtime. It uses generated prewarm knowledge plus a learned reasoning corpus built from online dataset adapters and deterministic fallbacks, so reply quality can imp... [truncated 60 of 280 bytes]

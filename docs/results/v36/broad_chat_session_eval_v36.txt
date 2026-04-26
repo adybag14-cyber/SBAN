@@ -1,0 +1,33 @@
+[1] prompt=what is DNS
+mode=free-composed
+backend=cpu
+response=DNS stands for Domain Name System. It translates human-readable names like example.com into the IP addresses computers use to reach the right server.
+
+expect_match=Domain Name System
+expect_pass=true
+
+[2] prompt=what is entropy
+mode=free-composed
+backend=cpu
+response=Entropy is often described as a measure of energy dispersal or the number of possible microscopic arrangements. The second law says total entropy in an isolated system tends not to decrease.
+
+expect_match=second law
+expect_pass=true
+
+[3] prompt=write a Zig function to reverse a slice
+mode=free-composed
+backend=cpu
+response=A compact Zig in-place slice reverse is:\n```zig\npub fn reverse(comptime T: type, items: []T) void {\n    var left: usize = 0;\n    var right: usize = items.len;\n    while (left < right) {\n        right -= 1;\n        const tmp = items[left];\n        items[left] = items[right];\n        items[right] = tmp;\n        left += 1;\n    }\n}\n```\nIt swaps the outer elements and walks inward, so it works for any mutable slice type.
+
+expect_match=pub fn reverse
+expect_pass=true
+
+[4] prompt=write a Rust async HTTP server
+mode=free-composed
+backend=cpu
+response=A compact Rust async HTTP server with Axum is:\n```rust\nuse axum::{routing::get, Router};\n\nasync fn health() -> &'static str {\n    "ok"\n}\n\n#[tokio::main]\nasync fn main() -> anyhow::Result<()> {\n    let app = Router::new().route("/health", get(health));\n    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;\n    axum::serve(listener, app).await?;\n    Ok(())\n}\n```\nUse `tokio`, `axum`, and optionally `anyhow` in `Cargo.toml`; add routes and shared state once the health endpoint is running.
+
+expect_match=axum
+expect_pass=true
+
+summary turns=4 anchored=0 retrieved=0 symbolic=0 nonempty=4 uncertain=0 expectations=4 passed=4

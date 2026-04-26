@@ -1,0 +1,5 @@
+prompt=Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+mode=learned-reasoning
+backend=cpu
+matched_prompt=Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+response=Sam has 17 left. Start from 14, subtract 5, then add 8.

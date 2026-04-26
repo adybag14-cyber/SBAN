@@ -5,7 +5,7 @@ const dialogue = sban.dialogue;
 
 fn printUsage(writer: *Io.Writer) !void {
     try writer.writeAll(
-        \\SBAN v35 - non-transformer auto-learned warm-start runtime, reasoning, memory, and coding upgrade
+        \\SBAN v36 - non-transformer runtime-learning, reasoning, memory, and coding upgrade
         \\Usage:
         \\  zig build run -- eval-enwik [dataset_path] [json_output_path] [prefix|drift] [segment_len] [checkpoint_interval] [rolling_window]
         \\  zig build run -- eval-ablations [dataset_path] [json_output_path] [prefix|drift] [bits] [segment_len] [checkpoint_interval] [rolling_window]
@@ -41,6 +41,7 @@ fn parseVariant(name: []const u8) ?sban.config.NetworkVariant {
     if (std.mem.eql(u8, name, "v33_arch")) return .v33_arch;
     if (std.mem.eql(u8, name, "v34_arch")) return .v34_arch;
     if (std.mem.eql(u8, name, "v35_arch")) return .v35_arch;
+    if (std.mem.eql(u8, name, "v36_arch")) return .v36_arch;
     return null;
 }
 
@@ -50,7 +51,7 @@ fn buildCustomLabel(allocator: std.mem.Allocator, base: []const u8, label_overri
 }
 
 fn printExperimentSummary(writer: *Io.Writer, data: *const sban.experiment.ExperimentData) !void {
-    try writer.print("SBAN v35 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
+    try writer.print("SBAN v36 experiment {s} ({s})\n", .{ data.meta.name, data.meta.protocol });
     for (data.reports.items) |report| {
         const accuracy = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.total_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
         const top5 = if (report.summary.total_predictions == 0) 0.0 else @as(f64, @floatFromInt(report.summary.top5_correct)) / @as(f64, @floatFromInt(report.summary.total_predictions));
@@ -98,7 +99,7 @@ fn parseEvalBool(value: []const u8) !bool {
 }
 
 fn runNumericAccelInfo(arena: std.mem.Allocator, writer: *Io.Writer, args: []const []const u8) !void {
-    var net_config = sban.config.v35ReleaseConfig(4);
+    var net_config = sban.config.v36ReleaseConfig(4);
     for (args[2..]) |arg| {
         const eq_idx = std.mem.indexOfScalar(u8, arg, '=') orelse {
             try writer.print("invalid_override={s}\n", .{arg});
@@ -356,7 +357,7 @@ pub fn main(init: std.process.Init) !void {
     } else if (std.mem.eql(u8, command, "profile-variant")) {
         try runProfileVariant(arena, io, writer, args);
     } else if (std.mem.eql(u8, command, "inspect")) {
-        var net = try sban.network.Network.init(arena, sban.config.v35ReleaseConfig(4));
+        var net = try sban.network.Network.init(arena, sban.config.v36ReleaseConfig(4));
         defer net.deinit();
         _ = try net.step('t', 'h');
         _ = try net.step('h', 'e');

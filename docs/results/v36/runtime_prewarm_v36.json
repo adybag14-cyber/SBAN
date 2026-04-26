@@ -1,0 +1,26 @@
+{
+  "version": "v36",
+  "generated_at_utc": "2026-04-26T11:46:01.477096+00:00",
+  "prewarm_bytes": 375553,
+  "learned_bytes": 26293,
+  "learned_examples": 55,
+  "knowledge_pairs": 55,
+  "online_examples": 40,
+  "fallback_examples": 15,
+  "sources": {
+    "openai/gsm8k": 16,
+    "Ritu27/StrategyQA": 12,
+    "HuggingFaceFW/CommonsenseQA": 12,
+    "fallback-v36": 8,
+    "fallback-v36-limitations": 7
+  },
+  "categories": [
+    "arithmetic",
+    "strategyqa",
+    "commonsense",
+    "runtime-regression",
+    "limitation-repairs"
+  ],
+  "cold_seed_path": "data/sban_cold_seed_v36.txt",
+  "learned_path": "data/sban_learned_reasoning_v36.txt"
+}

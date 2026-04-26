@@ -1,0 +1,98 @@
+[1] prompt=what is SBAN v36
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is SBAN v36
+response=SBAN v36 is an auto-learned warm-start non-transformer runtime. It uses generated prewarm knowledge plus a learned reasoning corpus built from online dataset adapters and deterministic fallbacks, so reply quality can improve by regenerating data instead of expanding dialogue.zig.
+
+[2] prompt=how does SBAN v36 learn without editing dialogue.zig
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=how does SBAN v36 learn without editing dialogue.zig
+response=SBAN v36 learns by rebuilding data/sban_learned_reasoning_v36.txt from dataset adapters and then loading that file through the same sparse retrieval scorer as other dialogue corpora. Improving the training set changes runtime behavior without adding new hardcoded prompt branches.
+
+[3] prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=If all daxes are lums, and some lums are norps, are all daxes definitely norps? Explain.
+response=No, not definitely. The statement says every dax is a lum, and only that some lums are norps. The some-lums fact may refer to lums that are not daxes, so the conclusion that every dax is a norp does not follow.
+
+[4] prompt=generate JSON with name Ada and age 37
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=generate JSON with name Ada and age thirty seven
+response=```json {"name":"Ada","age":37} ``` The word-number age is normalized to the JSON number 37.
+
+[5] prompt=my dog is max now
+mode=session-fact-store
+backend=cpu
+response=Noted. Your dog's name is Max, and I will remember that for this session.
+
+[6] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+[7] prompt=forget my dog name
+mode=session-forget-miss
+backend=cpu
+response=I did not have a stored dog name to forget in this session.
+
+[8] prompt=what is my dog name
+mode=session-recall-miss
+backend=cpu
+response=I do not know your dog's name yet. Tell me with 'my dog is ...' and I will remember it for this session.
+
+[9] prompt=what is DNS
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=what is DNS
+response=DNS stands for Domain Name System. It translates names such as example.com into IP addresses that networked computers use to route traffic.
+
+[10] prompt=write a Zig function to reverse a slice
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=write a Zig function to reverse a slice
+response=```zig
+
+[11] prompt=If no blickets are wugs and all glims are blickets, can any glim be a wug?
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=If no blickets are wugs and all glims are blickets, can any glim be a wug?
+response=No. All glims are blickets, and no blickets are wugs, so no glim can be a wug.
+
+[12] prompt=solve x^2 = 4
+mode=symbolic-math
+backend=cpu
+response=x = 2 and x = -2.
+
+[13] prompt=Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=Sam has 14 apples, gives away 5, then buys 8. How many apples does Sam have?
+response=Sam has 17 left. Start from 14, subtract 5, then add 8.
+
+[14] prompt=generate JSON with name Jane Doe and age 0
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=generate JSON with name Jane Doe and age 0
+response=```json {"name":"Jane Doe","age":0} ``` The full name and age slots are preserved exactly.
+
+[15] prompt=generate JSON with city London and temperature 18
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=generate JSON with city London and temperature 18
+response=```json {"city":"London","temperature":18} ``` The city and temperature slots are preserved exactly.
+
+[16] prompt=generate JSON with name Ada and age thirty seven
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=generate JSON with name Ada and age thirty seven
+response=```json {"name":"Ada","age":37} ``` The word-number age is normalized to the JSON number 37.
+
+[17] prompt=write a Rust async HTTP server
+mode=hybrid-anchor
+backend=cpu
+matched_prompt=write a Rust async HTTP server
+response=Use Tokio plus Axum: define async handlers, attach them to an Axum Router, bind a tokio::net::TcpListener, and serve it with axum::serve.
+
+summary turns=17 anchored=12 retrieved=0 symbolic=5 nonempty=17 uncertain=0

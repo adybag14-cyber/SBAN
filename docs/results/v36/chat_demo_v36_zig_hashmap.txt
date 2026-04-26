@@ -1,0 +1,4 @@
+prompt=where is std.hashmap implemented in zig upstream
+mode=free-composed
+backend=cpu
+response=In the upstream Zig source tree, the generic hash map implementation lives in lib/std/hash_map.zig.

@@ -16,12 +16,12 @@ Read only the files that matter for the current subtask:
 - `src/dialogue.zig` for the grounded chat runtime, session memory, symbolic helpers, persistence, and CPU or GPU retrieval support
 - `src/config.zig` for searchable profile knobs
 - `src/main.zig` for CLI behavior and release-facing commands
-- `scripts/build_v35_runtime_prewarm.py` for the generated runtime prewarm pack, learned reasoning corpus, cold seed, compatibility seed/open/knowledge files, eval assets, and stats
-- `scripts/vocab_size_probe_v35.py` for larger-vocabulary collision and dense-memory estimates through 65,536 buckets
-- `scripts/ci_smoke_v35.py` for the current product smoke gate, learned-corpus manifest checks, default-prewarm checks, exact JSON, and forget/delete checks
-- `scripts/run_v35_release.py` for the current packaged benchmark, dialogue suite, runtime-prewarm eval, learned-reasoning eval, and vocabulary probe
-- `scripts/make_v35_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
-- `scripts/package_v35_demo.py` for the newcomer demo bundle
+- `scripts/build_v36_runtime_prewarm.py` for the generated runtime prewarm pack, learned reasoning corpus, cold seed, compatibility seed/open/knowledge files, eval assets, and stats
+- `scripts/vocab_size_probe_v36.py` for larger-vocabulary collision and dense-memory estimates through 65,536 buckets
+- `scripts/ci_smoke_v36.py` for the current product smoke gate, learned-corpus manifest checks, default-prewarm checks, exact JSON, no-store memory checks, limitation-regression checks, and forget/delete checks
+- `scripts/run_v36_release.py` for the current packaged benchmark, dialogue suite, runtime-prewarm eval, learned-reasoning eval, limitation-regression eval, and vocabulary probe
+- `scripts/make_v36_deliverables.py` for report, summary, PDF, demo bundle, repo zip, and workstation recipe generation
+- `scripts/package_v36_demo.py` for the newcomer demo bundle
 - `references/release_profiles.md` for the current baseline, targets, shipped profile details, and caveat wording
 
 If you need the release targets or commands, read `references/release_profiles.md`.
@@ -36,7 +36,7 @@ If you need the release targets or commands, read `references/release_profiles.m
 6. Regenerate deliverables only after the measured suite and packaged demo behavior are stable.
 7. If the user asks for a product demo or release packaging, validate the newcomer demo bundle and GitHub workflow files before finishing.
 8. For every new SBAN generation, update this skill with the generation-specific lessons, commit and push the finished release changes, monitor the GitHub CI suite, and if CI fails, debug, fix, re-commit, re-push, and monitor again until the suite is green or a concrete external blocker is documented.
-9. A version upgrade is not complete after push CI alone. Trigger the versioned GitHub full release suite workflow, push the matching release tag such as `v34.0.0` so the release bundle workflow publishes GitHub Release assets, monitor both workflows, and verify the GitHub Release contains the expected demo assets before calling the generation shipped.
+9. A version upgrade is not complete after push CI alone. Trigger the versioned GitHub full release suite workflow, push the matching release tag such as `v36.0.0` so the release bundle workflow publishes GitHub Release assets, monitor both workflows, and verify the GitHub Release contains the expected demo assets before calling the generation shipped.
 10. For v34 and later, verify runtime prewarm assets, vocab probe JSON, GitHub Release demo assets, and any manually uploaded report/summary/PDF/repo assets before calling a full release complete.
 
 ## Guardrails
@@ -132,10 +132,10 @@ If you need the release targets or commands, read `references/release_profiles.m
   extend vocab probes through 65,536 buckets while keeping the dense byte-vocab core unchanged,
   keep live-current or unsupported source-location claims behind explicit external-lookup boundaries,
   and guardrail hosted 20M hardening with `--hosted-long-20m-guardrail` after the full GitHub-hosted 20M attempt was terminated under memory pressure before artifact upload.
-- The v35 product lessons are the auto-learned runtime step:
-  keep the v34 default prewarm contract, add `data/sban_learned_reasoning_v35.txt` as a separately generated learned corpus, load it by default in free-mode chat, validate that the release manifest includes online examples from dataset adapters, and use `prewarm_path=none learned_path=none` as the cold-mode proof that learned answers come from data assets rather than hidden prompt branches.
-  Future reply-quality work should regenerate or extend the builder and dataset adapters instead of expanding `src/dialogue.zig` with more canned conversations; code changes should stay focused on routing, safety, and symbolic/runtime semantics such as exact JSON slots and structured session forget/delete.
-  The v35 release gate must include `data/sban_learned_session_eval_v35.txt`, `docs/results/v35/autolearn_manifest_v35.json`, exact JSON age/name checks, forget/delete recall-miss checks, and the existing live-current/source-boundary checks.
+- The v36 product lessons are the limitation-repair and runtime-learning step:
+  keep the v35 default prewarm and learned-corpus contract, add `data/sban_limitations_session_eval_v36.txt`, route symbolic math/logic/coding/no-store handling before fuzzy retrieval, validate that the release manifest includes online examples from dataset adapters, and use `prewarm_path=none learned_path=none` as the cold-mode proof that learned answers come from data assets rather than hidden prompt branches.
+  Future reply-quality work should regenerate or extend the builder and dataset adapters instead of expanding `src/dialogue.zig` with more canned conversations; code changes should stay focused on routing, safety, and symbolic/runtime semantics such as exact JSON slots, structured session forget/delete/no-store, simple quadratics, and practical coding helpers.
+  The v36 release gate must include `data/sban_learned_session_eval_v36.txt`, `data/sban_limitations_session_eval_v36.txt`, `docs/results/v36/autolearn_manifest_v36.json`, exact JSON age/name/city checks, negated-memory no-store checks, quadratic and word-problem checks, Rust/Zig coding checks, and the existing live-current/source-boundary checks.
 - The release profile is search-sensitive. Preserve explicit overrides in release scripts instead of assuming raw defaults are the winning profile.
 
 ## Long-run release notes
@@ -144,15 +144,15 @@ If you need the release targets or commands, read `references/release_profiles.m
 - The near-100M v22 artifact is not just "the same profile but longer"; it intentionally disables the order-4, order-5, and continuation expert bonuses so the measurement stays bounded and reproducible.
 - If a long run fails with `OutOfMemory`, inspect both bundle allocation and retained capacity in dead neurons before assuming the model itself is fundamentally too large.
 - For the v31 era, keep the core hosted release suite split from the independent 10M, 20M, and 100M workflows, and make the runner label configurable because the repo may not actually have a larger self-hosted runner registered.
-- For v35 hosted long hardening, run the 10M job fresh and let the 20M job emit the carried-forward guardrail explicitly on GitHub-hosted runners; only attempt a fresh 20M on a larger runner with enough memory.
+- For v36 hosted long hardening, run the 10M job fresh and let the 20M job emit the carried-forward guardrail explicitly on GitHub-hosted runners; only attempt a fresh 20M on a larger runner with enough memory.
 
 ## Deliverables
 
 For a new release:
 
-1. Run `python scripts/build_v35_runtime_prewarm.py --force-refresh` when network is available and `python scripts/vocab_size_probe_v35.py` or the next-generation equivalents.
-2. Run `python scripts/run_v35_release.py` or the next-generation equivalent.
-3. Run `python scripts/make_v35_deliverables.py` or the next-generation equivalent.
+1. Run `python scripts/build_v36_runtime_prewarm.py --force-refresh` when network is available and `python scripts/vocab_size_probe_v36.py` or the next-generation equivalents.
+2. Run `python scripts/run_v36_release.py` or the next-generation equivalent.
+3. Run `python scripts/make_v36_deliverables.py` or the next-generation equivalent.
 4. Confirm the versioned paper PDF, executive summary, repo zip, demo bundle, runtime prewarm JSON, autolearn manifest JSON, generated knowledge compatibility JSON, learned session eval result, and vocab probe JSON exist under `deliverables/` or `docs/results/`.
 5. Update `README.md` and `references/release_profiles.md` so the current release can be reproduced without extra context.
 6. If CI or release workflows were requested, confirm `.github/workflows/` contains the current versioned automation.

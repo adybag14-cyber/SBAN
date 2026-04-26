@@ -1,0 +1,94 @@
+{
+  "release": "v36",
+  "core_byte_vocab_size": 256,
+  "probe": "hashed wordpiece bucket collision and dense-table cost probe for larger vocabularies",
+  "recommendation": "Use the v36 prewarm retrieval pack plus a sparse token index for 4096+ buckets; keep the core byte-level numeric runtime at 256 until dense order tables are replaced or sparsified.",
+  "inputs": [
+    "data\\sban_runtime_prewarm_v36.txt",
+    "data\\sban_synthetic_knowledge_v36.txt",
+    "data\\sban_dialogue_open_seed_v36.txt"
+  ],
+  "rows": [
+    {
+      "vocab_size": 256,
+      "unique_tokens": 6094,
+      "used_buckets": 256,
+      "collisions": 5838,
+      "collision_rate": 0.9579914670167378,
+      "estimated_dense_order2_bytes": 4194304,
+      "estimated_dense_order2_mib": 4.0
+    },
+    {
+      "vocab_size": 512,
+      "unique_tokens": 6094,
+      "used_buckets": 512,
+      "collisions": 5582,
+      "collision_rate": 0.9159829340334755,
+      "estimated_dense_order2_bytes": 16777216,
+      "estimated_dense_order2_mib": 16.0
+    },
+    {
+      "vocab_size": 1024,
+      "unique_tokens": 6094,
+      "used_buckets": 1022,
+      "collisions": 5072,
+      "collision_rate": 0.8322940597308829,
+      "estimated_dense_order2_bytes": 67108864,
+      "estimated_dense_order2_mib": 64.0
+    },
+    {
+      "vocab_size": 2048,
+      "unique_tokens": 6094,
+      "used_buckets": 1946,
+      "collisions": 4148,
+      "collision_rate": 0.6806695109944207,
+      "estimated_dense_order2_bytes": 268435456,
+      "estimated_dense_order2_mib": 256.0
+    },
+    {
+      "vocab_size": 4096,
+      "unique_tokens": 6094,
+      "used_buckets": 3196,
+      "collisions": 2898,
+      "collision_rate": 0.47554972103708565,
+      "estimated_dense_order2_bytes": 1073741824,
+      "estimated_dense_order2_mib": 1024.0
+    },
+    {
+      "vocab_size": 8192,
+      "unique_tokens": 6094,
+      "used_buckets": 4308,
+      "collisions": 1786,
+      "collision_rate": 0.2930751558910404,
+      "estimated_dense_order2_bytes": 4294967296,
+      "estimated_dense_order2_mib": 4096.0
+    },
+    {
+      "vocab_size": 16384,
+      "unique_tokens": 6094,
+      "used_buckets": 5073,
+      "collisions": 1021,
+      "collision_rate": 0.16754184443715128,
+      "estimated_dense_order2_bytes": 17179869184,
+      "estimated_dense_order2_mib": 16384.0
+    },
+    {
+      "vocab_size": 32768,
+      "unique_tokens": 6094,
+      "used_buckets": 5561,
+      "collisions": 533,
+      "collision_rate": 0.08746307843780768,
+      "estimated_dense_order2_bytes": 68719476736,
+      "estimated_dense_order2_mib": 65536.0
+    },
+    {
+      "vocab_size": 65536,
+      "unique_tokens": 6094,
+      "used_buckets": 5823,
+      "collisions": 271,
+      "collision_rate": 0.044469970462750245,
+      "estimated_dense_order2_bytes": 274877906944,
+      "estimated_dense_order2_mib": 262144.0
+    }
+  ]
+}
